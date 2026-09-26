@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.BarcodeView"
+             x:DataType="local:BarcodeViewModel"
+             s:DataContextResolver.Type="local:BarcodeViewModel"
+             d:DesignWidth="1280" d:DesignHeight="740">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <TextBlock Grid.Row="0"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   Text="{Binding Barcode}"
+                   FontSize="72"
+                   FontWeight="Bold" />
+
+        <UniformGrid Grid.Row="1"
+                     Rows="1">
+            <Button Command="{Binding ResumeCommand}"
+                    Content="Resume"
+                    Classes="command" />
+            <Button Command="{Binding PauseCommand}"
+                    Content="Pause"
+                    Classes="command" />
+        </UniformGrid>
+
+    </Grid>
+
+</UserControl>

@@ -1,0 +1,78 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.CameraView"
+             x:DataType="local:CameraViewModel"
+             s:DataContextResolver.Type="local:CameraViewModel"
+             d:DesignWidth="1280" d:DesignHeight="740">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <Viewbox Grid.Row="0"
+                 Stretch="Uniform">
+            <Panel Width="{Binding FrameWidth}"
+                   Height="{Binding FrameHeight}">
+                <Image Source="{Binding Bitmap}"
+                       Stretch="Fill" />
+                <controls:FaceBoxOverlay FaceBoxes="{Binding FaceBoxes}" />
+            </Panel>
+        </Viewbox>
+
+        <Border Grid.Row="0"
+                Margin="3" Padding="3"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Background="#40000000" BorderBrush="#C0FFFFFF" BorderThickness="1" CornerRadius="3">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                  ColumnDefinitions="Auto,Auto">
+                <Grid.Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="FontFamily" Value="monospace" />
+                        <Setter Property="FontSize" Value="12" />
+                        <Setter Property="Foreground" Value="White" />
+                    </Style>
+                    <Style Selector="TextBlock.value">
+                        <Setter Property="Width" Value="36" />
+                        <Setter Property="TextAlignment" Value="Right" />
+                    </Style>
+                </Grid.Styles>
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="FPS:" />
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Text="{Binding Fps, StringFormat={}{0:F1}}"
+                           Classes="value" />
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="GC0/s:" />
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           Text="{Binding Gc0PerSec, StringFormat={}{0:F1}}"
+                           Classes="value" />
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="GC1/s:" />
+                <TextBlock Grid.Row="2" Grid.Column="1"
+                           Text="{Binding Gc1PerSec, StringFormat={}{0:F1}}"
+                           Classes="value" />
+                <TextBlock Grid.Row="3" Grid.Column="0"
+                           Text="GC2/s:" />
+                <TextBlock Grid.Row="3" Grid.Column="1"
+                           Text="{Binding Gc2PerSec, StringFormat={}{0:F1}}"
+                           Classes="value" />
+            </Grid>
+        </Border>
+
+        <UniformGrid Grid.Row="1"
+                     Rows="1">
+            <Button Command="{Binding StartCommand}"
+                    Content="Start"
+                    Classes="command" />
+            <Button Command="{Binding StopCommand}"
+                    Content="Stop"
+                    Classes="command" />
+        </UniformGrid>
+
+    </Grid>
+
+</UserControl>

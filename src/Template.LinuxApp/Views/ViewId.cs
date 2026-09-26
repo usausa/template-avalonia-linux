@@ -2,6 +2,11 @@ namespace Template.LinuxApp.Views;
 
 public enum ViewId
 {
-    Menu,
-    Sub
+    Dashboard,
+    Typography,
+    Barcode,
+    Camera,
+    Printer,
+    Controller,
+    Nfc
 }

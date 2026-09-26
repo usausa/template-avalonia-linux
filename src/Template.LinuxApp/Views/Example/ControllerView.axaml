@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.ControllerView"
+             x:DataType="local:ControllerViewModel"
+             s:DataContextResolver.Type="local:ControllerViewModel"
+             d:DesignWidth="1280" d:DesignHeight="740">
+
+    <UserControl.Resources>
+        <converters:ShiftColorConverter x:Key="ShiftColorConverter"
+                                        ActiveColor="Turquoise" InactiveColor="#484D5F" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.shift">
+            <Setter Property="Margin" Value="16,0" />
+            <Setter Property="FontSize" Value="72" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Background="#20232A">
+        <controls:SpeedGauge Margin="0,40,0,-40"
+                             Color="Turquoise" BackgroundColor="#484D5F"
+                             GaugeWidth="32"
+                             Speed="{Binding Speed}" />
+
+        <TextBlock Margin="{StaticResource PaddingNormal}"
+                   HorizontalAlignment="Right"
+                   Text="{Binding Fps, StringFormat={}{0} fps}"
+                   FontSize="24"
+                   Foreground="White" />
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center"
+                       Text="km/h"
+                       FontSize="48"
+                       Foreground="#878A9F" />
+            <TextBlock HorizontalAlignment="Center"
+                       Text="{Binding Speed}"
+                       FontFamily="{StaticResource Gkktt}"
+                       FontSize="144"
+                       Foreground="White" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,0,0,120"
+                    HorizontalAlignment="Center" VerticalAlignment="Bottom">
+            <TextBlock Text="R"
+                       Classes="shift"
+                       Foreground="{Binding Shift, Converter={StaticResource ShiftColorConverter}, ConverterParameter={s:Int32 0}}" />
+            <TextBlock Text="1"
+                       Classes="shift"
+                       Foreground="{Binding Shift, Converter={StaticResource ShiftColorConverter}, ConverterParameter={s:Int32 1}}" />
+            <TextBlock Text="2"
+                       Classes="shift"
+                       Foreground="{Binding Shift, Converter={StaticResource ShiftColorConverter}, ConverterParameter={s:Int32 2}}" />
+            <TextBlock Text="3"
+                       Classes="shift"
+                       Foreground="{Binding Shift, Converter={StaticResource ShiftColorConverter}, ConverterParameter={s:Int32 3}}" />
+            <TextBlock Text="4"
+                       Classes="shift"
+                       Foreground="{Binding Shift, Converter={StaticResource ShiftColorConverter}, ConverterParameter={s:Int32 4}}" />
+            <TextBlock Text="5"
+                       Classes="shift"
+                       Foreground="{Binding Shift, Converter={StaticResource ShiftColorConverter}, ConverterParameter={s:Int32 5}}" />
+            <TextBlock Text="6"
+                       Classes="shift"
+                       Foreground="{Binding Shift, Converter={StaticResource ShiftColorConverter}, ConverterParameter={s:Int32 6}}" />
+        </StackPanel>
+    </Grid>
+
+</UserControl>

@@ -12,8 +12,18 @@ using Serilog;
 
 using Smart.Avalonia;
 
+using Template.LinuxApp.Components.Barcode;
+using Template.LinuxApp.Components.Gamepad;
+using Template.LinuxApp.Components.Motor;
+using Template.LinuxApp.Components.Nfc;
+using Template.LinuxApp.Components.Platform;
+using Template.LinuxApp.Components.Printer;
+using Template.LinuxApp.Components.Video;
+using Template.LinuxApp.Devices.Input;
 using Template.LinuxApp.Services;
 using Template.LinuxApp.Settings;
+using Template.LinuxApp.Shell;
+using Template.LinuxApp.State;
 using Template.LinuxApp.Views;
 
 public static partial class ApplicationExtensions
@@ -55,6 +65,8 @@ public static partial class ApplicationExtensions
         // Setting
         builder.Services.AddOptions<Setting>().BindConfiguration("Setting").ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<Setting>>().Value);
+        builder.Services.AddOptions<KioskSetting>().BindConfiguration("Kiosk").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<KioskSetting>>().Value);
 
         // Messenger
         builder.Services.AddSingleton<IReactiveMessenger>(ReactiveMessenger.Default);
@@ -73,8 +85,46 @@ public static partial class ApplicationExtensions
         builder.Services.AddServices();
         builder.Services.AddSingleton<IDialogService, DialogService>();
 
+        // State
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<DeviceState>();
+
+        // Input
+        builder.Services.AddOptions<InputOption>().BindConfiguration("Input").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<InputOption>>().Value);
+        builder.Services.AddSingleton<IInputDevice, PadInputDevice>();
+
+        // Components
+        builder.Services.AddOptions<GamepadReaderOption>().BindConfiguration("Gamepad").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<GamepadReaderOption>>().Value);
+        builder.Services.AddSingleton<IGamepadReader, GamepadReader>();
+        builder.Services.AddOptions<BarcodeReaderOption>().BindConfiguration("Barcode").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<BarcodeReaderOption>>().Value);
+        builder.Services.AddSingleton<IBarcodeReader, BarcodeReader>();
+        builder.Services.AddOptions<QrReaderOption>().BindConfiguration("Barcode").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<QrReaderOption>>().Value);
+        builder.Services.AddSingleton<IQrReader, QrReader>();
+        builder.Services.AddOptions<VideoSourceOption>().BindConfiguration("Camera").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<VideoSourceOption>>().Value);
+        builder.Services.AddSingleton<IVideoSource, VideoSource>();
+        builder.Services.AddOptions<FaceDetectorOption>().BindConfiguration("Detect").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<FaceDetectorOption>>().Value);
+        builder.Services.AddSingleton<IFaceDetector, FaceDetector>();
+        builder.Services.AddOptions<LinePrinterOption>().BindConfiguration("Printer").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<LinePrinterOption>>().Value);
+        builder.Services.AddSingleton<ILinePrinter, LinePrinter>();
+        builder.Services.AddOptions<ImagePrinterOption>().BindConfiguration("Printer").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<ImagePrinterOption>>().Value);
+        builder.Services.AddSingleton<IImagePrinter, ImagePrinter>();
+        builder.Services.AddOptions<MotorControllerOption>().BindConfiguration("Motor").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<MotorControllerOption>>().Value);
+        builder.Services.AddSingleton<IMotorController, MotorController>();
+        builder.Services.AddSingleton<ISuicaReader, SuicaReader>();
+        builder.Services.AddSingleton<ISystemMonitor, SystemMonitor>();
+
         // Window
         builder.Services.AddSingleton<MainWindow>();
+        builder.Services.AddSingleton<KioskController>();
         // View & ViewModel
         builder.Services.AddViews();
         builder.Services.AddViewModels();
@@ -94,6 +144,7 @@ public static partial class ApplicationExtensions
         // Startup log
         var log = host.Services.GetRequiredService<ILogger<App>>();
         var environment = host.Services.GetRequiredService<IHostEnvironment>();
+        var kiosk = host.Services.GetRequiredService<KioskSetting>();
         ThreadPool.GetMinThreads(out var workerThreads, out var completionPortThreads);
 
         log.InfoStartup();
@@ -102,10 +153,21 @@ public static partial class ApplicationExtensions
         log.InfoStartupSettingsThreadPool(workerThreads, completionPortThreads);
         log.InfoStartupApplication(environment.ApplicationName, typeof(App).Assembly.GetName().Version);
         log.InfoStartupEnvironment(environment.EnvironmentName, environment.ContentRootPath);
+        log.InfoStartupKiosk(kiosk.Enable, kiosk.HideCursor);
+
+        // Device
+        host.Services.GetRequiredService<IInputDevice>();
+        host.Services.GetRequiredService<IBarcodeReader>();
+        host.Services.GetRequiredService<IQrReader>();
+        host.Services.GetRequiredService<IVideoSource>();
+        host.Services.GetRequiredService<ILinePrinter>();
+        host.Services.GetRequiredService<IImagePrinter>();
+        host.Services.GetRequiredService<IMotorController>();
+        host.Services.GetRequiredService<ISuicaReader>();
 
         // Navigate to view
         var navigator = host.Services.GetRequiredService<INavigator>();
-        await navigator.ForwardAsync(ViewId.Menu).ConfigureAwait(false);
+        await navigator.ForwardAsync(ViewId.Dashboard).ConfigureAwait(false);
     }
 
     public static async ValueTask ExitApplicationAsync(this IHost host)

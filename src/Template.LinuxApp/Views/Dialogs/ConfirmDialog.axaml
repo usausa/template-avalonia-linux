@@ -1,29 +1,25 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Template.LinuxApp.Views.Dialogs.ConfirmDialog"
-        Width="384"
-        SizeToContent="Height"
-        WindowStartupLocation="CenterOwner"
-        CanResize="False"
-        ShowInTaskbar="False"
-        Title="Confirm">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Template.LinuxApp.Views.Dialogs.ConfirmDialog">
 
-    <StackPanel Margin="16">
-        <TextBlock x:Name="MessageText"
-                   TextWrapping="Wrap" />
-        <StackPanel Margin="0,16,0,0"
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal"
-                    Spacing="8">
-            <Button Width="96"
-                    Click="OnYesClick"
-                    Content="Yes"
-                    IsDefault="True" />
-            <Button Width="96"
-                    Click="OnNoClick"
-                    Content="No"
-                    IsCancel="True" />
+    <Border Classes="dialog">
+        <StackPanel>
+            <TextBlock Text="Confirm"
+                       Classes="dialog-title" />
+            <TextBlock x:Name="MessageText"
+                       TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal"
+                        Margin="0,16,0,0"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button Width="96"
+                        Content="Yes"
+                        Click="OnYesClick" IsDefault="True" />
+                <Button Width="96"
+                        Content="No"
+                        Click="OnNoClick" IsCancel="True" />
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </Border>
 
-</Window>
+</UserControl>

@@ -13,6 +13,8 @@ using Smart.Mvvm.Resolver;
 
 using Template.LinuxApp.Services;
 using Template.LinuxApp.Settings;
+using Template.LinuxApp.Shell;
+using Template.LinuxApp.Views;
 
 // ReSharper disable once PartialTypeWithSinglePart
 public partial class App : Application
@@ -20,6 +22,12 @@ public partial class App : Application
     private IHost host = default!;
 
     private ILogger<App> log = default!;
+
+    private bool started;
+
+    private bool recovering;
+
+    private bool restoring;
 
     public override void Initialize()
     {
@@ -43,9 +51,14 @@ public partial class App : Application
         };
         Dispatcher.UIThread.UnhandledException += (_, args) =>
         {
+            if (!started || restoring)
+            {
+                return;
+            }
+
             log.ErrorUnknownException(args.Exception);
             args.Handled = true;
-            NotifyException(args.Exception);
+            RecoverFromException();
         };
     }
 
@@ -95,14 +108,25 @@ public partial class App : Application
 
             // Main window
             var window = host.Services.GetRequiredService<MainWindow>();
-            RestoreWindowPlacement(window, store.Value);
-            window.Closing += (_, _) => SaveWindowPlacement(window, store.Value);
+            if (host.Services.GetRequiredService<KioskSetting>().Enable)
+            {
+                host.Services.GetRequiredService<KioskController>().Attach(window);
+            }
+            else
+            {
+                RestoreWindowPlacement(window, store.Value);
+                window.Closing += (_, _) => SaveWindowPlacement(window, store.Value);
+            }
+
+            // Stop request
+            var stopping = host.Services.GetRequiredService<IHostApplicationLifetime>().ApplicationStopping.Register(() => Dispatcher.UIThread.Post(window.Close));
 
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             window.Closed += async (_, _) =>
             {
                 try
                 {
+                    await stopping.DisposeAsync();
                     await store.SaveAsync();
                     await host.ExitApplicationAsync();
                 }
@@ -115,6 +139,7 @@ public partial class App : Application
 
             // Start
             await host.StartApplicationAsync();
+            started = true;
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -169,11 +194,33 @@ public partial class App : Application
     // Exception
     //--------------------------------------------------------------------------------
 
-    private void NotifyException(Exception ex)
+    private void RecoverFromException()
     {
-        Dispatcher.UIThread.Post(() =>
+        if (recovering)
         {
-            _ = host.Services.GetRequiredService<IDialogService>().NotifyAsync(ex.Message).AsTask();
-        });
+            return;
+        }
+
+        recovering = true;
+        Dispatcher.UIThread.Post(() => _ = RecoverAsync());
+    }
+
+    private async Task RecoverAsync()
+    {
+        try
+        {
+            await host.Services.GetRequiredService<INavigator>().PopAllAndForwardAsync(ViewId.Dashboard);
+            restoring = true;
+            Dispatcher.UIThread.Post(() =>
+            {
+                (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow?.UpdateLayout();
+                restoring = false;
+            });
+            await host.Services.GetRequiredService<IDialogService>().NotifyAsync("An unexpected error occurred.");
+        }
+        finally
+        {
+            recovering = false;
+        }
     }
 }

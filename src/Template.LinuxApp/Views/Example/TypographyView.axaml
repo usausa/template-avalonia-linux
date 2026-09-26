@@ -1,0 +1,143 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.TypographyView"
+             x:DataType="local:TypographyViewModel"
+             s:DataContextResolver.Type="local:TypographyViewModel"
+             d:DesignWidth="1280" d:DesignHeight="740">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="FontSize" Value="24" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer>
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+              ColumnDefinitions="Auto,32,*"
+              Margin="10"
+              RowSpacing="5">
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                       Margin="0,0,0,10"
+                       Text="フォント表示サンプル"
+                       FontSize="20"
+                       FontWeight="Bold" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0"
+                       Text="フォント名"
+                       FontWeight="SemiBold" TextAlignment="Center" />
+            <TextBlock Grid.Row="1" Grid.Column="2"
+                       Text="表示サンプル (テキストの内容)"
+                       FontWeight="SemiBold" TextAlignment="Center" />
+
+            <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                       Height="1"
+                       Margin="0,5"
+                       Fill="LightGray" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0"
+                       Text="sans-serif" />
+            <TextBlock Grid.Row="3" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。sans-serif。"
+                       FontFamily="sans-serif" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0"
+                       Text="serif" />
+            <TextBlock Grid.Row="4" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。serif。"
+                       FontFamily="serif" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0"
+                       Text="monospace" />
+            <TextBlock Grid.Row="5" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。monospace。"
+                       FontFamily="monospace" />
+
+            <Rectangle Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"
+                       Height="1"
+                       Margin="0,5"
+                       Fill="LightGray" />
+
+            <TextBlock Grid.Row="7" Grid.Column="0"
+                       Text="IPAMincho" />
+            <TextBlock Grid.Row="7" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。文字の美しさ、可読性が追求されています。私は日本語の明朝体です。IPAの明朝体。"
+                       FontFamily="IPAMincho" />
+
+            <TextBlock Grid.Row="8" Grid.Column="0"
+                       Text="IPAGothic" />
+            <TextBlock Grid.Row="8" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。文字の美しさ、可読性が追求されています。私は日本語のゴシック体です。IPAのゴシック体。"
+                       FontFamily="IPAGothic" />
+
+            <TextBlock Grid.Row="9" Grid.Column="0"
+                       Text="IPAexMincho" />
+            <TextBlock Grid.Row="9" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。IPAexは、和文と欧文の文字幅の統一を考慮した明朝体です。"
+                       FontFamily="IPAexMincho" />
+
+            <TextBlock Grid.Row="10" Grid.Column="0"
+                       Text="IPAexGothic" />
+            <TextBlock Grid.Row="10" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。IPAexは、和文と欧文の文字幅の統一を考慮したゴシック体です。"
+                       FontFamily="IPAexGothic" />
+
+            <Rectangle Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3"
+                       Height="1"
+                       Margin="0,5"
+                       Fill="LightGray" />
+
+            <TextBlock Grid.Row="12" Grid.Column="0"
+                       Text="Noto Sans CJK JP" />
+            <TextBlock Grid.Row="12" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。GoogleとAdobeが共同開発した、非常に包括的なゴシック体です。私はNoto Sans CJK JPです。"
+                       FontFamily="Noto Sans CJK JP" />
+
+            <TextBlock Grid.Row="13" Grid.Column="0"
+                       Text="Noto Serif CJK JP" />
+            <TextBlock Grid.Row="13" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。私はNoto Sansのセリフ（明朝）版です。明朝体のエレガントさを持っています。"
+                       FontFamily="Noto Serif CJK JP" />
+
+            <TextBlock Grid.Row="14" Grid.Column="0"
+                       Text="VL Gothic" />
+            <TextBlock Grid.Row="14" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙。視認性が高く、オープンソースで人気のあるゴシック体です。私はVL Gothicです。"
+                       FontFamily="VL Gothic" />
+
+            <Rectangle Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="3"
+                       Height="1"
+                       Margin="0,5"
+                       Fill="LightGray" />
+
+            <TextBlock Grid.Row="16" Grid.Column="0"
+                       Text="851Gkktt" />
+            <TextBlock Grid.Row="16" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙"
+                       FontFamily="{StaticResource Gkktt}" />
+
+            <TextBlock Grid.Row="17" Grid.Column="0"
+                       Text="DSEG7Classic" />
+            <TextBlock Grid.Row="17" Grid.Column="2"
+                       Text="ABCDE 12345 あいうえお 甲乙丙"
+                       FontFamily="{StaticResource Dseg7}" />
+
+            <Rectangle Grid.Row="18" Grid.Column="0" Grid.ColumnSpan="3"
+                       Height="1"
+                       Margin="0,5"
+                       Fill="LightGray" />
+
+            <TextBlock Grid.Row="19" Grid.Column="0"
+                       Text="絵文字" />
+            <TextBlock Grid.Row="19" Grid.Column="2"
+                       Text="😄🍕🚀🍣💻 (Noto Color Emojiによる表示)" />
+
+        </Grid>
+    </ScrollViewer>
+
+</UserControl>

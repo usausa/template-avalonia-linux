@@ -1,22 +1,19 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Template.LinuxApp.Views.Dialogs.NoticeDialog"
-        Width="384"
-        SizeToContent="Height"
-        WindowStartupLocation="CenterOwner"
-        CanResize="False"
-        ShowInTaskbar="False"
-        Title="Information">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Template.LinuxApp.Views.Dialogs.NoticeDialog">
 
-    <StackPanel Margin="16">
-        <TextBlock x:Name="MessageText"
-                   TextWrapping="Wrap" />
-        <Button Width="96"
-                Margin="0,16,0,0"
-                HorizontalAlignment="Right"
-                Click="OnOkClick"
-                Content="OK"
-                IsDefault="True" />
-    </StackPanel>
+    <Border Classes="dialog">
+        <StackPanel>
+            <TextBlock Text="Information"
+                       Classes="dialog-title" />
+            <TextBlock x:Name="MessageText"
+                       TextWrapping="Wrap" />
+            <Button Width="96"
+                    Margin="0,16,0,0"
+                    HorizontalAlignment="Right"
+                    Content="OK"
+                    Click="OnOkClick" IsDefault="True" />
+        </StackPanel>
+    </Border>
 
-</Window>
+</UserControl>

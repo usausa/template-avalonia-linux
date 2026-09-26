@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <FontFamily x:Key="Gkktt">avares://Template.LinuxApp/Assets/Fonts/851Gkktt_005.ttf#851Gkktt</FontFamily>
+    <FontFamily x:Key="Dseg7">avares://Template.LinuxApp/Assets/Fonts/DSEG7Classic-Regular.ttf#DSEG7 Classic</FontFamily>
+
+</ResourceDictionary>

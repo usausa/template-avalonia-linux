@@ -5,6 +5,7 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>..\..\Analyzers.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
@@ -27,6 +28,10 @@
       <DependentUpon>appsettings.json</DependentUpon>
       <ExcludeFromSingleFile>True</ExcludeFromSingleFile>
     </Content>
+    <Content Include="version-RFB-320.onnx;version-RFB-320-LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>True</ExcludeFromSingleFile>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -40,14 +45,24 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
     <PackageReference Include="BunnyTail.DependencyInjection" Version="0.7.0" />
     <PackageReference Include="BunnyTail.XamlProperty.Avalonia" Version="1.3.0" />
+    <PackageReference Include="LinuxDotNet.Cups" Version="1.16.0" />
+    <PackageReference Include="LinuxDotNet.GameInput" Version="1.16.0" />
+    <PackageReference Include="LinuxDotNet.InputEvent" Version="1.16.0" />
+    <PackageReference Include="LinuxDotNet.SystemInfo" Version="1.16.0" />
+    <PackageReference Include="LinuxDotNet.Video4Linux2" Version="1.16.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.12" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.30.0" />
+    <PackageReference Include="Mofucat.SerialIO" Version="1.5.0" />
+    <PackageReference Include="PCSC" Version="7.0.1" />
+    <PackageReference Include="QRCoder" Version="1.8.0" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.12" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
     <PackageReference Include="Usa.Smart.Avalonia" Version="2.27.0" />
     <PackageReference Include="Usa.Smart.Avalonia.Extensions" Version="2.27.0" />

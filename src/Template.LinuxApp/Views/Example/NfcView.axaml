@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.NfcView"
+             x:DataType="local:NfcViewModel"
+             s:DataContextResolver.Type="local:NfcViewModel"
+             d:DesignWidth="1280" d:DesignHeight="740">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock HorizontalAlignment="Center"
+                   Text="{Binding Id}"
+                   FontSize="72"
+                   FontWeight="Bold" />
+        <TextBlock HorizontalAlignment="Center"
+                   Text="{Binding Balance}"
+                   FontSize="72"
+                   FontWeight="Bold" />
+    </StackPanel>
+
+</UserControl>

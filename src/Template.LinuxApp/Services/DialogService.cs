@@ -1,46 +1,60 @@
 namespace Template.LinuxApp.Services;
 
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 
+using Template.LinuxApp.Controls;
 using Template.LinuxApp.Views.Dialogs;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class DialogService : IDialogService
 {
-    private static Window? GetOwner() =>
-        (Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+    private static DialogLayer? GetLayer() =>
+        ((Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as MainWindow)?.DialogLayer;
+
+    public bool IsOpen => GetLayer()?.IsVisible ?? false;
 
     public async ValueTask<bool> ConfirmAsync(string message)
     {
-        var owner = GetOwner();
-        if (owner is null)
+        var layer = GetLayer();
+        if (layer is null)
         {
             return false;
         }
 
-        return await new ConfirmDialog { Message = message }.ShowDialog<bool>(owner);
+        var dialog = new ConfirmDialog { Message = message };
+        using (layer.Open(dialog))
+        {
+            return await dialog.Result;
+        }
     }
 
-    public async ValueTask<string?> InputAsync(string title, string? initial = null)
+    public async ValueTask<string?> InputAsync(string title, string? initial = null, bool password = false)
     {
-        var owner = GetOwner();
-        if (owner is null)
+        var layer = GetLayer();
+        if (layer is null)
         {
             return null;
         }
 
-        return await new InputDialog { Title = title, Value = initial ?? string.Empty }.ShowDialog<string?>(owner);
+        var dialog = new InputDialog { Title = title, Value = initial ?? string.Empty, Password = password };
+        using (layer.Open(dialog))
+        {
+            return await dialog.Result;
+        }
     }
 
     public async ValueTask NotifyAsync(string message)
     {
-        var owner = GetOwner();
-        if (owner is null)
+        var layer = GetLayer();
+        if (layer is null)
         {
             return;
         }
 
-        await new NoticeDialog { Message = message }.ShowDialog(owner);
+        var dialog = new NoticeDialog { Message = message };
+        using (layer.Open(dialog))
+        {
+            await dialog.Result;
+        }
     }
 }

@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             xmlns:state="clr-namespace:Template.LinuxApp.State"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.DashboardView"
+             x:DataType="local:DashboardViewModel"
+             s:DataContextResolver.Type="local:DashboardViewModel"
+             d:DesignWidth="1280" d:DesignHeight="740">
+
+    <Grid RowDefinitions="Auto,*"
+          ColumnDefinitions="*,*"
+          Margin="{StaticResource PaddingLarge}"
+          ColumnSpacing="{StaticResource SpacingXLarge}"
+          RowSpacing="{StaticResource SpacingMedium}">
+
+        <StackPanel Grid.Row="0" Grid.Column="0"
+                    Spacing="{StaticResource SpacingSmall}">
+            <TextBlock Text="System"
+                       Classes="title" />
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                  ColumnDefinitions="Auto,*"
+                  ColumnSpacing="{StaticResource SpacingMedium}"
+                  RowSpacing="{StaticResource SpacingXSmall}">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Setting" />
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Text="{Binding SettingValue}" />
+                <TextBlock Grid.Row="1" Grid.Column="0"
+                           Text="CPU" />
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           Text="{Binding Cpu}" />
+                <TextBlock Grid.Row="2" Grid.Column="0"
+                           Text="Memory" />
+                <TextBlock Grid.Row="2" Grid.Column="1"
+                           Text="{Binding Memory}" />
+                <TextBlock Grid.Row="3" Grid.Column="0"
+                           Text="Load average" />
+                <TextBlock Grid.Row="3" Grid.Column="1"
+                           Text="{Binding LoadAverage}" />
+                <TextBlock Grid.Row="4" Grid.Column="0"
+                           Text="Temperature" />
+                <TextBlock Grid.Row="4" Grid.Column="1"
+                           Text="{Binding Temperature}" />
+                <TextBlock Grid.Row="5" Grid.Column="0"
+                           Text="Uptime" />
+                <TextBlock Grid.Row="5" Grid.Column="1"
+                           Text="{Binding Uptime}" />
+            </Grid>
+            <TextBlock IsVisible="{Binding !IsSystemSupported}"
+                       Text="System information is available on Linux." />
+        </StackPanel>
+
+        <StackPanel Grid.Row="0" Grid.Column="1"
+                    Spacing="{StaticResource SpacingSmall}">
+            <TextBlock Text="Theme"
+                       Classes="title" />
+            <StackPanel Orientation="Horizontal"
+                        Spacing="{StaticResource SpacingSmall}">
+                <Button Command="{Binding ThemeCommand}"
+                        CommandParameter="Light"
+                        Content="Light" />
+                <Button Command="{Binding ThemeCommand}"
+                        CommandParameter="Dark"
+                        Content="Dark" />
+                <Button Command="{Binding ThemeCommand}"
+                        CommandParameter="System"
+                        Content="System" />
+            </StackPanel>
+        </StackPanel>
+
+        <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+            <TextBlock Text="Devices"
+                       Classes="title" DockPanel.Dock="Top" />
+            <Grid ColumnDefinitions="160,120,100,100,*"
+                  Classes="device-header" DockPanel.Dock="Top">
+                <TextBlock Grid.Column="0"
+                           Text="Name" />
+                <TextBlock Grid.Column="1"
+                           Text="State" />
+                <TextBlock Grid.Column="2"
+                           Text="Last event" />
+                <TextBlock Grid.Column="3"
+                           Text="Reconnect" />
+                <TextBlock Grid.Column="4"
+                           Text="Error" />
+            </Grid>
+            <ScrollViewer>
+                <ItemsControl ItemsSource="{Binding Devices}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="state:DeviceStatus">
+                            <Grid ColumnDefinitions="160,120,100,100,*">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Name}" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Condition}" />
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding LastEventAt, StringFormat={}{0:HH:mm:ss}}" />
+                                <TextBlock Grid.Column="3"
+                                           Text="{Binding ReconnectCount}" />
+                                <TextBlock Grid.Column="4"
+                                           Text="{Binding LastError}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+
+    </Grid>
+
+</UserControl>

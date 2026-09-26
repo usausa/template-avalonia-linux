@@ -5,16 +5,56 @@
         xmlns:s="http://smart/avalonia"
         xmlns:navigation="http://smart/navigation"
         xmlns:app="using:Template.LinuxApp"
+        xmlns:controls="using:Template.LinuxApp.Controls"
+        xmlns:markup="using:Template.LinuxApp.Markup"
         mc:Ignorable="d"
         x:Class="Template.LinuxApp.MainWindow"
         x:DataType="app:MainWindowViewModel"
         s:DataContextResolver.Type="app:MainWindowViewModel"
-        Width="800" Height="600"
-        d:DesignWidth="800" d:DesignHeight="600"
+        Width="1280" Height="800"
+        d:DesignWidth="1280" d:DesignHeight="800"
         CanResize="True"
         Title="Template.LinuxApp"
         Icon="/Assets/avalonia-logo.ico">
 
-    <Canvas navigation:NavigationContainer.Navigator="{Binding Navigator}" />
+    <Panel>
+        <Grid RowDefinitions="Auto,*"
+              IsEnabled="{Binding !#DialogLayer.IsVisible}">
+            <UniformGrid Grid.Row="0"
+                         Rows="1">
+                <Button Command="{Binding ForwardCommand}"
+                        CommandParameter="{markup:ViewId Dashboard}"
+                        Content="Dashboard"
+                        Classes="toolbar" />
+                <Button Command="{Binding ForwardCommand}"
+                        CommandParameter="{markup:ViewId Typography}"
+                        Content="Typography"
+                        Classes="toolbar" />
+                <Button Command="{Binding ForwardCommand}"
+                        CommandParameter="{markup:ViewId Barcode}"
+                        Content="Barcode"
+                        Classes="toolbar" />
+                <Button Command="{Binding ForwardCommand}"
+                        CommandParameter="{markup:ViewId Camera}"
+                        Content="Camera"
+                        Classes="toolbar" />
+                <Button Command="{Binding ForwardCommand}"
+                        CommandParameter="{markup:ViewId Printer}"
+                        Content="Printer"
+                        Classes="toolbar" />
+                <Button Command="{Binding ForwardCommand}"
+                        CommandParameter="{markup:ViewId Controller}"
+                        Content="Controller"
+                        Classes="toolbar" />
+                <Button Command="{Binding ForwardCommand}"
+                        CommandParameter="{markup:ViewId Nfc}"
+                        Content="NFC"
+                        Classes="toolbar" />
+            </UniformGrid>
+            <Canvas Grid.Row="1"
+                    navigation:NavigationContainer.Navigator="{Binding Navigator}" />
+        </Grid>
+        <controls:DialogLayer x:Name="DialogLayer" />
+    </Panel>
 
 </Window>

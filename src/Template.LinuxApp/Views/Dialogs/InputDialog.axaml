@@ -1,28 +1,24 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Template.LinuxApp.Views.Dialogs.InputDialog"
-        Width="384"
-        SizeToContent="Height"
-        WindowStartupLocation="CenterOwner"
-        CanResize="False"
-        ShowInTaskbar="False"
-        Title="Input">
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Template.LinuxApp.Views.Dialogs.InputDialog">
 
-    <StackPanel Margin="16">
-        <TextBox x:Name="ValueText" />
-        <StackPanel Margin="0,16,0,0"
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal"
-                    Spacing="8">
-            <Button Width="96"
-                    Click="OnOkClick"
-                    Content="OK"
-                    IsDefault="True" />
-            <Button Width="96"
-                    Click="OnCancelClick"
-                    Content="Cancel"
-                    IsCancel="True" />
+    <Border Classes="dialog">
+        <StackPanel>
+            <TextBlock x:Name="TitleText"
+                       Classes="dialog-title" />
+            <TextBox x:Name="ValueText" />
+            <StackPanel Orientation="Horizontal"
+                        Margin="0,16,0,0"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button Width="96"
+                        Content="OK"
+                        Click="OnOkClick" IsDefault="True" />
+                <Button Width="96"
+                        Content="Cancel"
+                        Click="OnCancelClick" IsCancel="True" />
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </Border>
 
-</Window>
+</UserControl>
