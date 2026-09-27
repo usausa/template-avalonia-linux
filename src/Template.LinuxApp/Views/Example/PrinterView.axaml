@@ -11,7 +11,7 @@
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <StackPanel Orientation="Horizontal"
-                Margin="{StaticResource PaddingLarge}"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
                 Spacing="{StaticResource SpacingSmall}">
         <Button Width="240"
                 Command="{Binding PrintTextCommand}"

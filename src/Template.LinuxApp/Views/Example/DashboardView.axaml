@@ -70,6 +70,10 @@
                         CommandParameter="System"
                         Content="System" />
             </StackPanel>
+            <TextBlock Text="Application"
+                       Classes="title" />
+            <Button Command="{Binding ExitCommand}"
+                    Content="Exit" />
         </StackPanel>
 
         <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">

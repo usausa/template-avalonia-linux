@@ -6,7 +6,9 @@ public interface IDialogService
 
     ValueTask<bool> ConfirmAsync(string message);
 
-    ValueTask<string?> InputAsync(string title, string? initial = null, bool password = false);
+    ValueTask<string?> InputAsync(string title, string? initial = null);
+
+    ValueTask<string?> PinAsync(string title);
 
     ValueTask NotifyAsync(string message);
 }

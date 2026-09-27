@@ -1,9 +1,6 @@
 namespace Template.LinuxApp.Shell;
 
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Threading;
 
 using Template.LinuxApp.Components.Gamepad;
@@ -14,8 +11,6 @@ using Template.LinuxApp.Views.Dialogs;
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class KioskController
 {
-    private const double CornerSize = 64;
-
     private static readonly TimeSpan CodeTimeout = TimeSpan.FromSeconds(10);
 
     private static readonly TimeSpan CodeMismatchDisplay = TimeSpan.FromSeconds(2);
@@ -28,15 +23,11 @@ public sealed class KioskController
 
     private readonly IGamepadReader gamepadReader;
 
-    private readonly DispatcherTimer holdTimer;
-
     private readonly DispatcherTimer padHoldTimer;
 
     private readonly DispatcherTimer codeTimer;
 
     private Window? window;
-
-    private IPointer? holdPointer;
 
     private bool prompting;
 
@@ -52,12 +43,6 @@ public sealed class KioskController
         this.setting = setting;
         this.dialogService = dialogService;
         this.gamepadReader = gamepadReader;
-        holdTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(setting.AdminHoldSeconds) };
-        holdTimer.Tick += async (_, _) =>
-        {
-            CancelHold();
-            await PromptAdminAsync();
-        };
         padHoldTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(setting.AdminHoldSeconds) };
         padHoldTimer.Tick += async (_, _) =>
         {
@@ -89,9 +74,6 @@ public sealed class KioskController
         }
 
         target.Closing += OnClosing;
-        target.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel, true);
-        target.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Tunnel, true);
-        target.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel, true);
 
         if (setting.AdminPadButtons.Count > 0)
         {
@@ -108,73 +90,6 @@ public sealed class KioskController
         if (!e.IsProgrammatic && (e.CloseReason != WindowCloseReason.OSShutdown))
         {
             e.Cancel = true;
-        }
-    }
-
-    //--------------------------------------------------------------------------------
-    // Admin
-    //--------------------------------------------------------------------------------
-
-    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (prompting || (holdPointer is not null) || !IsInCorner(e.GetPosition(window)))
-        {
-            return;
-        }
-
-        holdPointer = e.Pointer;
-        holdTimer.Start();
-    }
-
-    private void OnPointerMoved(object? sender, PointerEventArgs e)
-    {
-        if ((e.Pointer == holdPointer) && !IsInCorner(e.GetPosition(window)))
-        {
-            CancelHold();
-        }
-    }
-
-    private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        if (e.Pointer == holdPointer)
-        {
-            CancelHold();
-        }
-    }
-
-    private bool IsInCorner(Point position) => (window is not null) && (position.X >= window.Bounds.Width - CornerSize) && (position.Y <= CornerSize);
-
-    private void CancelHold()
-    {
-        holdPointer = null;
-        holdTimer.Stop();
-    }
-
-    private async Task PromptAdminAsync()
-    {
-        prompting = true;
-        try
-        {
-            var pin = await dialogService.InputAsync("Admin PIN", password: true);
-            if (pin is null)
-            {
-                return;
-            }
-
-            if (String.Equals(pin, setting.AdminPin, StringComparison.Ordinal))
-            {
-                log.InfoKioskAdminExit();
-                window?.Close();
-            }
-            else
-            {
-                log.WarnKioskAdminPinMismatch();
-                await dialogService.NotifyAsync("PIN is incorrect.");
-            }
-        }
-        finally
-        {
-            prompting = false;
         }
     }
 
@@ -197,7 +112,7 @@ public sealed class KioskController
             return;
         }
 
-        if (prompting || !setting.AdminPadButtons.Contains(button))
+        if (prompting || dialogService.IsOpen || !setting.AdminPadButtons.Contains(button))
         {
             return;
         }

@@ -39,7 +39,9 @@ public sealed partial class DashboardViewModel : AppViewModelBase
 
     public ICommand ThemeCommand { get; }
 
-    public DashboardViewModel(Setting setting, DeviceState deviceState, ISystemMonitor systemMonitor, ThemeService themeService)
+    public ICommand ExitCommand { get; }
+
+    public DashboardViewModel(Setting setting, DeviceState deviceState, ISystemMonitor systemMonitor, ThemeService themeService, ExitService exitService)
     {
         this.systemMonitor = systemMonitor;
         SettingValue = setting.Value;
@@ -49,6 +51,7 @@ public sealed partial class DashboardViewModel : AppViewModelBase
         timer.Tick += (_, _) => Refresh();
 
         ThemeCommand = MakeAsyncCommand<string>(x => themeService.ChangeAsync(x).AsTask());
+        ExitCommand = MakeAsyncCommand(() => exitService.RequestExitAsync().AsTask());
     }
 
     protected override void Dispose(bool disposing)

@@ -9,7 +9,7 @@ using Template.LinuxApp.Views;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 [ObservableGeneratorOption(Reactive = true, ViewModel = true)]
-public sealed class MainWindowViewModel : ExtendViewModelBase
+public sealed partial class MainWindowViewModel : ExtendViewModelBase
 {
     private static readonly ViewId[] Views =
     [
@@ -26,6 +26,9 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
 
     public INavigator Navigator { get; }
 
+    [ObservableProperty]
+    public partial ViewId? CurrentView { get; set; }
+
     public ICommand ForwardCommand { get; }
 
     public MainWindowViewModel(INavigator navigator, IDialogService dialogService, IInputDevice input)
@@ -34,6 +37,10 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
         this.dialogService = dialogService;
 
         ForwardCommand = MakeAsyncCommand<ViewId>(x => Navigator.ForwardAsync(x));
+
+        Disposables.Add(Observable
+            .FromEventPattern<NavigationEventArgs>(h => navigator.Navigated += h, h => navigator.Navigated -= h)
+            .Subscribe(x => CurrentView = x.EventArgs.Context.ToId as ViewId?));
 
         var scheduler = new SynchronizationContextScheduler(SynchronizationContext.Current!);
         Disposables.Add(Observable

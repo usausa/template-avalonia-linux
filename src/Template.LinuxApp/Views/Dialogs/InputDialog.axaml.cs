@@ -19,12 +19,6 @@ public sealed partial class InputDialog : UserControl
         set => ValueText.Text = value;
     }
 
-    public bool Password
-    {
-        get => ValueText.PasswordChar != default;
-        set => ValueText.PasswordChar = value ? '*' : default;
-    }
-
     public Task<string?> Result => completion.Task;
 
     public InputDialog()

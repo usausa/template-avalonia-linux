@@ -1,0 +1,48 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Template.LinuxApp.Views.Dialogs.PinDialog">
+
+    <Border Classes="dialog">
+        <StackPanel>
+            <TextBlock x:Name="TitleText"
+                       Classes="dialog-title" />
+            <TextBlock x:Name="ValueText"
+                       MinHeight="44"
+                       HorizontalAlignment="Center"
+                       FontSize="32" />
+            <StackPanel HorizontalAlignment="Center">
+                <UniformGrid Columns="3">
+                    <Button Content="1"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="2"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="3"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="4"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="5"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="6"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="7"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="8"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="9"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="Del"
+                            Classes="keypad" Click="OnDeleteClick" />
+                    <Button Content="0"
+                            Classes="keypad" Click="OnDigitClick" />
+                    <Button Content="OK"
+                            Classes="keypad" Click="OnOkClick" IsDefault="True" />
+                </UniformGrid>
+                <Button Margin="4,8,4,4"
+                        HorizontalAlignment="Stretch"
+                        Content="Cancel"
+                        Click="OnCancelClick" HorizontalContentAlignment="Center" IsCancel="True" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+
+</UserControl>

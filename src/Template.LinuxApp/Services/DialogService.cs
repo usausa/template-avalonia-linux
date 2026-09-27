@@ -28,7 +28,7 @@ public sealed class DialogService : IDialogService
         }
     }
 
-    public async ValueTask<string?> InputAsync(string title, string? initial = null, bool password = false)
+    public async ValueTask<string?> InputAsync(string title, string? initial = null)
     {
         var layer = GetLayer();
         if (layer is null)
@@ -36,7 +36,22 @@ public sealed class DialogService : IDialogService
             return null;
         }
 
-        var dialog = new InputDialog { Title = title, Value = initial ?? string.Empty, Password = password };
+        var dialog = new InputDialog { Title = title, Value = initial ?? string.Empty };
+        using (layer.Open(dialog))
+        {
+            return await dialog.Result;
+        }
+    }
+
+    public async ValueTask<string?> PinAsync(string title)
+    {
+        var layer = GetLayer();
+        if (layer is null)
+        {
+            return null;
+        }
+
+        var dialog = new PinDialog { Title = title };
         using (layer.Open(dialog))
         {
             return await dialog.Result;

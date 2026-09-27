@@ -22,6 +22,15 @@
         <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
     </Style>
 
+    <Style Selector="Button.keypad">
+        <Setter Property="Width" Value="88" />
+        <Setter Property="Height" Value="64" />
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+
     <Style Selector="TextBlock.dialog-title">
         <Setter Property="Margin" Value="0,0,0,12" />
         <Setter Property="FontSize" Value="16" />
@@ -44,6 +53,10 @@
 
     <Style Selector="Button.toolbar:pressed">
         <Setter Property="RenderTransform" Value="none" />
+    </Style>
+
+    <Style Selector="Button.toolbar.selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BlueDarken1}" />
     </Style>
 
     <!-- Page -->

@@ -17,6 +17,10 @@
         Title="Template.LinuxApp"
         Icon="/Assets/avalonia-logo.ico">
 
+    <Window.Resources>
+        <s:CompareToBoolConverter x:Key="EqualToBoolConverter" />
+    </Window.Resources>
+
     <Panel>
         <Grid RowDefinitions="Auto,*"
               IsEnabled="{Binding !#DialogLayer.IsVisible}">
@@ -25,31 +29,38 @@
                 <Button Command="{Binding ForwardCommand}"
                         CommandParameter="{markup:ViewId Dashboard}"
                         Content="Dashboard"
-                        Classes="toolbar" />
+                        Classes="toolbar"
+                        Classes.selected="{Binding CurrentView, Converter={StaticResource EqualToBoolConverter}, ConverterParameter={markup:ViewId Dashboard}}" />
                 <Button Command="{Binding ForwardCommand}"
                         CommandParameter="{markup:ViewId Typography}"
                         Content="Typography"
-                        Classes="toolbar" />
+                        Classes="toolbar"
+                        Classes.selected="{Binding CurrentView, Converter={StaticResource EqualToBoolConverter}, ConverterParameter={markup:ViewId Typography}}" />
                 <Button Command="{Binding ForwardCommand}"
                         CommandParameter="{markup:ViewId Barcode}"
                         Content="Barcode"
-                        Classes="toolbar" />
+                        Classes="toolbar"
+                        Classes.selected="{Binding CurrentView, Converter={StaticResource EqualToBoolConverter}, ConverterParameter={markup:ViewId Barcode}}" />
                 <Button Command="{Binding ForwardCommand}"
                         CommandParameter="{markup:ViewId Camera}"
                         Content="Camera"
-                        Classes="toolbar" />
+                        Classes="toolbar"
+                        Classes.selected="{Binding CurrentView, Converter={StaticResource EqualToBoolConverter}, ConverterParameter={markup:ViewId Camera}}" />
                 <Button Command="{Binding ForwardCommand}"
                         CommandParameter="{markup:ViewId Printer}"
                         Content="Printer"
-                        Classes="toolbar" />
+                        Classes="toolbar"
+                        Classes.selected="{Binding CurrentView, Converter={StaticResource EqualToBoolConverter}, ConverterParameter={markup:ViewId Printer}}" />
                 <Button Command="{Binding ForwardCommand}"
                         CommandParameter="{markup:ViewId Controller}"
                         Content="Controller"
-                        Classes="toolbar" />
+                        Classes="toolbar"
+                        Classes.selected="{Binding CurrentView, Converter={StaticResource EqualToBoolConverter}, ConverterParameter={markup:ViewId Controller}}" />
                 <Button Command="{Binding ForwardCommand}"
                         CommandParameter="{markup:ViewId Nfc}"
                         Content="NFC"
-                        Classes="toolbar" />
+                        Classes="toolbar"
+                        Classes.selected="{Binding CurrentView, Converter={StaticResource EqualToBoolConverter}, ConverterParameter={markup:ViewId Nfc}}" />
             </UniformGrid>
             <Canvas Grid.Row="1"
                     navigation:NavigationContainer.Navigator="{Binding Navigator}" />
