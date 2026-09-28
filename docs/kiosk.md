@@ -152,7 +152,14 @@ WantedBy=graphical-session.target
 
 - アプリを終了するとデスクトップに戻る(落ちたときは 5 秒後に起動し直す)
 
-## 6. 終了時
+### 有効化
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now template-linuxapp
+```
+
+## 5. 終了時
 
 アプリを終了したとき、デスクトップに戻らず処理する方法。
 
