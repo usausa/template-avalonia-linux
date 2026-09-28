@@ -76,4 +76,8 @@
     <PackageReference Include="Xaml.Behaviors.Avalonia" Version="12.0.7" />
   </ItemGroup>
 
+  <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux-'))">
+    <None Remove="$(NuGetPackageRoot)microsoft.ml.onnxruntime\*\runtimes\win-*\native\*.dll" />
+  </ItemGroup>
+
 </Project>
