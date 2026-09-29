@@ -110,6 +110,9 @@ public static partial class ApplicationExtensions
         builder.Services.AddOptions<FaceDetectorOption>().BindConfiguration("Detect").ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<FaceDetectorOption>>().Value);
         builder.Services.AddSingleton<IFaceDetector, FaceDetector>();
+        builder.Services.AddOptions<QrCodeDetectorOption>().BindConfiguration("QrDetect").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<QrCodeDetectorOption>>().Value);
+        builder.Services.AddSingleton<IQrCodeDetector, QrCodeDetector>();
         builder.Services.AddOptions<LinePrinterOption>().BindConfiguration("Printer").ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<LinePrinterOption>>().Value);
         builder.Services.AddSingleton<ILinePrinter, LinePrinter>();
@@ -121,6 +124,8 @@ public static partial class ApplicationExtensions
         builder.Services.AddSingleton<IMotorController, MotorController>();
         builder.Services.AddSingleton<ISuicaReader, SuicaReader>();
         builder.Services.AddSingleton<ISystemMonitor, SystemMonitor>();
+        builder.Services.AddSingleton<IPerformanceMonitor, PerformanceMonitor>();
+        builder.Services.AddSingleton<ISystemInspector, SystemInspector>();
 
         // Window
         builder.Services.AddSingleton<MainWindow>();
@@ -160,6 +165,7 @@ public static partial class ApplicationExtensions
         host.Services.GetRequiredService<IBarcodeReader>();
         host.Services.GetRequiredService<IQrReader>();
         host.Services.GetRequiredService<IVideoSource>();
+        host.Services.GetRequiredService<IQrCodeDetector>();
         host.Services.GetRequiredService<ILinePrinter>();
         host.Services.GetRequiredService<IImagePrinter>();
         host.Services.GetRequiredService<IMotorController>();

@@ -11,6 +11,12 @@ public interface IVideoSource
 
     bool IsRunning { get; }
 
+    string Device { get; }
+
+    int RequestedWidth { get; }
+
+    int RequestedHeight { get; }
+
     int Width { get; }
 
     int Height { get; }
@@ -18,6 +24,10 @@ public interface IVideoSource
     void Start();
 
     ValueTask StopAsync();
+
+    ValueTask ChangeAsync(string device, int width, int height);
+
+    bool TryReadFrame(Span<byte> destination);
 
     bool TryReadFrame(Span<byte> destination, ICollection<FaceBox> faceBoxes);
 }
@@ -56,6 +66,12 @@ public sealed class VideoSource : IVideoSource, IDisposable
 
     public bool IsRunning => loopTask is not null;
 
+    public string Device { get; private set; }
+
+    public int RequestedWidth { get; private set; }
+
+    public int RequestedHeight { get; private set; }
+
     public int Width { get; private set; }
 
     public int Height { get; private set; }
@@ -65,6 +81,9 @@ public sealed class VideoSource : IVideoSource, IDisposable
         this.timeProvider = timeProvider;
         this.option = option;
         this.faceDetector = faceDetector;
+        Device = option.Device;
+        RequestedWidth = option.Width;
+        RequestedHeight = option.Height;
         status = deviceState.Register("Camera", !String.IsNullOrEmpty(option.Device));
     }
 
@@ -114,6 +133,45 @@ public sealed class VideoSource : IVideoSource, IDisposable
         status.ReportStopped();
     }
 
+    public async ValueTask ChangeAsync(string device, int width, int height)
+    {
+        var running = IsRunning;
+        await StopAsync().ConfigureAwait(false);
+
+        Device = device;
+        RequestedWidth = width;
+        RequestedHeight = height;
+
+        if (running)
+        {
+            Start();
+        }
+    }
+
+    public bool TryReadFrame(Span<byte> destination)
+    {
+        lock (sync)
+        {
+            var slot = bufferManager?.LastUpdatedSlot();
+            if (slot is null)
+            {
+                return false;
+            }
+
+            lock (slot.Lock)
+            {
+                if (destination.Length < slot.Buffer.Length)
+                {
+                    return false;
+                }
+
+                slot.Buffer.CopyTo(destination);
+            }
+        }
+
+        return true;
+    }
+
     public bool TryReadFrame(Span<byte> destination, ICollection<FaceBox> faceBoxes)
     {
         lock (sync)
@@ -151,7 +209,7 @@ public sealed class VideoSource : IVideoSource, IDisposable
             {
                 if (capture is null)
                 {
-                    if (File.Exists(option.Device))
+                    if (File.Exists(Device))
                     {
                         Open();
                     }
@@ -173,8 +231,8 @@ public sealed class VideoSource : IVideoSource, IDisposable
 
     private void Open()
     {
-        var video = new VideoCapture(option.Device);
-        if (!video.Open(option.Width, option.Height))
+        var video = new VideoCapture(Device);
+        if (!video.Open(RequestedWidth, RequestedHeight))
         {
             video.Dispose();
             status.ReportError("Failed to open the camera.");

@@ -11,22 +11,38 @@
              s:DataContextResolver.Type="local:CameraViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
-    <Grid RowDefinitions="*,Auto">
+    <UserControl.Resources>
+        <DataTemplate x:Key="InfoItemTemplate"
+                      x:DataType="local:InfoItem">
+            <Grid ColumnDefinitions="72,*">
+                <TextBlock Text="{Binding Name}"
+                           Classes="panel-name" />
+                <TextBlock Grid.Column="1"
+                           Text="{Binding Value}"
+                           Classes="panel-text" />
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
 
-        <Viewbox Grid.Row="0"
+    <Grid RowDefinitions="*,Auto"
+          ColumnDefinitions="*,360">
+
+        <Viewbox Grid.Row="0" Grid.Column="0"
                  Stretch="Uniform">
             <Panel Width="{Binding FrameWidth}"
                    Height="{Binding FrameHeight}">
                 <Image Source="{Binding Bitmap}"
                        Stretch="Fill" />
                 <controls:FaceBoxOverlay FaceBoxes="{Binding FaceBoxes}" />
+                <controls:QrCodeOverlay Codes="{Binding QrCodes}"
+                                        Stroke="{StaticResource ChartGreen}" />
             </Panel>
         </Viewbox>
 
-        <Border Grid.Row="0"
+        <Border Grid.Row="0" Grid.Column="0"
                 Margin="3" Padding="3"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
-                Background="#40000000" BorderBrush="#C0FFFFFF" BorderThickness="1" CornerRadius="3">
+                Background="#40000000" BorderBrush="#C0FFFFFF" BorderThickness="1">
             <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                   ColumnDefinitions="Auto,Auto">
                 <Grid.Styles>
@@ -63,13 +79,93 @@
             </Grid>
         </Border>
 
-        <UniformGrid Grid.Row="1"
+        <ScrollViewer Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="{StaticResource PaddingSmall}"
+                        Spacing="{StaticResource SpacingSmall}">
+                <Border Classes="panel">
+                    <StackPanel Spacing="{StaticResource SpacingSmall}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Camera"
+                                       Classes="panel-title" />
+                            <Button Grid.Column="1"
+                                    Command="{Binding RefreshCommand}"
+                                    Content="Refresh"
+                                    Classes="panel-button" />
+                        </Grid>
+                        <TextBlock Text="Device"
+                                   Classes="panel-header" />
+                        <ComboBox HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding Cameras}"
+                                  SelectedItem="{Binding SelectedCamera}" />
+                        <TextBlock Text="Resolution (YUYV)"
+                                   Classes="panel-header" />
+                        <ComboBox HorizontalAlignment="Stretch"
+                                  ItemsSource="{Binding Resolutions}"
+                                  SelectedItem="{Binding SelectedResolution}" />
+                        <Button HorizontalAlignment="Stretch"
+                                Command="{Binding ApplyCommand}"
+                                Content="Apply"
+                                Classes="panel-button" />
+                        <ItemsControl ItemsSource="{Binding CameraInfo}"
+                                      ItemTemplate="{StaticResource InfoItemTemplate}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="panel">
+                    <StackPanel Spacing="{StaticResource SpacingSmall}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="QR code"
+                                       Classes="panel-title" />
+                            <CheckBox Grid.Column="1"
+                                      Content="Read"
+                                      IsChecked="{Binding IsQrScan}"
+                                      IsEnabled="{Binding IsQrEnabled}" />
+                        </Grid>
+                        <TextBlock Text="{Binding QrText}"
+                                   FontSize="{StaticResource FontSizeXLarge}"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding QrHistory}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding}"
+                                               Classes="panel-name" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="panel">
+                    <StackPanel Spacing="{StaticResource SpacingSmall}">
+                        <TextBlock Text="Snapshot"
+                                   Classes="panel-title" />
+                        <Border Height="180"
+                                BorderThickness="{StaticResource BorderThicknessThin}"
+                                BorderBrush="{DynamicResource PanelBorderBrush}">
+                            <Image Source="{Binding LastSnapshot}"
+                                   Stretch="Uniform" />
+                        </Border>
+                        <TextBlock Text="{Binding SnapshotText}"
+                                   Classes="panel-note" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <UniformGrid Grid.Row="1" Grid.Column="0"
                      Rows="1">
             <Button Command="{Binding StartCommand}"
                     Content="Start"
                     Classes="command" />
             <Button Command="{Binding StopCommand}"
                     Content="Stop"
+                    Classes="command" />
+            <Button Command="{Binding SnapshotCommand}"
+                    Content="Snapshot"
                     Classes="command" />
         </UniformGrid>
 

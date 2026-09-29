@@ -46,6 +46,7 @@
     <PackageReference Include="BunnyTail.DependencyInjection" Version="0.7.0" />
     <PackageReference Include="BunnyTail.XamlProperty.Avalonia" Version="1.3.0" />
     <PackageReference Include="LinuxDotNet.Cups" Version="1.16.0" />
+    <PackageReference Include="LinuxDotNet.Disk" Version="1.16.0" />
     <PackageReference Include="LinuxDotNet.GameInput" Version="1.16.0" />
     <PackageReference Include="LinuxDotNet.InputEvent" Version="1.16.0" />
     <PackageReference Include="LinuxDotNet.SystemInfo" Version="1.16.0" />
@@ -74,6 +75,7 @@
     <PackageReference Include="Usa.Smart.Navigation.Extensions.DependencyInjection" Version="3.12.0" />
     <PackageReference Include="Usa.Smart.Reactive" Version="2.15.0" />
     <PackageReference Include="Xaml.Behaviors.Avalonia" Version="12.0.7" />
+    <PackageReference Include="ZXing.Net" Version="0.16.11" />
   </ItemGroup>
 
   <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux-'))">

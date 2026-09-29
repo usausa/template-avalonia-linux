@@ -35,6 +35,10 @@ public interface IGamepadReader
 
     bool IsConnected { get; }
 
+    string Device { get; }
+
+    string Name { get; }
+
     bool GetButtonPressed(byte button);
 
     short GetAxisValue(byte axis);
@@ -52,8 +56,13 @@ public sealed class GamepadReader : IGamepadReader, IDisposable
 
     public bool IsConnected => controller?.IsConnected ?? false;
 
+    public string Device { get; }
+
+    public string Name => ReadName(Device);
+
     public GamepadReader(GamepadReaderOption option, DeviceState deviceState)
     {
+        Device = option.Device;
         status = deviceState.Register("Gamepad", !String.IsNullOrEmpty(option.Device));
         if (!status.IsEnabled)
         {
@@ -84,6 +93,26 @@ public sealed class GamepadReader : IGamepadReader, IDisposable
     public bool GetButtonPressed(byte button) => controller?.GetButtonPressed(button) ?? false;
 
     public short GetAxisValue(byte axis) => controller?.GetAxisValue(axis) ?? 0;
+
+    private static string ReadName(string device)
+    {
+        if (String.IsNullOrEmpty(device))
+        {
+            return String.Empty;
+        }
+
+        try
+        {
+            var file = new FileInfo(device);
+            var target = file.ResolveLinkTarget(true)?.Name ?? file.Name;
+            var path = $"/sys/class/input/{target}/device/name";
+            return File.Exists(path) ? File.ReadAllText(path).Trim() : String.Empty;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return String.Empty;
+        }
+    }
 
     private void OnButtonChanged(byte button, bool pressed)
     {

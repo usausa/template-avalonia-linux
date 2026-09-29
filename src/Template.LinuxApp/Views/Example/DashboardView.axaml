@@ -11,109 +11,207 @@
              s:DataContextResolver.Type="local:DashboardViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
+    <UserControl.Styles>
+        <Style Selector="TextBlock.dashboard-name">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        </Style>
+        <Style Selector="TextBlock.dashboard-value">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="32" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+        <Style Selector="TextBlock.device-header">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        </Style>
+        <Style Selector="TextBlock.device-text">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+        <Style Selector="Border.device-state">
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessNormal}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelNoteBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PanelNoteBrush}" />
+        </Style>
+        <Style Selector="Border.device-state.running">
+            <Setter Property="BorderBrush" Value="{StaticResource ChartOrange}" />
+            <Setter Property="Background" Value="{StaticResource ChartOrange}" />
+        </Style>
+        <Style Selector="Border.device-state.connected">
+            <Setter Property="BorderBrush" Value="{StaticResource ChartGreen}" />
+            <Setter Property="Background" Value="{StaticResource ChartGreen}" />
+        </Style>
+        <Style Selector="Border.device-state.error">
+            <Setter Property="BorderBrush" Value="{StaticResource ChartRed}" />
+            <Setter Property="Background" Value="{StaticResource ChartRed}" />
+        </Style>
+        <Style Selector="Border.device-state.disabled">
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </UserControl.Styles>
+
     <Grid RowDefinitions="Auto,*"
-          ColumnDefinitions="*,*"
-          Margin="{StaticResource PaddingLarge}"
-          ColumnSpacing="{StaticResource SpacingXLarge}"
-          RowSpacing="{StaticResource SpacingMedium}">
+          ColumnDefinitions="3*,2*"
+          Margin="{StaticResource PaddingSmall}"
+          ColumnSpacing="{StaticResource SpacingSmall}"
+          RowSpacing="{StaticResource SpacingSmall}">
 
-        <StackPanel Grid.Row="0" Grid.Column="0"
-                    Spacing="{StaticResource SpacingSmall}">
-            <TextBlock Text="System"
-                       Classes="title" />
-            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-                  ColumnDefinitions="Auto,*"
-                  ColumnSpacing="{StaticResource SpacingMedium}"
-                  RowSpacing="{StaticResource SpacingXSmall}">
-                <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="Setting" />
-                <TextBlock Grid.Row="0" Grid.Column="1"
-                           Text="{Binding SettingValue}" />
-                <TextBlock Grid.Row="1" Grid.Column="0"
-                           Text="CPU" />
-                <TextBlock Grid.Row="1" Grid.Column="1"
-                           Text="{Binding Cpu}" />
-                <TextBlock Grid.Row="2" Grid.Column="0"
-                           Text="Memory" />
-                <TextBlock Grid.Row="2" Grid.Column="1"
-                           Text="{Binding Memory}" />
-                <TextBlock Grid.Row="3" Grid.Column="0"
-                           Text="Load average" />
-                <TextBlock Grid.Row="3" Grid.Column="1"
-                           Text="{Binding LoadAverage}" />
-                <TextBlock Grid.Row="4" Grid.Column="0"
-                           Text="Temperature" />
-                <TextBlock Grid.Row="4" Grid.Column="1"
-                           Text="{Binding Temperature}" />
-                <TextBlock Grid.Row="5" Grid.Column="0"
-                           Text="Uptime" />
-                <TextBlock Grid.Row="5" Grid.Column="1"
-                           Text="{Binding Uptime}" />
-            </Grid>
-            <TextBlock IsVisible="{Binding !IsSystemSupported}"
-                       Text="System information is available on Linux." />
-        </StackPanel>
-
-        <StackPanel Grid.Row="0" Grid.Column="1"
-                    Spacing="{StaticResource SpacingSmall}">
-            <TextBlock Text="Theme"
-                       Classes="title" />
-            <StackPanel Orientation="Horizontal"
-                        Spacing="{StaticResource SpacingSmall}">
-                <Button Command="{Binding ThemeCommand}"
-                        CommandParameter="Light"
-                        Content="Light" />
-                <Button Command="{Binding ThemeCommand}"
-                        CommandParameter="Dark"
-                        Content="Dark" />
-                <Button Command="{Binding ThemeCommand}"
-                        CommandParameter="System"
-                        Content="System" />
+        <Border Grid.Row="0" Grid.Column="0"
+                Classes="panel">
+            <StackPanel>
+                <TextBlock Margin="0,0,0,8"
+                           Text="System"
+                           Classes="title" />
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                      ColumnDefinitions="220,*"
+                      RowSpacing="{StaticResource SpacingXSmall}">
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Setting"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding SettingValue}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="CPU"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="{Binding Cpu}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="Memory"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               Text="{Binding Memory}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="3" Grid.Column="0"
+                               Text="Load average"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="3" Grid.Column="1"
+                               Text="{Binding LoadAverage}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="4" Grid.Column="0"
+                               Text="Temperature"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="4" Grid.Column="1"
+                               Text="{Binding Temperature}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="5" Grid.Column="0"
+                               Text="Uptime"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="5" Grid.Column="1"
+                               Text="{Binding Uptime}"
+                               Classes="dashboard-value" />
+                </Grid>
+                <TextBlock Margin="0,8,0,0"
+                           IsVisible="{Binding !IsSystemSupported}"
+                           Text="System information is available on Linux."
+                           Classes="dashboard-name" />
             </StackPanel>
-            <TextBlock Text="Application"
-                       Classes="title" />
-            <Button Command="{Binding ExitCommand}"
-                    Content="Exit" />
-        </StackPanel>
+        </Border>
 
-        <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBlock Text="Devices"
-                       Classes="title" DockPanel.Dock="Top" />
-            <Grid ColumnDefinitions="160,120,100,100,*"
-                  Classes="device-header" DockPanel.Dock="Top">
-                <TextBlock Grid.Column="0"
-                           Text="Name" />
-                <TextBlock Grid.Column="1"
-                           Text="State" />
-                <TextBlock Grid.Column="2"
-                           Text="Last event" />
-                <TextBlock Grid.Column="3"
-                           Text="Reconnect" />
-                <TextBlock Grid.Column="4"
-                           Text="Error" />
-            </Grid>
-            <ScrollViewer>
-                <ItemsControl ItemsSource="{Binding Devices}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="state:DeviceStatus">
-                            <Grid ColumnDefinitions="160,120,100,100,*">
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding Name}" />
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Condition}" />
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding LastEventAt, StringFormat={}{0:HH:mm:ss}}" />
-                                <TextBlock Grid.Column="3"
-                                           Text="{Binding ReconnectCount}" />
-                                <TextBlock Grid.Column="4"
-                                           Text="{Binding LastError}"
-                                           TextTrimming="CharacterEllipsis" />
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </DockPanel>
+        <Border Grid.Row="0" Grid.Column="1"
+                Classes="panel">
+            <StackPanel Spacing="{StaticResource SpacingSmall}">
+                <TextBlock Text="Theme"
+                           Classes="title" />
+                <UniformGrid Columns="3"
+                             ColumnSpacing="{StaticResource SpacingSmall}">
+                    <Button Command="{Binding ThemeCommand}"
+                            CommandParameter="Light"
+                            Content="Light"
+                            Classes="command" />
+                    <Button Command="{Binding ThemeCommand}"
+                            CommandParameter="Dark"
+                            Content="Dark"
+                            Classes="command" />
+                    <Button Command="{Binding ThemeCommand}"
+                            CommandParameter="System"
+                            Content="System"
+                            Classes="command" />
+                </UniformGrid>
+                <TextBlock Margin="0,16,0,0"
+                           Text="Application"
+                           Classes="title" />
+                <Button Command="{Binding ExitCommand}"
+                        Content="Exit"
+                        Classes="command" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                Classes="panel">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top"
+                           Margin="0,0,0,8"
+                           Text="Devices"
+                           Classes="title" />
+                <Grid DockPanel.Dock="Top"
+                      Margin="0,0,0,8"
+                      ColumnDefinitions="48,300,240,220,180,*">
+                    <TextBlock Grid.Column="1"
+                               Text="Name"
+                               Classes="device-header" />
+                    <TextBlock Grid.Column="2"
+                               Text="State"
+                               Classes="device-header" />
+                    <TextBlock Grid.Column="3"
+                               Text="Last event"
+                               Classes="device-header" />
+                    <TextBlock Grid.Column="4"
+                               Text="Reconnect"
+                               Classes="device-header" />
+                    <TextBlock Grid.Column="5"
+                               Text="Error"
+                               Classes="device-header" />
+                </Grid>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Devices}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="{StaticResource SpacingSmall}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="state:DeviceStatus">
+                                <Grid ColumnDefinitions="48,300,240,220,180,*">
+                                    <Border Grid.Column="0"
+                                            HorizontalAlignment="Left"
+                                            Classes="device-state"
+                                            Classes.running="{Binding IsRunning}"
+                                            Classes.connected="{Binding IsConnected}"
+                                            Classes.error="{Binding LastError, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                            Classes.disabled="{Binding !IsEnabled}" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               Classes="device-text" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding Condition}"
+                                               Classes="device-text" />
+                                    <TextBlock Grid.Column="3"
+                                               Text="{Binding LastEventAt, StringFormat={}{0:HH:mm:ss}}"
+                                               Classes="device-text" />
+                                    <TextBlock Grid.Column="4"
+                                               Text="{Binding ReconnectCount}"
+                                               Classes="device-text" />
+                                    <TextBlock Grid.Column="5"
+                                               Text="{Binding LastError}"
+                                               Classes="device-text" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
 
     </Grid>
 

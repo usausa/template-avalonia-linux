@@ -1,0 +1,160 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.GamepadView"
+             x:DataType="local:GamepadViewModel"
+             s:DataContextResolver.Type="local:GamepadViewModel"
+             d:DesignWidth="1280" d:DesignHeight="696">
+
+    <UserControl.Resources>
+        <controls:ChartColorCollection x:Key="FaceColors">
+            <StaticResource ResourceKey="ChartGreen" />
+            <StaticResource ResourceKey="ChartRed" />
+            <StaticResource ResourceKey="ChartBlue" />
+            <StaticResource ResourceKey="ChartYellow" />
+        </controls:ChartColorCollection>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="Border.button-cell">
+            <Setter Property="Padding" Value="6,4" />
+            <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessThin}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+        </Style>
+        <Style Selector="Border.button-cell.pressed">
+            <Setter Property="Background" Value="{StaticResource ChartBlue}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ChartBlue}" />
+        </Style>
+        <Style Selector="Border.button-cell.pressed TextBlock">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="controls|AxisBar">
+            <Setter Property="Height" Value="12" />
+            <Setter Property="Fill" Value="{StaticResource ChartBlue}" />
+            <Setter Property="TrackBrush" Value="{DynamicResource PanelBorderBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="2*,*"
+          Margin="{StaticResource PaddingSmall}"
+          ColumnSpacing="{StaticResource SpacingSmall}">
+
+        <Border Grid.Column="0"
+                Classes="panel">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top"
+                      ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Controller"
+                               Classes="panel-title" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding Status}"
+                               Classes="panel-name" />
+                </Grid>
+                <controls:GamepadDiagram Margin="{StaticResource PaddingLarge}"
+                                         Buttons="{Binding Buttons}"
+                                         Axes="{Binding Axes}"
+                                         IsConnected="{Binding IsConnected}"
+                                         FaceColors="{StaticResource FaceColors}"
+                                         BodyFill="{DynamicResource PanelBorderBrush}"
+                                         Stroke="{DynamicResource PanelNoteBrush}"
+                                         PressedFill="{StaticResource ChartBlue}"
+                                         Foreground="{DynamicResource PanelTitleBrush}" />
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1"
+              RowDefinitions="Auto,Auto,*"
+              RowSpacing="{StaticResource SpacingSmall}">
+
+            <Border Grid.Row="0"
+                    Classes="panel">
+                <StackPanel Spacing="{StaticResource SpacingSmall}">
+                    <TextBlock Text="Buttons"
+                               Classes="panel-title" />
+                    <ItemsControl ItemsSource="{Binding ButtonItems}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="4"
+                                             ColumnSpacing="{StaticResource SpacingXSmall}"
+                                             RowSpacing="{StaticResource SpacingXSmall}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:GamepadButtonItem">
+                                <Border Classes="button-cell"
+                                        Classes.pressed="{Binding Pressed}">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <TextBlock Text="{Binding Index}"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Column="1"
+                                                   HorizontalAlignment="Right"
+                                                   Text="{Binding Name}"
+                                                   Classes="panel-text" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="1"
+                    Classes="panel">
+                <StackPanel Spacing="{StaticResource SpacingSmall}">
+                    <TextBlock Text="Axes"
+                               Classes="panel-title" />
+                    <ItemsControl ItemsSource="{Binding AxisItems}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="{StaticResource SpacingXSmall}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:GamepadAxisItem">
+                                <Grid ColumnDefinitions="20,64,*,56"
+                                      ColumnSpacing="{StaticResource SpacingSmall}">
+                                    <TextBlock Text="{Binding Index}"
+                                               Classes="panel-name" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               Classes="panel-text" />
+                                    <controls:AxisBar Grid.Column="2"
+                                                      Value="{Binding Value}" />
+                                    <TextBlock Grid.Column="3"
+                                               HorizontalAlignment="Right"
+                                               Text="{Binding Text}"
+                                               Classes="panel-text" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="2"
+                    Classes="panel">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top"
+                               Margin="0,0,0,6"
+                               Text="Events"
+                               Classes="panel-title" />
+                    <ItemsControl ItemsSource="{Binding Events}"
+                                  ClipToBounds="True">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextBlock Text="{Binding}"
+                                           Classes="panel-text" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </Grid>
+
+</UserControl>

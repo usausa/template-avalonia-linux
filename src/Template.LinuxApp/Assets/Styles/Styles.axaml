@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Template.LinuxApp.Controls">
 
     <!-- Kiosk -->
     <Style Selector="Window.hide-cursor, Window.hide-cursor :is(InputElement)">
@@ -16,7 +17,7 @@
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Padding" Value="16" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusSmall}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Background" Value="{DynamicResource SystemRegionBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SystemControlForegroundBaseLowBrush}" />
@@ -39,7 +40,7 @@
 
     <!-- Toolbar -->
     <Style Selector="Button.toolbar">
-        <Setter Property="Height" Value="60" />
+        <Setter Property="Height" Value="52" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -55,8 +56,19 @@
         <Setter Property="RenderTransform" Value="none" />
     </Style>
 
+    <Style Selector="Button.toolbar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BlueDarken4}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style Selector="Button.toolbar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource BlueDarken2}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
     <Style Selector="Button.toolbar.selected /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="Background" Value="{StaticResource BlueDarken1}" />
+        <Setter Property="Foreground" Value="White" />
     </Style>
 
     <!-- Page -->
@@ -73,8 +85,76 @@
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
-    <Style Selector="Grid.device-header TextBlock">
+    <!-- Panel -->
+    <Style Selector="Border.panel">
+        <Setter Property="Padding" Value="{StaticResource PaddingNormal}" />
+        <Setter Property="Background" Value="{DynamicResource PanelBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessThin}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusSmall}" />
+    </Style>
+
+    <Style Selector="TextBlock.panel-title">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeNormal}" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelTitleBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.panel-value">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeNormal}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelTitleBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.panel-note">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.panel-header">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.panel-name">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style Selector="TextBlock.panel-text">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeNormal}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style Selector="Button.panel-button">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="MinWidth" Value="88" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
+    </Style>
+
+    <!-- Chart -->
+    <Style Selector="controls|SeriesChart">
+        <Setter Property="Palette" Value="{StaticResource ChartBlueShades}" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        <Setter Property="GridBrush" Value="{DynamicResource PanelBorderBrush}" />
+    </Style>
+
+    <Style Selector="controls|BarChart">
+        <Setter Property="Fill" Value="{StaticResource ChartOrange}" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        <Setter Property="GridBrush" Value="{DynamicResource PanelBorderBrush}" />
+    </Style>
+
+    <Style Selector="controls|SegmentGauge">
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
     </Style>
 
 </Styles>

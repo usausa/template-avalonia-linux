@@ -50,6 +50,14 @@ internal static partial class Log
     [LoggerMessage(Level = LogLevel.Warning, Message = "Device error. name=[{name}], message=[{message}]")]
     public static partial void WarnDeviceError(this ILogger logger, string name, string message);
 
+    // Platform
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Performance sample failed.")]
+    public static partial void WarnPerformanceSampleFailed(this ILogger logger, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "System read failed. section=[{section}]")]
+    public static partial void WarnSystemReadFailed(this ILogger logger, string section, Exception ex);
+
     // Error
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Unknown exception.")]

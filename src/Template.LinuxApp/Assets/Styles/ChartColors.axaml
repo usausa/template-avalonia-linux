@@ -1,0 +1,95 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:Template.LinuxApp.Controls">
+
+    <!-- Grafana -->
+    <!-- Shade: SuperLight, Light, Default, SemiDark, Dark -->
+
+    <Color x:Key="ChartRedSuperLight">#FFA6B0</Color>
+    <Color x:Key="ChartRedLight">#FF7383</Color>
+    <Color x:Key="ChartRed">#F2495C</Color>
+    <Color x:Key="ChartRedSemiDark">#E02F44</Color>
+    <Color x:Key="ChartRedDark">#C4162A</Color>
+
+    <Color x:Key="ChartOrangeSuperLight">#FFCB7D</Color>
+    <Color x:Key="ChartOrangeLight">#FFB357</Color>
+    <Color x:Key="ChartOrange">#FF9830</Color>
+    <Color x:Key="ChartOrangeSemiDark">#FF780A</Color>
+    <Color x:Key="ChartOrangeDark">#FA6400</Color>
+
+    <Color x:Key="ChartYellowSuperLight">#FFF899</Color>
+    <Color x:Key="ChartYellowLight">#FFEE52</Color>
+    <Color x:Key="ChartYellow">#FADE2A</Color>
+    <Color x:Key="ChartYellowSemiDark">#F2CC0C</Color>
+    <Color x:Key="ChartYellowDark">#E0B400</Color>
+
+    <Color x:Key="ChartGreenSuperLight">#C8F2C2</Color>
+    <Color x:Key="ChartGreenLight">#96D98D</Color>
+    <Color x:Key="ChartGreen">#73BF69</Color>
+    <Color x:Key="ChartGreenSemiDark">#56A64B</Color>
+    <Color x:Key="ChartGreenDark">#37872D</Color>
+
+    <Color x:Key="ChartBlueSuperLight">#C0D8FF</Color>
+    <Color x:Key="ChartBlueLight">#8AB8FF</Color>
+    <Color x:Key="ChartBlue">#5794F2</Color>
+    <Color x:Key="ChartBlueSemiDark">#3274D9</Color>
+    <Color x:Key="ChartBlueDark">#1F60C4</Color>
+
+    <Color x:Key="ChartPurpleSuperLight">#DEB6F2</Color>
+    <Color x:Key="ChartPurpleLight">#CA95E5</Color>
+    <Color x:Key="ChartPurple">#B877D9</Color>
+    <Color x:Key="ChartPurpleSemiDark">#A352CC</Color>
+    <Color x:Key="ChartPurpleDark">#8F3BB8</Color>
+
+
+    <!-- Shades of a color -->
+
+    <controls:ChartColorCollection x:Key="ChartRedShades">
+        <StaticResource ResourceKey="ChartRed" />
+        <StaticResource ResourceKey="ChartRedSemiDark" />
+        <StaticResource ResourceKey="ChartRedLight" />
+        <StaticResource ResourceKey="ChartRedDark" />
+        <StaticResource ResourceKey="ChartRedSuperLight" />
+    </controls:ChartColorCollection>
+
+    <controls:ChartColorCollection x:Key="ChartOrangeShades">
+        <StaticResource ResourceKey="ChartOrange" />
+        <StaticResource ResourceKey="ChartOrangeSemiDark" />
+        <StaticResource ResourceKey="ChartOrangeLight" />
+        <StaticResource ResourceKey="ChartOrangeDark" />
+        <StaticResource ResourceKey="ChartOrangeSuperLight" />
+    </controls:ChartColorCollection>
+
+    <controls:ChartColorCollection x:Key="ChartYellowShades">
+        <StaticResource ResourceKey="ChartYellow" />
+        <StaticResource ResourceKey="ChartYellowSemiDark" />
+        <StaticResource ResourceKey="ChartYellowLight" />
+        <StaticResource ResourceKey="ChartYellowDark" />
+        <StaticResource ResourceKey="ChartYellowSuperLight" />
+    </controls:ChartColorCollection>
+
+    <controls:ChartColorCollection x:Key="ChartGreenShades">
+        <StaticResource ResourceKey="ChartGreen" />
+        <StaticResource ResourceKey="ChartGreenSemiDark" />
+        <StaticResource ResourceKey="ChartGreenLight" />
+        <StaticResource ResourceKey="ChartGreenDark" />
+        <StaticResource ResourceKey="ChartGreenSuperLight" />
+    </controls:ChartColorCollection>
+
+    <controls:ChartColorCollection x:Key="ChartBlueShades">
+        <StaticResource ResourceKey="ChartBlue" />
+        <StaticResource ResourceKey="ChartBlueSemiDark" />
+        <StaticResource ResourceKey="ChartBlueLight" />
+        <StaticResource ResourceKey="ChartBlueDark" />
+        <StaticResource ResourceKey="ChartBlueSuperLight" />
+    </controls:ChartColorCollection>
+
+    <controls:ChartColorCollection x:Key="ChartPurpleShades">
+        <StaticResource ResourceKey="ChartPurple" />
+        <StaticResource ResourceKey="ChartPurpleSemiDark" />
+        <StaticResource ResourceKey="ChartPurpleLight" />
+        <StaticResource ResourceKey="ChartPurpleDark" />
+        <StaticResource ResourceKey="ChartPurpleSuperLight" />
+    </controls:ChartColorCollection>
+
+</ResourceDictionary>

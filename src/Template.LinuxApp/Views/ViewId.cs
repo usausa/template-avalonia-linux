@@ -3,10 +3,15 @@ namespace Template.LinuxApp.Views;
 public enum ViewId
 {
     Dashboard,
-    Typography,
-    Barcode,
+    Performance,
+    System,
     Camera,
+    Barcode,
+    Nfc,
     Printer,
     Controller,
-    Nfc
+    Gamepad,
+    Motor,
+    Typography,
+    Graphics
 }

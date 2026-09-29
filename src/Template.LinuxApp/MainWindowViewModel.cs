@@ -9,25 +9,27 @@ using Template.LinuxApp.Views;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 [ObservableGeneratorOption(Reactive = true, ViewModel = true)]
-public sealed partial class MainWindowViewModel : ExtendViewModelBase
+public sealed class MainWindowViewModel : ExtendViewModelBase
 {
-    private static readonly ViewId[] Views =
-    [
-        ViewId.Dashboard,
-        ViewId.Typography,
-        ViewId.Barcode,
-        ViewId.Camera,
-        ViewId.Printer,
-        ViewId.Controller,
-        ViewId.Nfc
-    ];
-
     private readonly IDialogService dialogService;
 
     public INavigator Navigator { get; }
 
-    [ObservableProperty]
-    public partial ViewId? CurrentView { get; set; }
+    public IReadOnlyList<NavigationItem> Items { get; } =
+    [
+        new(ViewId.Dashboard, "Dashboard"),
+        new(ViewId.Performance, "Performance"),
+        new(ViewId.System, "System"),
+        new(ViewId.Camera, "Camera"),
+        new(ViewId.Barcode, "Barcode"),
+        new(ViewId.Nfc, "NFC"),
+        new(ViewId.Printer, "Printer"),
+        new(ViewId.Controller, "Controller"),
+        new(ViewId.Gamepad, "Gamepad"),
+        new(ViewId.Motor, "Motor"),
+        new(ViewId.Typography, "Typography"),
+        new(ViewId.Graphics, "Graphics")
+    ];
 
     public ICommand ForwardCommand { get; }
 
@@ -40,7 +42,7 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
 
         Disposables.Add(Observable
             .FromEventPattern<NavigationEventArgs>(h => navigator.Navigated += h, h => navigator.Navigated -= h)
-            .Subscribe(x => CurrentView = x.EventArgs.Context.ToId as ViewId?));
+            .Subscribe(x => UpdateSelection(x.EventArgs.Context.ToId as ViewId?)));
 
         var scheduler = new SynchronizationContextScheduler(SynchronizationContext.Current!);
         Disposables.Add(Observable
@@ -51,18 +53,33 @@ public sealed partial class MainWindowViewModel : ExtendViewModelBase
             .Subscribe());
     }
 
+    private void UpdateSelection(ViewId? id)
+    {
+        foreach (var item in Items)
+        {
+            item.IsSelected = item.Id == id;
+        }
+    }
+
     private Task HandleInputAsync(InputSignal signal) => dialogService.IsOpen ? Task.CompletedTask : signal switch
     {
-        { Key: InputKey.Previous, Action: InputAction.Press } => SwitchViewAsync(-1),
-        { Key: InputKey.Next, Action: InputAction.Press } => SwitchViewAsync(1),
+        { Key: InputKey.Select, Action: InputAction.Press } => SwitchViewAsync(),
         { Key: InputKey.Start, Action: InputAction.Press } => Navigator.NotifyAsync(ShellEvent.Start),
         _ => Task.CompletedTask
     };
 
-    private Task<bool> SwitchViewAsync(int offset)
+    private Task<bool> SwitchViewAsync()
     {
-        var index = Navigator.CurrentViewId is ViewId current ? Array.IndexOf(Views, current) : -1;
-        index = index < 0 ? 0 : (index + offset + Views.Length) % Views.Length;
-        return Navigator.ForwardAsync(Views[index]);
+        var index = -1;
+        for (var i = 0; i < Items.Count; i++)
+        {
+            if (Equals(Navigator.CurrentViewId, Items[i].Id))
+            {
+                index = i;
+                break;
+            }
+        }
+
+        return Navigator.ForwardAsync(Items[(index + 1) % Items.Count].Id);
     }
 }

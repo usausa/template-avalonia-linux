@@ -8,6 +8,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="Assets/Styles/Constants.axaml" />
                 <MergeResourceInclude Source="Assets/Styles/Colors.axaml" />
+                <MergeResourceInclude Source="Assets/Styles/ChartColors.axaml" />
+                <MergeResourceInclude Source="Assets/Styles/Theme.axaml" />
                 <MergeResourceInclude Source="Assets/Styles/Fonts.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

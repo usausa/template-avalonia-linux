@@ -21,6 +21,9 @@
     <CornerRadius x:Key="CornerRadiusMedium">8</CornerRadius>
     <CornerRadius x:Key="CornerRadiusLarge">12</CornerRadius>
 
+    <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
+    <CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
+
     <Thickness x:Key="BorderThicknessNone">0</Thickness>
     <Thickness x:Key="BorderThicknessThin">1</Thickness>
     <Thickness x:Key="BorderThicknessNormal">2</Thickness>
