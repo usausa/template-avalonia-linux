@@ -274,7 +274,7 @@ public sealed class SystemInspector : ISystemInspector, IDisposable
         }, null);
 
     public IReadOnlyList<UsbDevice> ReadUsbDevices() =>
-        Guard("usb", UsbDeviceReader.GetDevices, []);
+        Guard("usb", static () => PlatformProvider.GetUsbDevices(), []);
 
     private T Guard<T>(string section, Func<T> func, T fallback)
     {

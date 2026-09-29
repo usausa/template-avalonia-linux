@@ -228,18 +228,18 @@ public sealed partial class SystemViewModel : AppViewModelBase
 
     private void ApplyUsb(IReadOnlyList<UsbDevice> devices)
     {
-        var current = devices.ToDictionary(static x => $"{x.Port} {x.VendorId}:{x.ProductId}", StringComparer.Ordinal);
+        var current = devices.ToDictionary(static x => String.Create(CultureInfo.InvariantCulture, $"{x.Name} {x.VendorId:x4}:{x.ProductId:x4}"), StringComparer.Ordinal);
         if (previousUsb is not null)
         {
             var time = timeProvider.GetLocalNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture);
             foreach (var device in current.Where(x => !previousUsb.ContainsKey(x.Key)).Select(static x => x.Value))
             {
-                AddUsbEvent($"{time} Connected {GetUsbName(device)} ({device.Port})");
+                AddUsbEvent($"{time} Connected {GetUsbName(device)} ({device.Name})");
             }
 
             foreach (var device in previousUsb.Where(x => !current.ContainsKey(x.Key)).Select(static x => x.Value))
             {
-                AddUsbEvent($"{time} Disconnected {GetUsbName(device)} ({device.Port})");
+                AddUsbEvent($"{time} Disconnected {GetUsbName(device)} ({device.Name})");
             }
         }
 
@@ -346,21 +346,55 @@ public sealed partial class SystemViewModel : AppViewModelBase
 
     private static UsbItem FormatUsb(UsbDevice device)
     {
-        var details = new List<string> { device.Port, $"{device.VendorId}:{device.ProductId}", device.Class };
-        details.AddRange(device.Drivers);
-        details.AddRange(device.DeviceFiles);
+        var details = new List<string> { device.Name, String.Create(CultureInfo.InvariantCulture, $"{device.VendorId:x4}:{device.ProductId:x4}"), FormatDeviceClass(device) };
+        details.AddRange(device.Interfaces.Select(static x => x.Driver).Distinct(StringComparer.Ordinal));
+        details.AddRange(device.Interfaces.SelectMany(static x => x.DeviceFiles).Distinct(StringComparer.Ordinal));
         return new UsbItem(
             GetUsbName(device),
             FormatSpeed(device.Speed),
             String.Join("  ", details.Where(static x => !String.IsNullOrEmpty(x))),
-            new Thickness(IndentWidth * device.Port.Count(static x => x == '.'), 0, 0, 0));
+            new Thickness(IndentWidth * device.Name.Count(static x => x == '.'), 0, 0, 0));
     }
 
     private static string GetUsbName(UsbDevice device)
     {
         var name = Join(device.Manufacturer, device.Product);
-        return name.Length > 0 ? name : device.Class == "Hub" ? "USB hub" : $"{device.Class} device";
+        return name.Length > 0 ? name : device.DeviceClass == UsbClass.Hub ? "USB hub" : $"{FormatDeviceClass(device)} device";
     }
+
+    private static string FormatDeviceClass(UsbDevice device)
+    {
+        if (device.DeviceClass is not (UsbClass.PerInterface or UsbClass.Miscellaneous))
+        {
+            return FormatClass(device.DeviceClass);
+        }
+
+        var names = device.Interfaces
+            .Select(static x => x.InterfaceClass)
+            .Where(static x => x != UsbClass.CdcData)
+            .Distinct()
+            .Select(FormatClass)
+            .ToList();
+        return names.Count > 0 ? String.Join(", ", names) : FormatClass(device.DeviceClass);
+    }
+
+    private static string FormatClass(UsbClass value) =>
+        value switch
+        {
+            UsbClass.PerInterface => "Device",
+            UsbClass.Hid => "HID",
+            UsbClass.CdcData => "CDC data",
+            UsbClass.MassStorage => "Mass storage",
+            UsbClass.SmartCard => "Smart card",
+            UsbClass.ContentSecurity => "Content security",
+            UsbClass.PersonalHealthcare => "Healthcare",
+            UsbClass.AudioVideo => "Audio/Video",
+            UsbClass.TypeCBridge => "Type-C bridge",
+            UsbClass.WirelessController => "Wireless",
+            UsbClass.ApplicationSpecific => "Application",
+            UsbClass.VendorSpecific => "Vendor specific",
+            _ => value.ToString()
+        };
 
     private static void AddAttribute(List<InfoItem> list, string name, double value, Func<double, string> format)
     {

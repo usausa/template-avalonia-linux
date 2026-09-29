@@ -42,6 +42,8 @@ public sealed class VideoSource : IVideoSource, IDisposable
 
     private static readonly TimeSpan FrameTimeout = TimeSpan.FromSeconds(5);
 
+    private static readonly TimeSpan FrameTolerance = TimeSpan.FromMilliseconds(5);
+
     private readonly Lock sync = new();
 
     private readonly TimeProvider timeProvider;
@@ -52,6 +54,8 @@ public sealed class VideoSource : IVideoSource, IDisposable
 
     private readonly DeviceStatus status;
 
+    private readonly TimeSpan frameInterval;
+
     private CancellationTokenSource? cts;
 
     private Task? loopTask;
@@ -61,6 +65,8 @@ public sealed class VideoSource : IVideoSource, IDisposable
     private BufferManager? bufferManager;
 
     private long lastFrameTimestamp;
+
+    private long lastProcessTimestamp;
 
     public event EventHandler? FrameUpdated;
 
@@ -84,6 +90,7 @@ public sealed class VideoSource : IVideoSource, IDisposable
         Device = option.Device;
         RequestedWidth = option.Width;
         RequestedHeight = option.Height;
+        frameInterval = option.Fps > 0 ? TimeSpan.FromMilliseconds(1000d / option.Fps) : TimeSpan.Zero;
         status = deviceState.Register("Camera", !String.IsNullOrEmpty(option.Device));
     }
 
@@ -253,7 +260,12 @@ public sealed class VideoSource : IVideoSource, IDisposable
 
         Interlocked.Exchange(ref lastFrameTimestamp, timeProvider.GetTimestamp());
         video.FrameCaptured += OnFrameCaptured;
-        if (!video.StartCapture(option.Fps))
+        if (option.Fps > 0)
+        {
+            video.SetFrameRate(option.Fps);
+        }
+
+        if (!video.StartCapture())
         {
             video.FrameCaptured -= OnFrameCaptured;
             video.Dispose();
@@ -280,6 +292,15 @@ public sealed class VideoSource : IVideoSource, IDisposable
 
     private void OnFrameCaptured(FrameBuffer frame)
     {
+        var timestamp = timeProvider.GetTimestamp();
+        Interlocked.Exchange(ref lastFrameTimestamp, timestamp);
+        if (timeProvider.GetElapsedTime(lastProcessTimestamp, timestamp) < frameInterval - FrameTolerance)
+        {
+            return;
+        }
+
+        lastProcessTimestamp = timestamp;
+
         BufferManager? manager;
         lock (sync)
         {
@@ -299,7 +320,6 @@ public sealed class VideoSource : IVideoSource, IDisposable
             slot.MarkUpdated();
         }
 
-        Interlocked.Exchange(ref lastFrameTimestamp, timeProvider.GetTimestamp());
         status.ReportEvent();
         FrameUpdated?.Invoke(this, EventArgs.Empty);
     }
