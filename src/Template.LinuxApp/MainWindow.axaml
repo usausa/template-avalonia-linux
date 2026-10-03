@@ -21,10 +21,11 @@
         <Grid RowDefinitions="Auto,*"
               IsEnabled="{Binding !#DialogLayer.IsVisible}">
             <ItemsControl Grid.Row="0"
+                          Background="{StaticResource BlueDarken4}"
                           ItemsSource="{Binding Items}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="6" Rows="2" />
+                        <UniformGrid Columns="8" Rows="2" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>

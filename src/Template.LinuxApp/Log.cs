@@ -50,6 +50,11 @@ internal static partial class Log
     [LoggerMessage(Level = LogLevel.Warning, Message = "Device error. name=[{name}], message=[{message}]")]
     public static partial void WarnDeviceError(this ILogger logger, string name, string message);
 
+    // Nfc
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Suica read failed. step=[{step}], status=[{status}], atr=[{atr}]")]
+    public static partial void WarnSuicaReadFailed(this ILogger logger, string step, string status, string atr);
+
     // Platform
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Performance sample failed.")]

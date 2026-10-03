@@ -10,6 +10,10 @@ public interface IQrReader
 {
     event EventHandler<BarcodeEventArgs>? Scanned;
 
+    DeviceStatus Status { get; }
+
+    string Device { get; }
+
     void Start();
 
     ValueTask StopAsync();
@@ -33,8 +37,6 @@ public sealed class QrReader : IQrReader, IDisposable
 
     private readonly QrReaderOption option;
 
-    private readonly DeviceStatus status;
-
     private CancellationTokenSource? cts;
 
     private Task? loopTask;
@@ -45,11 +47,15 @@ public sealed class QrReader : IQrReader, IDisposable
 
     public event EventHandler<BarcodeEventArgs>? Scanned;
 
+    public DeviceStatus Status { get; }
+
+    public string Device => option.Port;
+
     public QrReader(TimeProvider timeProvider, QrReaderOption option, DeviceState deviceState)
     {
         this.timeProvider = timeProvider;
         this.option = option;
-        status = deviceState.Register("QR", !String.IsNullOrEmpty(option.Port));
+        Status = deviceState.Register("QR", !String.IsNullOrEmpty(option.Port));
     }
 
     public void Dispose()
@@ -59,7 +65,7 @@ public sealed class QrReader : IQrReader, IDisposable
 
     public void Start()
     {
-        if (!status.IsEnabled || (loopTask is not null))
+        if (!Status.IsEnabled || (loopTask is not null))
         {
             return;
         }
@@ -67,7 +73,7 @@ public sealed class QrReader : IQrReader, IDisposable
         cts = new CancellationTokenSource();
         var token = cts.Token;
         loopTask = Task.Run(() => LoopAsync(token), token);
-        status.ReportStarted();
+        Status.ReportStarted();
     }
 
     public async ValueTask StopAsync()
@@ -89,7 +95,7 @@ public sealed class QrReader : IQrReader, IDisposable
         cts.Dispose();
         cts = null;
         loopTask = null;
-        status.ReportStopped();
+        Status.ReportStopped();
     }
 
     public void ResumeReading() => Write(ResumeCommand);
@@ -112,7 +118,7 @@ public sealed class QrReader : IQrReader, IDisposable
                 else if (!File.Exists(option.Port))
                 {
                     Close();
-                    status.ReportDisconnected();
+                    Status.ReportDisconnected();
                 }
 
                 await Task.Delay(CheckInterval, timeProvider, token).ConfigureAwait(false);
@@ -146,7 +152,7 @@ public sealed class QrReader : IQrReader, IDisposable
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
         {
             serial.Dispose();
-            status.ReportError(ex.Message);
+            Status.ReportError(ex.Message);
             return;
         }
 
@@ -158,7 +164,7 @@ public sealed class QrReader : IQrReader, IDisposable
             reader = lineReader;
         }
 
-        status.ReportConnected();
+        Status.ReportConnected();
     }
 
     private void Close()
@@ -192,14 +198,14 @@ public sealed class QrReader : IQrReader, IDisposable
             }
             catch (Exception ex) when (ex is IOException or TimeoutException or InvalidOperationException)
             {
-                status.ReportError(ex.Message);
+                Status.ReportError(ex.Message);
             }
         }
     }
 
     private void OnLineReceived(object? sender, ReadOnlySpan<byte> bytes)
     {
-        status.ReportEvent();
+        Status.ReportEvent();
         Scanned?.Invoke(this, new BarcodeEventArgs(Encoding.UTF8.GetString(bytes)));
     }
 }

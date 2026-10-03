@@ -33,30 +33,6 @@
             <Setter Property="FontSize" Value="28" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
-        <Style Selector="Border.device-state">
-            <Setter Property="Width" Value="22" />
-            <Setter Property="Height" Value="22" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessNormal}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource PanelNoteBrush}" />
-            <Setter Property="Background" Value="{DynamicResource PanelNoteBrush}" />
-        </Style>
-        <Style Selector="Border.device-state.running">
-            <Setter Property="BorderBrush" Value="{StaticResource ChartOrange}" />
-            <Setter Property="Background" Value="{StaticResource ChartOrange}" />
-        </Style>
-        <Style Selector="Border.device-state.connected">
-            <Setter Property="BorderBrush" Value="{StaticResource ChartGreen}" />
-            <Setter Property="Background" Value="{StaticResource ChartGreen}" />
-        </Style>
-        <Style Selector="Border.device-state.error">
-            <Setter Property="BorderBrush" Value="{StaticResource ChartRed}" />
-            <Setter Property="Background" Value="{StaticResource ChartRed}" />
-        </Style>
-        <Style Selector="Border.device-state.disabled">
-            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
-            <Setter Property="Background" Value="Transparent" />
-        </Style>
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*"

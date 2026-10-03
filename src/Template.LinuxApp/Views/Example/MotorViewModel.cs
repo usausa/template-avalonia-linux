@@ -175,7 +175,8 @@ public sealed partial class MotorViewModel : AppViewModelBase
             ApplyPose(x);
         });
         SavePoseCommand = MakeAsyncCommand(SavePoseAsync);
-        PlayCommand = MakeAsyncCommand(PlayAsync, () => !IsPlaying);
+        // Playback runs until stopped, so it does not hold the busy state
+        PlayCommand = MakeDelegateCommand(CommandMode.Simple, () => _ = PlayAsync(), () => !IsPlaying);
         StopCommand = MakeDelegateCommand(StopPlayback, () => IsPlaying);
 
         SubscribeServo1(x => SendServo(ServoChannel.Servo1, x));

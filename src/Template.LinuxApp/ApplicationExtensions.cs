@@ -122,6 +122,8 @@ public static partial class ApplicationExtensions
         builder.Services.AddOptions<MotorControllerOption>().BindConfiguration("Motor").ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<MotorControllerOption>>().Value);
         builder.Services.AddSingleton<IMotorController, MotorController>();
+        builder.Services.AddOptions<SuicaReaderOption>().BindConfiguration("Nfc").ValidateDataAnnotations().ValidateOnStart();
+        builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<SuicaReaderOption>>().Value);
         builder.Services.AddSingleton<ISuicaReader, SuicaReader>();
         builder.Services.AddSingleton<ISystemMonitor, SystemMonitor>();
         builder.Services.AddSingleton<IPerformanceMonitor, PerformanceMonitor>();

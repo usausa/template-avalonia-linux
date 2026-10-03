@@ -4,23 +4,178 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.PrinterView"
              x:DataType="local:PrinterViewModel"
              s:DataContextResolver.Type="local:PrinterViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
-    <StackPanel Orientation="Horizontal"
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                Spacing="{StaticResource SpacingSmall}">
-        <Button Width="240"
-                Command="{Binding PrintTextCommand}"
-                Content="Text"
-                Classes="command" />
-        <Button Width="240"
-                Command="{Binding PrintImageCommand}"
-                Content="Image"
-                Classes="command" />
-    </StackPanel>
+    <UserControl.Resources>
+        <converters:PrinterStateBrushConverter x:Key="PrinterStateBrushConverter"
+                                               Idle="{StaticResource ChartGreen}"
+                                               Processing="{StaticResource ChartBlue}"
+                                               Stopped="{StaticResource ChartRed}" />
+        <converters:PrintJobStateBrushConverter x:Key="JobStateBrushConverter"
+                                                Processing="{StaticResource ChartBlue}"
+                                                Held="{StaticResource ChartYellow}"
+                                                Stopped="{StaticResource ChartOrange}"
+                                                Aborted="{StaticResource ChartRed}"
+                                                Completed="{StaticResource ChartGreen}" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="Border.state-chip">
+            <Setter Property="Padding" Value="10,2" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.state-chip > TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Border.paper">
+            <Setter Property="Padding" Value="{StaticResource PaddingNormal}" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+            <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessThin}" />
+        </Style>
+        <Style Selector="TextBlock.result">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+            <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        </Style>
+        <Style Selector="TextBlock.result.error">
+            <Setter Property="Foreground" Value="{StaticResource ChartRed}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          ColumnDefinitions="*,480"
+          Margin="{StaticResource PaddingSmall}"
+          RowSpacing="{StaticResource SpacingSmall}"
+          ColumnSpacing="{StaticResource SpacingSmall}">
+
+        <Grid Grid.Row="0" Grid.Column="0"
+              ColumnDefinitions="*,*"
+              ColumnSpacing="{StaticResource SpacingSmall}">
+            <controls:DeviceCard Grid.Column="0"
+                                 Title="Line printer"
+                                 Device="{Binding LineDevice}"
+                                 Status="{Binding LineStatus}" />
+            <controls:DeviceCard Grid.Column="1"
+                                 Title="Image printer"
+                                 Device="{Binding ImageDevice}"
+                                 Status="{Binding ImageStatus}" />
+        </Grid>
+
+        <Border Grid.Row="1" Grid.Column="0"
+                Classes="panel">
+            <Grid RowDefinitions="Auto,*,Auto"
+                  ColumnDefinitions="*,*"
+                  RowSpacing="{StaticResource SpacingSmall}"
+                  ColumnSpacing="{StaticResource SpacingNormal}">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="Line printer"
+                           Classes="card-note" />
+                <TextBlock Grid.Row="0" Grid.Column="1"
+                           Text="Image printer"
+                           Classes="card-note" />
+                <Border Grid.Row="1" Grid.Column="0"
+                        Classes="paper">
+                    <TextBlock Text="{Binding PreviewText}"
+                               FontFamily="monospace"
+                               FontSize="{StaticResource FontSizeLarge}"
+                               Foreground="Black" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1"
+                        Classes="paper">
+                    <Image Source="{Binding PreviewImage}"
+                           Stretch="Uniform" />
+                </Border>
+                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding ResultText}"
+                           Classes="result"
+                           Classes.error="{Binding IsResultError}" />
+            </Grid>
+        </Border>
+
+        <UniformGrid Grid.Row="2" Grid.Column="0"
+                     Rows="1">
+            <Button Command="{Binding PrintTextCommand}"
+                    Content="Print text"
+                    Classes="command" />
+            <Button Command="{Binding PrintImageCommand}"
+                    Content="Print image"
+                    Classes="command" />
+        </UniformGrid>
+
+        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+                Classes="panel">
+            <Grid RowDefinitions="Auto,Auto,*"
+                  RowSpacing="{StaticResource SpacingSmall}">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="{StaticResource SpacingNormal}">
+                    <TextBlock Text="Jobs"
+                               Classes="card-title" />
+                    <Border Grid.Column="1"
+                            Background="{Binding QueueState, Converter={StaticResource PrinterStateBrushConverter}}"
+                            Classes="state-chip">
+                        <TextBlock Text="{Binding QueueState}"
+                                   FontSize="{StaticResource FontSizeLarge}" />
+                    </Border>
+                </Grid>
+                <TextBlock Grid.Row="1"
+                           Text="{Binding QueueDetail}"
+                           TextWrapping="Wrap"
+                           Classes="card-meta" />
+                <TextBlock Grid.Row="2"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           IsVisible="{Binding !HasJobs}"
+                           Text="No jobs"
+                           Classes="card-note" />
+                <ScrollViewer Grid.Row="2"
+                              VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Jobs}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="{StaticResource SpacingSmall}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:PrintJobItem">
+                                <Grid RowDefinitions="Auto,Auto"
+                                      ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="{StaticResource SpacingSmall}">
+                                    <TextBlock Grid.Row="0" Grid.Column="0"
+                                               VerticalAlignment="Center"
+                                               Text="{Binding Label}"
+                                               FontSize="{StaticResource FontSizeLarge}"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <Border Grid.Row="0" Grid.Column="1"
+                                            HorizontalAlignment="Right"
+                                            Background="{Binding State, Converter={StaticResource JobStateBrushConverter}}"
+                                            Classes="state-chip">
+                                        <TextBlock Text="{Binding State}"
+                                                   FontSize="{StaticResource FontSizeNormal}" />
+                                    </Border>
+                                    <TextBlock Grid.Row="1" Grid.Column="0"
+                                               VerticalAlignment="Center"
+                                               Text="{Binding Time}"
+                                               Classes="card-meta" />
+                                    <Button Grid.Row="1" Grid.Column="1"
+                                            Command="{Binding $parent[ItemsControl].((local:PrinterViewModel)DataContext).CancelJobCommand, FallbackValue={x:Null}}"
+                                            CommandParameter="{Binding JobId}"
+                                            IsVisible="{Binding CanCancel}"
+                                            Content="Cancel"
+                                            Classes="panel-button" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+    </Grid>
 
 </UserControl>

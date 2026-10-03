@@ -2,6 +2,8 @@ namespace Template.LinuxApp;
 
 using System.Reactive.Concurrency;
 
+using Smart.Mvvm.ViewModels;
+
 using Template.LinuxApp.Devices.Input;
 using Template.LinuxApp.Services;
 using Template.LinuxApp.Shell;
@@ -12,6 +14,8 @@ using Template.LinuxApp.Views;
 public sealed class MainWindowViewModel : ExtendViewModelBase
 {
     private readonly IDialogService dialogService;
+
+    private IDisposable? navigatingBusy;
 
     public INavigator Navigator { get; }
 
@@ -40,6 +44,10 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
 
         ForwardCommand = MakeAsyncCommand<ViewId>(x => Navigator.ForwardAsync(x));
 
+        // Busy while navigating
+        Disposables.Add(Observable.FromEventPattern<EventArgs>(h => Navigator.ExecutingChanged += h, h => Navigator.ExecutingChanged -= h)
+            .Subscribe(_ => UpdateNavigatingBusy()));
+
         Disposables.Add(Observable
             .FromEventPattern<NavigationEventArgs>(h => navigator.Navigated += h, h => navigator.Navigated -= h)
             .Subscribe(x => UpdateSelection(x.EventArgs.Context.ToId as ViewId?)));
@@ -51,6 +59,19 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
             .Select(x => Observable.FromAsync(() => HandleInputAsync(x.Data), scheduler))
             .Concat()
             .Subscribe());
+    }
+
+    private void UpdateNavigatingBusy()
+    {
+        if (Navigator.Executing)
+        {
+            navigatingBusy ??= BusyState.Begin();
+        }
+        else
+        {
+            navigatingBusy?.Dispose();
+            navigatingBusy = null;
+        }
     }
 
     private void UpdateSelection(ViewId? id)

@@ -1,5 +1,7 @@
 namespace Template.LinuxApp.Components.Nfc;
 
+using System.Buffers.Binary;
+
 using PCSC;
 using PCSC.Exceptions;
 using PCSC.Monitoring;
@@ -7,7 +9,7 @@ using PCSC.Monitoring;
 using Template.LinuxApp.Domain.Logic;
 using Template.LinuxApp.State;
 
-public sealed record SuicaHistoryRecord(DateTime DateTime, byte Terminal, byte Process, int Balance);
+public sealed record SuicaHistoryRecord(DateTime DateTime, byte Terminal, byte Process, int Balance, int TransactionId);
 
 public sealed class SuicaReadEventArgs : EventArgs
 {
@@ -29,6 +31,12 @@ public interface ISuicaReader
 {
     event EventHandler<SuicaReadEventArgs>? CardRead;
 
+    event EventHandler? ReadFailed;
+
+    DeviceStatus Status { get; }
+
+    string Device { get; }
+
     void Start();
 
     ValueTask StopAsync();
@@ -40,22 +48,58 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
     private const int HistoryCount = 20;
 
+    private const int HistoryChunk = 8;
+
+    private const int ResponseSize = 512;
+
+    private const uint ExchangeTimeoutMicroseconds = 100_000;
+
+    private const ushort DefaultSystemCode = 0x0003;
+
     private static readonly TimeSpan RetryInterval = TimeSpan.FromSeconds(2);
+
+    private static readonly TimeSpan RepeatInterval = TimeSpan.FromSeconds(3);
+
+    private static readonly TimeSpan SwitchGuardTime = TimeSpan.FromMilliseconds(20);
+
+    private static readonly byte[] StartSessionCommand = [0xFF, 0x50, 0x00, 0x00, 0x02, 0x81, 0x00, 0x00];
+
+    private static readonly byte[] EndSessionCommand = [0xFF, 0x50, 0x00, 0x00, 0x02, 0x82, 0x00, 0x00];
+
+    private static readonly byte[] SwitchFeliCaCommand = [0xFF, 0x50, 0x00, 0x02, 0x04, 0x8F, 0x02, 0x03, 0x00, 0x00];
+
+    private readonly ILogger<SuicaReader> log;
 
     private readonly TimeProvider timeProvider;
 
-    private readonly DeviceStatus status;
+    private readonly ushort[] systemCodes;
 
     private CancellationTokenSource? cts;
 
     private Task? loopTask;
 
+    private volatile string? currentReader;
+
+    private string? lastIdm;
+
+    private long lastReadTimestamp;
+
+    private string lastStatus = string.Empty;
+
     public event EventHandler<SuicaReadEventArgs>? CardRead;
 
-    public SuicaReader(TimeProvider timeProvider, DeviceState deviceState)
+    public event EventHandler? ReadFailed;
+
+    public DeviceStatus Status { get; }
+
+    public string Device => currentReader ?? "PC/SC";
+
+    public SuicaReader(ILogger<SuicaReader> log, TimeProvider timeProvider, SuicaReaderOption option, DeviceState deviceState)
     {
+        this.log = log;
         this.timeProvider = timeProvider;
-        status = deviceState.Register("NFC", true);
+        systemCodes = ParseSystemCodes(option.SystemCodes);
+        Status = deviceState.Register("NFC", true);
     }
 
     public void Dispose()
@@ -73,7 +117,7 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         cts = new CancellationTokenSource();
         var token = cts.Token;
         loopTask = Task.Run(() => LoopAsync(token), token);
-        status.ReportStarted();
+        Status.ReportStarted();
     }
 
     public async ValueTask StopAsync()
@@ -95,7 +139,21 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         cts.Dispose();
         cts = null;
         loopTask = null;
-        status.ReportStopped();
+        Status.ReportStopped();
+    }
+
+    private static ushort[] ParseSystemCodes(IEnumerable<string> values)
+    {
+        var codes = new List<ushort>();
+        foreach (var value in values)
+        {
+            if (UInt16.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var code))
+            {
+                codes.Add(code);
+            }
+        }
+
+        return codes.Count > 0 ? [.. codes] : [DefaultSystemCode];
     }
 
     private async Task LoopAsync(CancellationToken token)
@@ -109,7 +167,7 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
             }
             catch (Exception ex) when (ex is DllNotFoundException or TypeInitializationException)
             {
-                status.ReportError(ex.Message);
+                Status.ReportError(ex.Message);
                 return;
             }
 
@@ -132,13 +190,15 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         }
         catch (PCSCException ex)
         {
-            status.ReportError(ex.Message);
+            Status.ReportError(ex.Message);
             return null;
         }
     }
 
     private async Task MonitorAsync(string readerName, CancellationToken token)
     {
+        ResetSession(readerName);
+
         var failed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var monitor = MonitorFactory.Instance.Create(SCardScope.System);
         monitor.CardInserted += OnCardInserted;
@@ -146,16 +206,19 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         try
         {
             monitor.Start(readerName);
-            status.ReportConnected();
+            currentReader = readerName;
+            Status.ReportConnected();
             await failed.Task.WaitAsync(token).ConfigureAwait(false);
-            status.ReportDisconnected();
+            currentReader = null;
+            Status.ReportDisconnected();
         }
         catch (PCSCException ex)
         {
-            status.ReportError(ex.Message);
+            Status.ReportError(ex.Message);
         }
         finally
         {
+            currentReader = null;
             monitor.CardInserted -= OnCardInserted;
             monitor.MonitorException -= OnMonitorException;
             monitor.Cancel();
@@ -163,117 +226,281 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
         void OnMonitorException(object sender, PCSCException ex)
         {
-            status.ReportError(ex.Message);
+            Status.ReportError(ex.Message);
             failed.TrySetResult();
+        }
+    }
+
+    private void ResetSession(string readerName)
+    {
+        try
+        {
+            using var context = ContextFactory.Instance.Establish(SCardScope.System);
+            using var reader = context.ConnectReader(readerName, SCardShareMode.Direct, SCardProtocol.Unset);
+            Send(reader, EndSessionCommand);
+        }
+        catch (PCSCException ex)
+        {
+            Status.ReportError(ex.Message);
         }
     }
 
     private void OnCardInserted(object sender, CardStatusEventArgs e)
     {
+        var timestamp = timeProvider.GetTimestamp();
         try
         {
             using var context = ContextFactory.Instance.Establish(SCardScope.System);
-            using var reader = context.ConnectReader(e.ReaderName, SCardShareMode.Shared, SCardProtocol.Any);
-            if (ReadCard(reader) is { } args)
+            using var reader = context.ConnectReader(e.ReaderName, SCardShareMode.Direct, SCardProtocol.Unset);
+            var args = ReadCard(reader, Convert.ToHexString(e.Atr ?? []));
+            if (args is null)
             {
-                status.ReportEvent();
-                CardRead?.Invoke(this, args);
+                ReadFailed?.Invoke(this, EventArgs.Empty);
+                return;
             }
+
+            var repeated = (args.Idm == lastIdm) && (timeProvider.GetElapsedTime(lastReadTimestamp, timestamp) < RepeatInterval);
+            lastIdm = args.Idm;
+            lastReadTimestamp = timestamp;
+            if (repeated)
+            {
+                return;
+            }
+
+            Status.ReportEvent();
+            CardRead?.Invoke(this, args);
         }
         catch (Exception ex) when (ex is PCSCException or ArgumentException)
         {
-            status.ReportError(ex.Message);
+            Status.ReportError(ex.Message);
+            ReadFailed?.Invoke(this, EventArgs.Empty);
         }
     }
 
-    private static SuicaReadEventArgs? ReadCard(ICardReader reader)
+    private SuicaReadEventArgs? ReadCard(ICardReader reader, string atr)
     {
-        var response = SendCommand(reader, CreateCommand(0xFF, 0xCA, 0x00, 0x00, 0x00));
-        if (!response.IsSuccess)
+        if (Send(reader, StartSessionCommand) is null)
         {
-            return null;
+            return Fail("start session", atr);
         }
 
-        var idm = Convert.ToHexString(response.Data);
-
-        response = SendCommand(reader, CreateCommand(0xFF, 0xA4, 0x00, 0x01, [0x8B, 0x00]));
-        if (!response.IsSuccess)
+        try
         {
-            return null;
+            if (Send(reader, SwitchFeliCaCommand) is null)
+            {
+                return Fail("switch felica", atr);
+            }
+
+            Thread.Sleep(SwitchGuardTime);
+            return ReadSuica(reader, atr);
+        }
+        finally
+        {
+            Send(reader, EndSessionCommand);
+        }
+    }
+
+    private SuicaReadEventArgs? ReadSuica(ICardReader reader, string atr)
+    {
+        var idm = Poll(reader);
+        if (idm is null)
+        {
+            return Fail("polling", atr);
         }
 
-        response = SendCommand(reader, CreateCommand(0xFF, 0xB0, 0x00, 0x00, 0x00));
-        if (!response.IsSuccess || (response.Data.Length < BlockSize))
+        var access = ReadBlocks(reader, idm, 0x008B, 0, 1);
+        if (access is null)
         {
-            return null;
-        }
-
-        var balance = SuicaLogic.ExtractAccessBalance(response.Data);
-
-        response = SendCommand(reader, CreateCommand(0xFF, 0xA4, 0x00, 0x01, [0x0F, 0x09]));
-        if (!response.IsSuccess)
-        {
-            return null;
+            return Fail("read 008B", atr);
         }
 
         var history = new List<SuicaHistoryRecord>();
-        for (var i = 0; i < HistoryCount; i++)
+        for (var start = 0; start < HistoryCount; start += HistoryChunk)
         {
-            response = SendCommand(reader, CreateCommand(0xFF, 0xB0, 0x00, (byte)i, 0x00));
-            if (!response.IsSuccess || (response.Data.Length < BlockSize))
+            var count = Math.Min(HistoryChunk, HistoryCount - start);
+            var blocks = ReadBlocks(reader, idm, 0x090F, start, count);
+            if (blocks is null)
             {
-                return null;
+                return Fail(String.Create(CultureInfo.InvariantCulture, $"read 090F {start}"), atr);
             }
 
-            if (SuicaLogic.IsValidLog(response.Data))
+            for (var i = 0; i < count; i++)
             {
-                history.Add(new SuicaHistoryRecord(
-                    SuicaLogic.ExtractLogDateTime(response.Data),
-                    SuicaLogic.ExtractLogTerminal(response.Data),
-                    SuicaLogic.ExtractLogProcess(response.Data),
-                    SuicaLogic.ExtractLogBalance(response.Data)));
+                var block = blocks.AsSpan(i * BlockSize, BlockSize);
+                if (SuicaLogic.IsValidLog(block))
+                {
+                    history.Add(new SuicaHistoryRecord(
+                        SuicaLogic.ExtractLogDateTime(block),
+                        SuicaLogic.ExtractLogTerminal(block),
+                        SuicaLogic.ExtractLogProcess(block),
+                        SuicaLogic.ExtractLogBalance(block),
+                        SuicaLogic.ExtractLogTransactionId(block)));
+                }
             }
         }
 
-        return new SuicaReadEventArgs(idm, balance, history);
+        return new SuicaReadEventArgs(Convert.ToHexString(idm), SuicaLogic.ExtractAccessBalance(access), history);
     }
 
-    private static Response SendCommand(ICardReader reader, byte[] command)
+    private SuicaReadEventArgs? Fail(string step, string atr)
     {
-        var buffer = new byte[258];
-        var length = reader.Transmit(command, buffer);
-        return new Response(buffer, length);
+        log.WarnSuicaReadFailed(step, lastStatus, atr);
+        return null;
     }
 
-    private static byte[] CreateCommand(byte cla, byte ins, byte p1, byte p2, byte[] data)
+    private byte[]? Poll(ICardReader reader)
     {
-        var command = new byte[5 + data.Length];
-        command[0] = cla;
-        command[1] = ins;
-        command[2] = p1;
-        command[3] = p2;
-        command[4] = (byte)data.Length;
-        data.CopyTo(command.AsSpan(5));
-        return command;
-    }
-
-    private static byte[] CreateCommand(byte cla, byte ins, byte p1, byte p2, int le) =>
-        [cla, ins, p1, p2, (byte)le];
-
-    private readonly struct Response
-    {
-        private readonly byte[] buffer;
-
-        private readonly int length;
-
-        public ReadOnlySpan<byte> Data => buffer.AsSpan(0, Math.Max(length - 2, 0));
-
-        public bool IsSuccess => (length >= 2) && (buffer[length - 2] == 0x90) && (buffer[length - 1] == 0x00);
-
-        public Response(byte[] buffer, int length)
+        foreach (var systemCode in systemCodes)
         {
-            this.buffer = buffer;
-            this.length = length;
+            var response = Exchange(reader, [0x06, 0x00, (byte)(systemCode >> 8), (byte)systemCode, 0x01, 0x0F]);
+            if ((response is not null) && (response.Length >= 18) && (response[1] == 0x01))
+            {
+                return response[2..10];
+            }
         }
+
+        return null;
+    }
+
+    private byte[]? ReadBlocks(ICardReader reader, byte[] idm, ushort service, int start, int count)
+    {
+        var command = new byte[14 + (count * 2)];
+        command[0] = (byte)command.Length;
+        command[1] = 0x06;
+        idm.CopyTo(command, 2);
+        command[10] = 0x01;
+        command[11] = (byte)service;
+        command[12] = (byte)(service >> 8);
+        command[13] = (byte)count;
+        for (var i = 0; i < count; i++)
+        {
+            command[14 + (i * 2)] = 0x80;
+            command[15 + (i * 2)] = (byte)(start + i);
+        }
+
+        var response = Exchange(reader, command);
+        var size = count * BlockSize;
+        if ((response is null) || (response.Length < 13 + size) || (response[1] != 0x07) || (response[10] != 0x00) || (response[11] != 0x00))
+        {
+            return null;
+        }
+
+        return response[13..(13 + size)];
+    }
+
+    private byte[]? Exchange(ICardReader reader, ReadOnlySpan<byte> felica)
+    {
+        var length = 11 + felica.Length;
+        var command = new byte[7 + length + 3];
+        command[0] = 0xFF;
+        command[1] = 0x50;
+        command[3] = 0x01;
+        command[5] = (byte)(length >> 8);
+        command[6] = (byte)length;
+        command[7] = 0x5F;
+        command[8] = 0x46;
+        command[9] = 0x04;
+        BinaryPrimitives.WriteUInt32LittleEndian(command.AsSpan(10), ExchangeTimeoutMicroseconds);
+        command[14] = 0x95;
+        command[15] = 0x82;
+        command[16] = (byte)(felica.Length >> 8);
+        command[17] = (byte)felica.Length;
+        felica.CopyTo(command.AsSpan(18));
+
+        var response = Send(reader, command);
+        if ((response is null) || !TryFindValue(response.AsSpan(0, response.Length - 2), 0x97, out var data))
+        {
+            return null;
+        }
+
+        return data.ToArray();
+    }
+
+    private byte[]? Send(ICardReader reader, byte[] command)
+    {
+        var buffer = new byte[ResponseSize];
+        int length;
+        try
+        {
+            length = Transmit(reader, command, buffer);
+        }
+        catch (PCSCException ex)
+        {
+            lastStatus = ex.SCardError.ToString();
+            return null;
+        }
+
+        var response = buffer.AsSpan(0, length);
+        if ((length < 2) || (response[^2] != 0x90) || (response[^1] != 0x00))
+        {
+            lastStatus = Convert.ToHexString(response);
+            return null;
+        }
+
+        if (TryFindValue(response[..^2], 0xC0, out var status) && ((status.Length < 3) || (status[0] != 0x00) || (status[1] != 0x90) || (status[2] != 0x00)))
+        {
+            lastStatus = Convert.ToHexString(status);
+            return null;
+        }
+
+        lastStatus = string.Empty;
+        return response.ToArray();
+    }
+
+    private static int Transmit(ICardReader reader, byte[] command, byte[] buffer)
+    {
+        try
+        {
+            return reader.Transmit(SCardPCI.T1, command, buffer);
+        }
+        catch (PCSCException)
+        {
+            return reader.Transmit(SCardPCI.Raw, command, buffer);
+        }
+    }
+
+    private static bool TryFindValue(ReadOnlySpan<byte> data, byte tag, out ReadOnlySpan<byte> value)
+    {
+        var offset = 0;
+        while (offset < data.Length)
+        {
+            var current = data[offset++];
+            if (current == 0x5F)
+            {
+                offset++;
+            }
+
+            if (offset >= data.Length)
+            {
+                break;
+            }
+
+            int length = data[offset++];
+            if ((length == 0x81) && (offset < data.Length))
+            {
+                length = data[offset++];
+            }
+            else if ((length == 0x82) && (offset + 1 < data.Length))
+            {
+                length = (data[offset] << 8) | data[offset + 1];
+                offset += 2;
+            }
+
+            if (offset + length > data.Length)
+            {
+                break;
+            }
+
+            if (current == tag)
+            {
+                value = data.Slice(offset, length);
+                return true;
+            }
+
+            offset += length;
+        }
+
+        value = default;
+        return false;
     }
 }

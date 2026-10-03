@@ -4,21 +4,160 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.NfcView"
              x:DataType="local:NfcViewModel"
              s:DataContextResolver.Type="local:NfcViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <TextBlock HorizontalAlignment="Center"
-                   Text="{Binding Id}"
-                   FontSize="72"
-                   FontWeight="Bold" />
-        <TextBlock HorizontalAlignment="Center"
-                   Text="{Binding Balance}"
-                   FontSize="72"
-                   FontWeight="Bold" />
-    </StackPanel>
+    <UserControl.Resources>
+        <converters:SuicaProcessBrushConverter x:Key="ProcessBrushConverter" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.amount">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeXLarge}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.amount.income">
+            <Setter Property="Foreground" Value="{StaticResource ChartGreen}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*"
+          ColumnDefinitions="*,480"
+          Margin="{StaticResource PaddingSmall}"
+          RowSpacing="{StaticResource SpacingSmall}"
+          ColumnSpacing="{StaticResource SpacingSmall}">
+
+        <controls:DeviceCard Grid.Row="0" Grid.Column="0"
+                             Title="NFC reader"
+                             Device="{Binding ReaderDevice}"
+                             Status="{Binding ReaderStatus}" />
+
+        <Border Grid.Row="1" Grid.Column="0"
+                Padding="{StaticResource PaddingLarge}"
+                Classes="panel scan-card"
+                Classes.flash="{Binding IsFlashing}">
+            <Panel>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsVisible="{Binding !HasCard}"
+                            Spacing="{StaticResource SpacingXLarge}">
+                    <Path HorizontalAlignment="Center"
+                          Data="M20,30 A22,22 0 0 1 20,66 M38,18 A38,38 0 0 1 38,78 M56,6 A54,54 0 0 1 56,90"
+                          Stroke="{DynamicResource PanelNoteBrush}"
+                          StrokeThickness="8"
+                          StrokeLineCap="Round"
+                          Opacity="0.4" />
+                    <TextBlock HorizontalAlignment="Center"
+                               Text="Touch a Suica card"
+                               FontSize="28"
+                               Foreground="{DynamicResource PanelNoteBrush}" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsVisible="{Binding HasCard}"
+                            Spacing="{StaticResource SpacingLarge}">
+                    <StackPanel HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource SpacingNormal}">
+                        <TextBlock Text="Balance"
+                                   Classes="card-note" />
+                        <TextBlock Text="{Binding ReadTime}"
+                                   Classes="card-note" />
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Center"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource SpacingSmall}">
+                        <TextBlock VerticalAlignment="Bottom"
+                                   Margin="0,0,0,20"
+                                   Text="¥"
+                                   FontSize="64"
+                                   FontWeight="SemiBold" />
+                        <controls:CountUpText Value="{Binding Balance}"
+                                              FontSize="128"
+                                              FontWeight="Bold" />
+                    </StackPanel>
+                    <TextBlock HorizontalAlignment="Center"
+                               Text="{Binding Idm}"
+                               FontSize="{StaticResource FontSizeXLarge}"
+                               Foreground="{DynamicResource PanelNoteBrush}"
+                               Classes="code" />
+                </StackPanel>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                           IsVisible="{Binding ErrorText, Converter={x:Static ObjectConverters.IsNotNull}}"
+                           Text="{Binding ErrorText}"
+                           FontSize="{StaticResource FontSizeXLarge}"
+                           Foreground="{StaticResource ChartRed}" />
+            </Panel>
+        </Border>
+
+        <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                Classes="panel">
+            <Grid RowDefinitions="Auto,*"
+                  RowSpacing="{StaticResource SpacingSmall}">
+                <Grid ColumnDefinitions="*,Auto,Auto"
+                      ColumnSpacing="{StaticResource SpacingNormal}">
+                    <TextBlock Text="History"
+                               Classes="card-title" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding HistorySummary}"
+                               Classes="card-note" />
+                    <Button Grid.Column="2"
+                            Command="{Binding ClearCommand}"
+                            Content="Clear"
+                            Classes="panel-button" />
+                </Grid>
+                <TextBlock Grid.Row="1"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           IsVisible="{Binding !HasHistory}"
+                           Text="No history"
+                           Classes="card-note" />
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding History}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="{StaticResource SpacingSmall}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:SuicaHistoryItem">
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="{StaticResource SpacingSmall}">
+                                    <Border Grid.Column="0"
+                                            Width="4"
+                                            Background="{Binding Process, Converter={StaticResource ProcessBrushConverter}}" />
+                                    <Grid Grid.Column="1"
+                                          RowDefinitions="Auto,Auto"
+                                          ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{StaticResource SpacingSmall}">
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="{Binding Date}"
+                                                   Classes="card-meta" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                   HorizontalAlignment="Right"
+                                                   Text="{Binding Amount}"
+                                                   Classes="amount"
+                                                   Classes.income="{Binding IsIncome}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                                   Text="{Binding Title}"
+                                                   FontSize="{StaticResource FontSizeLarge}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                                   HorizontalAlignment="Right"
+                                                   Text="{Binding Balance}"
+                                                   Classes="card-note" />
+                                    </Grid>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+    </Grid>
 
 </UserControl>

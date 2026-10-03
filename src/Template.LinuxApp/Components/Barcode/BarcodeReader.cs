@@ -20,6 +20,10 @@ public interface IBarcodeReader
 {
     event EventHandler<BarcodeEventArgs>? Scanned;
 
+    DeviceStatus Status { get; }
+
+    string Device { get; }
+
     void Start();
 
     ValueTask StopAsync();
@@ -54,19 +58,21 @@ public sealed class BarcodeReader : IBarcodeReader, IDisposable
 
     private readonly BarcodeReaderOption option;
 
-    private readonly DeviceStatus status;
-
     private CancellationTokenSource? cts;
 
     private Task? loopTask;
 
     public event EventHandler<BarcodeEventArgs>? Scanned;
 
+    public DeviceStatus Status { get; }
+
+    public string Device => option.Name;
+
     public BarcodeReader(TimeProvider timeProvider, BarcodeReaderOption option, DeviceState deviceState)
     {
         this.timeProvider = timeProvider;
         this.option = option;
-        status = deviceState.Register("Barcode", !String.IsNullOrEmpty(option.Name));
+        Status = deviceState.Register("Barcode", !String.IsNullOrEmpty(option.Name));
     }
 
     public void Dispose()
@@ -76,7 +82,7 @@ public sealed class BarcodeReader : IBarcodeReader, IDisposable
 
     public void Start()
     {
-        if (!status.IsEnabled || (loopTask is not null))
+        if (!Status.IsEnabled || (loopTask is not null))
         {
             return;
         }
@@ -84,7 +90,7 @@ public sealed class BarcodeReader : IBarcodeReader, IDisposable
         cts = new CancellationTokenSource();
         var token = cts.Token;
         loopTask = Task.Run(() => LoopAsync(token), token);
-        status.ReportStarted();
+        Status.ReportStarted();
     }
 
     public async ValueTask StopAsync()
@@ -106,7 +112,7 @@ public sealed class BarcodeReader : IBarcodeReader, IDisposable
         cts.Dispose();
         cts = null;
         loopTask = null;
-        status.ReportStopped();
+        Status.ReportStopped();
     }
 
     private async Task LoopAsync(CancellationToken token)
@@ -119,14 +125,14 @@ public sealed class BarcodeReader : IBarcodeReader, IDisposable
                 try
                 {
                     device.Open(true);
-                    status.ReportConnected();
+                    Status.ReportConnected();
                     Read(device, token);
                     return;
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                 {
-                    status.ReportDisconnected();
-                    status.ReportError(ex.Message);
+                    Status.ReportDisconnected();
+                    Status.ReportError(ex.Message);
                 }
             }
 
@@ -151,7 +157,7 @@ public sealed class BarcodeReader : IBarcodeReader, IDisposable
 
             if (result.Code == EnterCode)
             {
-                status.ReportEvent();
+                Status.ReportEvent();
                 Scanned?.Invoke(this, new BarcodeEventArgs(buffer.ToString()));
                 buffer.Clear();
             }

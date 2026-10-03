@@ -4,24 +4,83 @@ using Template.LinuxApp.State;
 
 public interface ILinePrinter
 {
+    DeviceStatus Status { get; }
+
+    string Device { get; }
+
+    void Start();
+
+    ValueTask StopAsync();
+
     ValueTask<bool> PrintAsync(ReadOnlyMemory<byte> data);
 }
 
-public sealed class LinePrinter : ILinePrinter
+public sealed class LinePrinter : ILinePrinter, IDisposable
 {
+    private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(2);
+
+    private readonly TimeProvider timeProvider;
+
     private readonly LinePrinterOption option;
 
-    private readonly DeviceStatus status;
+    private CancellationTokenSource? cts;
 
-    public LinePrinter(LinePrinterOption option, DeviceState deviceState)
+    private Task? loopTask;
+
+    public DeviceStatus Status { get; }
+
+    public string Device => option.LinePrinterDevice;
+
+    public LinePrinter(TimeProvider timeProvider, LinePrinterOption option, DeviceState deviceState)
     {
+        this.timeProvider = timeProvider;
         this.option = option;
-        status = deviceState.Register("Line printer", !String.IsNullOrEmpty(option.LinePrinterDevice));
+        Status = deviceState.Register("Line printer", !String.IsNullOrEmpty(option.LinePrinterDevice));
+    }
+
+    public void Dispose()
+    {
+        StopAsync().AsTask().GetAwaiter().GetResult();
+    }
+
+    public void Start()
+    {
+        if (!Status.IsEnabled || (loopTask is not null))
+        {
+            return;
+        }
+
+        cts = new CancellationTokenSource();
+        var token = cts.Token;
+        loopTask = Task.Run(() => LoopAsync(token), token);
+        Status.ReportStarted();
+    }
+
+    public async ValueTask StopAsync()
+    {
+        if ((cts is null) || (loopTask is null))
+        {
+            return;
+        }
+
+        await cts.CancelAsync().ConfigureAwait(false);
+        try
+        {
+            await loopTask.ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+
+        cts.Dispose();
+        cts = null;
+        loopTask = null;
+        Status.ReportStopped();
     }
 
     public async ValueTask<bool> PrintAsync(ReadOnlyMemory<byte> data)
     {
-        if (!status.IsEnabled)
+        if (!Status.IsEnabled)
         {
             return false;
         }
@@ -37,13 +96,30 @@ public sealed class LinePrinter : ILinePrinter
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            status.ReportDisconnected();
-            status.ReportError(ex.Message);
+            Status.ReportDisconnected();
+            Status.ReportError(ex.Message);
             return false;
         }
 
-        status.ReportConnected();
-        status.ReportEvent();
+        Status.ReportConnected();
+        Status.ReportEvent();
         return true;
+    }
+
+    private async Task LoopAsync(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            if (File.Exists(option.LinePrinterDevice))
+            {
+                Status.ReportConnected();
+            }
+            else
+            {
+                Status.ReportDisconnected();
+            }
+
+            await Task.Delay(CheckInterval, timeProvider, token).ConfigureAwait(false);
+        }
     }
 }

@@ -1,32 +1,96 @@
 namespace Template.LinuxApp.Views.Example;
 
+using Avalonia.Threading;
+
 using Smart.Reactive;
 
 using Template.LinuxApp.Components.Nfc;
+using Template.LinuxApp.Domain.Logic;
+using Template.LinuxApp.State;
+
+public sealed record SuicaHistoryItem(string Date, string Title, string Balance, string Amount, bool IsIncome, byte Process);
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class NfcViewModel : AppViewModelBase
 {
+    private static readonly TimeSpan FlashDuration = TimeSpan.FromMilliseconds(400);
+
+    private readonly TimeProvider timeProvider;
+
     private readonly ISuicaReader suicaReader;
 
+    private readonly DispatcherTimer flashTimer;
+
     [ObservableProperty]
-    public partial string Id { get; set; } = "-";
+    public partial bool HasCard { get; set; }
 
     [ObservableProperty]
     public partial int Balance { get; set; }
 
-    public NfcViewModel(ISuicaReader suicaReader)
+    [ObservableProperty]
+    public partial string Idm { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string ReadTime { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string? ErrorText { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsFlashing { get; set; }
+
+    [ObservableProperty]
+    public partial bool HasHistory { get; set; }
+
+    [ObservableProperty]
+    public partial string HistorySummary { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string ReaderDevice { get; set; }
+
+    public ObservableCollection<SuicaHistoryItem> History { get; } = [];
+
+    public DeviceStatus ReaderStatus => suicaReader.Status;
+
+    public ICommand ClearCommand { get; }
+
+    public NfcViewModel(TimeProvider timeProvider, ISuicaReader suicaReader)
     {
+        this.timeProvider = timeProvider;
         this.suicaReader = suicaReader;
+        ReaderDevice = suicaReader.Device;
+
+        flashTimer = new DispatcherTimer { Interval = FlashDuration };
+        flashTimer.Tick += (_, _) =>
+        {
+            flashTimer.Stop();
+            IsFlashing = false;
+        };
 
         Disposables.Add(Observable
             .FromEventPattern<SuicaReadEventArgs>(h => suicaReader.CardRead += h, h => suicaReader.CardRead -= h)
             .ObserveOnCurrentContext()
-            .Subscribe(x =>
-            {
-                Id = x.EventArgs.Idm;
-                Balance = x.EventArgs.Balance;
-            }));
+            .Subscribe(x => ApplyCard(x.EventArgs)));
+        Disposables.Add(Observable
+            .FromEventPattern(h => suicaReader.ReadFailed += h, h => suicaReader.ReadFailed -= h)
+            .ObserveOnCurrentContext()
+            .Subscribe(_ => ErrorText = "Could not read the card."));
+        Disposables.Add(Observable
+            .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => suicaReader.Status.PropertyChanged += h, h => suicaReader.Status.PropertyChanged -= h)
+            .ObserveOnCurrentContext()
+            .Subscribe(_ => ReaderDevice = suicaReader.Device));
+
+        ClearCommand = MakeDelegateCommand(Clear, () => HasCard);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            flashTimer.Stop();
+        }
+
+        base.Dispose(disposing);
     }
 
     public override Task OnNavigatedToAsync(INavigationContext context)
@@ -39,4 +103,61 @@ public sealed partial class NfcViewModel : AppViewModelBase
     {
         await suicaReader.StopAsync();
     }
+
+    private void ApplyCard(SuicaReadEventArgs args)
+    {
+        Idm = args.Idm;
+        Balance = args.Balance;
+        ReadTime = timeProvider.GetLocalNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture);
+        ErrorText = null;
+        HasCard = true;
+
+        History.Clear();
+        for (var i = 0; i < args.History.Count; i++)
+        {
+            History.Add(FormatHistory(args.History[i], i + 1 < args.History.Count ? args.History[i + 1] : null));
+        }
+
+        HasHistory = History.Count > 0;
+        HistorySummary = History.Count == 1 ? "1 record" : String.Create(CultureInfo.InvariantCulture, $"{History.Count} records");
+
+        IsFlashing = true;
+        flashTimer.Stop();
+        flashTimer.Start();
+    }
+
+    private void Clear()
+    {
+        History.Clear();
+        HasHistory = false;
+        HistorySummary = string.Empty;
+        HasCard = false;
+        Balance = 0;
+        Idm = string.Empty;
+        ReadTime = string.Empty;
+        ErrorText = null;
+    }
+
+    private static SuicaHistoryItem FormatHistory(SuicaHistoryRecord record, SuicaHistoryRecord? previous)
+    {
+        var date = record.DateTime.ToString(SuicaLogic.IsProcessOfSales(record.Process) ? "yyyy/MM/dd HH:mm" : "yyyy/MM/dd", CultureInfo.InvariantCulture);
+        var title = $"{SuicaLogic.ConvertTerminalString(record.Terminal)} - {SuicaLogic.ConvertProcessString(record.Process)}";
+        var amount = (previous is not null) && (((record.TransactionId - previous.TransactionId) & 0xFFFF) == 1) ? record.Balance - previous.Balance : (int?)null;
+        return new SuicaHistoryItem(
+            date,
+            title,
+            String.Create(CultureInfo.InvariantCulture, $"¥{record.Balance:#,0}"),
+            FormatAmount(amount),
+            amount > 0,
+            record.Process);
+    }
+
+    private static string FormatAmount(int? amount) =>
+        amount switch
+        {
+            null => string.Empty,
+            > 0 => String.Create(CultureInfo.InvariantCulture, $"+¥{amount.Value:#,0}"),
+            < 0 => String.Create(CultureInfo.InvariantCulture, $"-¥{-amount.Value:#,0}"),
+            _ => "¥0"
+        };
 }

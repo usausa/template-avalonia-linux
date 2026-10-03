@@ -2,6 +2,45 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="using:Template.LinuxApp.Controls">
 
+    <Styles.Resources>
+        <ControlTheme x:Key="{x:Type controls:DeviceCard}"
+                      TargetType="controls:DeviceCard">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Classes="panel">
+                        <Grid RowDefinitions="Auto,Auto,Auto"
+                              ColumnDefinitions="Auto,*,Auto"
+                              ColumnSpacing="{StaticResource SpacingSmall}">
+                            <Border Grid.Row="0" Grid.Column="0"
+                                    Width="16" Height="16"
+                                    Classes="device-state"
+                                    Classes.running="{Binding Status.IsRunning, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}"
+                                    Classes.connected="{Binding Status.IsConnected, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}"
+                                    Classes.error="{Binding Status.LastError, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
+                                    Classes.disabled="{Binding !Status.IsEnabled, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{TemplateBinding Title}"
+                                       Classes="card-title" />
+                            <TextBlock Grid.Row="0" Grid.Column="2"
+                                       Text="{Binding Status.Condition, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=''}"
+                                       Classes="card-note" />
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       Text="{TemplateBinding Device}"
+                                       Classes="card-meta" />
+                            <ContentPresenter Grid.Row="1" Grid.Column="2"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                                       IsVisible="{Binding Status.LastError, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
+                                       Text="{Binding Status.LastError, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=''}"
+                                       Classes="card-error" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+    </Styles.Resources>
+
     <!-- Kiosk -->
     <Style Selector="Window.hide-cursor, Window.hide-cursor :is(InputElement)">
         <Setter Property="Cursor" Value="None" />
@@ -138,6 +177,75 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
+    </Style>
+
+    <!-- Card -->
+    <Style Selector="TextBlock.card-title">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeXLarge}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.card-note">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.card-meta">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeNormal}" />
+        <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.card-error">
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+        <Setter Property="Foreground" Value="{StaticResource ChartRed}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.code">
+        <Setter Property="FontFamily" Value="monospace" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="Border.scan-card">
+        <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessNormal}" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.3" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Border.scan-card.flash">
+        <Setter Property="BorderBrush" Value="{StaticResource ChartGreen}" />
+    </Style>
+
+    <!-- Device -->
+    <Style Selector="Border.device-state">
+        <Setter Property="Width" Value="22" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessNormal}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PanelNoteBrush}" />
+        <Setter Property="Background" Value="{DynamicResource PanelNoteBrush}" />
+    </Style>
+    <Style Selector="Border.device-state.running">
+        <Setter Property="BorderBrush" Value="{StaticResource ChartOrange}" />
+        <Setter Property="Background" Value="{StaticResource ChartOrange}" />
+    </Style>
+    <Style Selector="Border.device-state.connected">
+        <Setter Property="BorderBrush" Value="{StaticResource ChartGreen}" />
+        <Setter Property="Background" Value="{StaticResource ChartGreen}" />
+    </Style>
+    <Style Selector="Border.device-state.error">
+        <Setter Property="BorderBrush" Value="{StaticResource ChartRed}" />
+        <Setter Property="Background" Value="{StaticResource ChartRed}" />
+    </Style>
+    <Style Selector="Border.device-state.disabled">
+        <Setter Property="BorderBrush" Value="{DynamicResource PanelBorderBrush}" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
 
     <!-- Chart -->
