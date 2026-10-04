@@ -1,10 +1,15 @@
-namespace Template.LinuxApp.Components.Platform;
+namespace Template.LinuxApp.Services;
 
 using System.Text.RegularExpressions;
 
 using LinuxDotNet.SystemInfo;
 
-public sealed record MetricValue(double Last, IReadOnlyList<double> History);
+public sealed record MetricValue(double Last, IReadOnlyList<double> History)
+{
+    public static MetricValue Empty { get; } = new(Double.NaN, []);
+
+    public double? Current => Double.IsFinite(Last) ? Last : null;
+}
 
 public sealed record MetricSeries(string Name, double Last, IReadOnlyList<double> History);
 
@@ -65,7 +70,7 @@ public sealed class PerformanceSample
     public required MetricValue Commit { get; init; }
 }
 
-public interface IPerformanceMonitor
+public interface IPerformanceService
 {
     event EventHandler<EventArgs<PerformanceSample>>? Sampled;
 
@@ -80,7 +85,7 @@ public interface IPerformanceMonitor
     void Start();
 }
 
-public sealed partial class PerformanceMonitor : IPerformanceMonitor, IDisposable
+public sealed partial class PerformanceService : IPerformanceService, IDisposable
 {
     private const int HistoryCapacity = 120;
 
@@ -94,7 +99,7 @@ public sealed partial class PerformanceMonitor : IPerformanceMonitor, IDisposabl
 
     private readonly Lock sync = new();
 
-    private readonly ILogger<PerformanceMonitor> log;
+    private readonly ILogger<PerformanceService> log;
 
     private readonly TimeProvider timeProvider;
 
@@ -186,7 +191,7 @@ public sealed partial class PerformanceMonitor : IPerformanceMonitor, IDisposabl
 
     public PerformanceSample? Latest { get; private set; }
 
-    public PerformanceMonitor(ILogger<PerformanceMonitor> log, TimeProvider timeProvider)
+    public PerformanceService(ILogger<PerformanceService> log, TimeProvider timeProvider)
     {
         this.log = log;
         this.timeProvider = timeProvider;

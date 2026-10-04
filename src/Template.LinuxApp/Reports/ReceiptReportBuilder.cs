@@ -1,8 +1,10 @@
-namespace Template.LinuxApp.Helpers;
+namespace Template.LinuxApp.Reports;
 
 using SkiaSharp;
 
-public static class ReceiptHelper
+using Template.LinuxApp.Helpers;
+
+public sealed class ReceiptReportBuilder
 {
     private const string StoreName = "TEMPLATE STORE";
 
@@ -31,7 +33,20 @@ public static class ReceiptHelper
         ("Cookie", 200)
     ];
 
-    public static string CreateText(DateTimeOffset now)
+    private readonly TimeProvider timeProvider;
+
+    public ReceiptReportBuilder(TimeProvider timeProvider)
+    {
+        this.timeProvider = timeProvider;
+    }
+
+    public (string Text, byte[] Image) Build()
+    {
+        var now = timeProvider.GetLocalNow();
+        return (BuildText(now), BuildImage(now));
+    }
+
+    private static string BuildText(DateTimeOffset now)
     {
         var rule = new string('-', TextColumns);
         var builder = new StringBuilder();
@@ -49,7 +64,7 @@ public static class ReceiptHelper
         return builder.ToString();
     }
 
-    public static byte[] CreatePng(DateTimeOffset now)
+    private static byte[] BuildImage(DateTimeOffset now)
     {
         using var bitmap = new SKBitmap(LabelWidth, LabelHeight);
         using (var canvas = new SKCanvas(bitmap))

@@ -7,7 +7,7 @@ using Avalonia.Threading;
 
 using LinuxDotNet.SystemInfo;
 
-using Template.LinuxApp.Components.Platform;
+using Template.LinuxApp.Services;
 
 public sealed record InfoItem(string Name, string Value);
 
@@ -32,7 +32,7 @@ public sealed partial class SystemViewModel : AppViewModelBase
 
     private static readonly string[] ByteUnits = ["B", "KB", "MB", "GB", "TB", "PB"];
 
-    private readonly ISystemInspector inspector;
+    private readonly ISystemService inspector;
 
     private readonly TimeProvider timeProvider;
 
@@ -84,7 +84,7 @@ public sealed partial class SystemViewModel : AppViewModelBase
     [ObservableProperty]
     public partial bool HasUsbEvents { get; set; }
 
-    public SystemViewModel(TimeProvider timeProvider, ISystemInspector inspector)
+    public SystemViewModel(TimeProvider timeProvider, ISystemService inspector)
     {
         this.timeProvider = timeProvider;
         this.inspector = inspector;

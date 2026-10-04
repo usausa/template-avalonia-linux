@@ -1,6 +1,7 @@
 namespace Template.LinuxApp.Components.Nfc;
 
 using System.Buffers.Binary;
+using System.Threading.Channels;
 
 using PCSC;
 using PCSC.Exceptions;
@@ -201,9 +202,9 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
     private async Task MonitorAsync(string readerName, CancellationToken token)
     {
-        ResetSession(readerName);
+        await ResetSessionAsync(readerName, token).ConfigureAwait(false);
 
-        var failed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var requests = Channel.CreateBounded<string>(new BoundedChannelOptions(1) { FullMode = BoundedChannelFullMode.DropOldest, SingleReader = true, SingleWriter = true });
         using var monitor = MonitorFactory.Instance.Create(SCardScope.System);
         monitor.CardInserted += OnCardInserted;
         monitor.MonitorException += OnMonitorException;
@@ -212,7 +213,15 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
             monitor.Start(readerName);
             currentReader = readerName;
             Status.ReportConnected();
-            await failed.Task.WaitAsync(token).ConfigureAwait(false);
+            await foreach (var atr in requests.Reader.ReadAllAsync(token).ConfigureAwait(false))
+            {
+                await HandleCardAsync(readerName, atr, token).ConfigureAwait(false);
+                while (requests.Reader.TryRead(out var ignored))
+                {
+                    log.DebugSuicaCardIgnored(ignored);
+                }
+            }
+
             currentReader = null;
             Status.ReportDisconnected();
         }
@@ -228,14 +237,16 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
             monitor.Cancel();
         }
 
+        void OnCardInserted(object sender, CardStatusEventArgs e) => requests.Writer.TryWrite(Convert.ToHexString(e.Atr ?? []));
+
         void OnMonitorException(object sender, PCSCException ex)
         {
             Status.ReportError(ex.Message);
-            failed.TrySetResult();
+            requests.Writer.TryComplete();
         }
     }
 
-    private void ResetSession(string readerName)
+    private async Task ResetSessionAsync(string readerName, CancellationToken token)
     {
         PCSCException? error = null;
         for (var attempt = 1; attempt <= ResetAttempts; attempt++)
@@ -253,7 +264,7 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
                 error = ex;
             }
 
-            Thread.Sleep(ResetInterval);
+            await Task.Delay(ResetInterval, timeProvider, token).ConfigureAwait(false);
         }
 
         if (error is not null)
@@ -263,9 +274,8 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         }
     }
 
-    private void OnCardInserted(object sender, CardStatusEventArgs e)
+    private async Task HandleCardAsync(string readerName, string atr, CancellationToken token)
     {
-        var atr = Convert.ToHexString(e.Atr ?? []);
         if ((lastReadTimestamp != 0) && (timeProvider.GetElapsedTime(lastReadTimestamp) < RedetectInterval))
         {
             log.DebugSuicaCardIgnored(atr);
@@ -279,8 +289,8 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         try
         {
             using var context = ContextFactory.Instance.Establish(SCardScope.System);
-            using var reader = context.ConnectReader(e.ReaderName, SCardShareMode.Direct, SCardProtocol.Unset);
-            args = ReadCard(reader, atr, out closed);
+            using var reader = context.ConnectReader(readerName, SCardShareMode.Direct, SCardProtocol.Unset);
+            (args, closed) = await ReadCardAsync(reader, atr, token).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is PCSCException or ArgumentException)
         {
@@ -289,7 +299,7 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
         if (!closed)
         {
-            ResetSession(e.ReaderName);
+            await ResetSessionAsync(readerName, token).ConfigureAwait(false);
         }
 
         if (args is null)
@@ -304,28 +314,33 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         CardRead?.Invoke(this, args);
     }
 
-    private SuicaReadEventArgs? ReadCard(ICardReader reader, string atr, out bool closed)
+    private async Task<(SuicaReadEventArgs? Args, bool Closed)> ReadCardAsync(ICardReader reader, string atr, CancellationToken token)
     {
-        closed = false;
         if (Send(reader, StartSessionCommand) is null)
         {
-            return Fail("start session", atr);
+            return (Fail("start session", atr), false);
         }
 
+        SuicaReadEventArgs? args = null;
+        bool closed;
         try
         {
             if (Send(reader, SwitchFeliCaCommand) is null)
             {
-                return Fail("switch felica", atr);
+                args = Fail("switch felica", atr);
             }
-
-            Thread.Sleep(SwitchGuardTime);
-            return ReadSuica(reader, atr);
+            else
+            {
+                await Task.Delay(SwitchGuardTime, timeProvider, token).ConfigureAwait(false);
+                args = ReadSuica(reader, atr);
+            }
         }
         finally
         {
             closed = Send(reader, EndSessionCommand) is not null;
         }
+
+        return (args, closed);
     }
 
     private SuicaReadEventArgs? ReadSuica(ICardReader reader, string atr)

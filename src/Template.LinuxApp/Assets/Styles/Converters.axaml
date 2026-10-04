@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="using:Template.LinuxApp.Converters">
+
+    <converters:ByteSizeConverter x:Key="ByteSizeConverter" />
+    <converters:ByteSizeConverter x:Key="DiskSizeConverter"
+                                  Divisor="1000" />
+    <converters:ByteSizeConverter x:Key="ByteRateConverter"
+                                  Suffix="/s" />
+    <converters:DurationConverter x:Key="DurationConverter" />
+    <converters:DurationConverter x:Key="ShortDurationConverter"
+                                  ShowMinutesWithDays="False" />
+
+</ResourceDictionary>

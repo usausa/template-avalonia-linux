@@ -16,7 +16,6 @@ using Template.LinuxApp.Components.Barcode;
 using Template.LinuxApp.Components.Gamepad;
 using Template.LinuxApp.Components.Motor;
 using Template.LinuxApp.Components.Nfc;
-using Template.LinuxApp.Components.Platform;
 using Template.LinuxApp.Components.Printer;
 using Template.LinuxApp.Components.Video;
 using Template.LinuxApp.Devices.Input;
@@ -130,9 +129,9 @@ public static partial class ApplicationExtensions
         builder.Services.AddOptions<SuicaReaderOption>().BindConfiguration("Nfc").ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<SuicaReaderOption>>().Value);
         builder.Services.AddSingleton<ISuicaReader, SuicaReader>();
-        builder.Services.AddSingleton<IPerformanceMonitor, PerformanceMonitor>();
-        builder.Services.AddSingleton<ISystemInspector, SystemInspector>();
-        builder.Services.AddSingleton<IDiskInspector, DiskInspector>();
+        builder.Services.AddSingleton<IPerformanceService, PerformanceService>();
+        builder.Services.AddSingleton<ISystemService, SystemService>();
+        builder.Services.AddSingleton<IDiskService, DiskService>();
 
         // Window
         builder.Services.AddSingleton<MainWindow>();

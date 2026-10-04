@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
+             xmlns:sys="using:System"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              mc:Ignorable="d"
@@ -43,24 +44,58 @@
                 <TextBlock Margin="0,0,0,8"
                            Text="Application"
                            Classes="title" />
-                <ItemsControl ItemsSource="{Binding Application}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Spacing="{StaticResource SpacingXSmall}" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="local:InfoItem">
-                            <Grid ColumnDefinitions="220,*">
-                                <TextBlock Text="{Binding Name}"
-                                           Classes="dashboard-name" />
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Value}"
-                                           Classes="dashboard-value" />
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <Grid ColumnDefinitions="220,*"
+                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                      RowSpacing="{StaticResource SpacingXSmall}">
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Version"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Text="{Binding Version, TargetNullValue=—}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="1" Grid.Column="0"
+                               Text="Runtime"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Classes="dashboard-value">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} {1}">
+                                <Binding Path="Framework" />
+                                <Binding Path="RuntimeIdentifier" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="Environment"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="2" Grid.Column="1"
+                               Classes="dashboard-value">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0} (setting {1})">
+                                <Binding Path="EnvironmentName" />
+                                <Binding Path="SettingValue" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock Grid.Row="3" Grid.Column="0"
+                               Text="Kiosk"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="3" Grid.Column="1"
+                               Text="{Binding IsKiosk, Converter={s:BoolToText True=Enabled, False=Disabled}}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="4" Grid.Column="0"
+                               Text="Process"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="4" Grid.Column="1"
+                               Text="{Binding ProcessId, StringFormat='PID {0}'}"
+                               Classes="dashboard-value" />
+                    <TextBlock Grid.Row="5" Grid.Column="0"
+                               Text="Started"
+                               Classes="dashboard-name" />
+                    <TextBlock Grid.Row="5" Grid.Column="1"
+                               Text="{Binding StartTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
+                               Classes="dashboard-value" />
+                </Grid>
             </StackPanel>
         </Border>
 
@@ -109,20 +144,20 @@
                 <UniformGrid Grid.Row="1"
                              Rows="1"
                              ColumnSpacing="{StaticResource SpacingSmall}">
-                    <controls:RingGauge Value="{Binding Cpu.Value}"
-                                        Text="{Binding Cpu.Text}"
+                    <controls:RingGauge Value="{Binding Cpu, TargetNullValue={x:Static sys:Double.NaN}}"
+                                        Text="{Binding Cpu, StringFormat='{}{0:F0}%', TargetNullValue=—}"
                                         Label="CPU"
                                         Fill="{StaticResource ChartBlue}" />
-                    <controls:RingGauge Value="{Binding Memory.Value}"
-                                        Text="{Binding Memory.Text}"
+                    <controls:RingGauge Value="{Binding Memory, TargetNullValue={x:Static sys:Double.NaN}}"
+                                        Text="{Binding Memory, StringFormat='{}{0:F0}%', TargetNullValue=—}"
                                         Label="Memory"
                                         Fill="{StaticResource ChartPurple}" />
-                    <controls:RingGauge Value="{Binding Swap.Value}"
-                                        Text="{Binding Swap.Text}"
+                    <controls:RingGauge Value="{Binding Swap, TargetNullValue={x:Static sys:Double.NaN}}"
+                                        Text="{Binding Swap, StringFormat='{}{0:F0}%', TargetNullValue=—}"
                                         Label="Swap"
                                         Fill="{StaticResource ChartOrange}" />
-                    <controls:RingGauge Value="{Binding Temperature.Value}"
-                                        Text="{Binding Temperature.Text}"
+                    <controls:RingGauge Value="{Binding Temperature, TargetNullValue={x:Static sys:Double.NaN}}"
+                                        Text="{Binding Temperature, StringFormat='{}{0:F0} °C', TargetNullValue=—}"
                                         Label="Temperature"
                                         Fill="{StaticResource ChartRed}" />
                 </UniformGrid>

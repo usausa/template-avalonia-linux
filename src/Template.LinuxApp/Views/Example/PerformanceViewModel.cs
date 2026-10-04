@@ -2,8 +2,8 @@ namespace Template.LinuxApp.Views.Example;
 
 using System.Reactive.Concurrency;
 
-using Template.LinuxApp.Components.Platform;
 using Template.LinuxApp.Controls;
+using Template.LinuxApp.Services;
 
 public sealed partial class MetricItem : ObservableObject
 {
@@ -89,7 +89,7 @@ public sealed partial class PerformanceViewModel : AppViewModelBase
     [ObservableProperty]
     public partial IReadOnlyList<ChartSeries>? Network { get; set; }
 
-    public PerformanceViewModel(IPerformanceMonitor monitor)
+    public PerformanceViewModel(IPerformanceService monitor)
     {
         IsSupported = monitor.IsSupported;
         Capacity = monitor.Capacity;

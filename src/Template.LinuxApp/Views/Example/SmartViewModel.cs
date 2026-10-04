@@ -4,8 +4,8 @@ using Avalonia.Threading;
 
 using LinuxDotNet.Disk;
 
-using Template.LinuxApp.Components.Platform;
 using Template.LinuxApp.Domain.Logic;
+using Template.LinuxApp.Services;
 
 public sealed record SmartGaugeItem(string Label, double Value, double Maximum, string Text, SmartHealth Health);
 
@@ -67,7 +67,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
 
     private readonly TimeProvider timeProvider;
 
-    private readonly IDiskInspector inspector;
+    private readonly IDiskService inspector;
 
     private readonly DispatcherTimer timer;
 
@@ -89,7 +89,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
 
     public ICommand SelectCommand { get; }
 
-    public SmartViewModel(TimeProvider timeProvider, IDiskInspector inspector)
+    public SmartViewModel(TimeProvider timeProvider, IDiskService inspector)
     {
         this.timeProvider = timeProvider;
         this.inspector = inspector;

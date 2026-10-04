@@ -12,7 +12,34 @@ public enum SmartHealth
     Critical
 }
 
-public sealed record SmartIssue(SmartHealth Health, string Text);
+public enum SmartValueUnit
+{
+    None,
+    Count,
+    Percent,
+    Celsius,
+    Minutes,
+    Hours,
+    Days,
+    Bytes,
+    CriticalWarning
+}
+
+public enum SmartIssueType
+{
+    CriticalWarning,
+    SpareBelowThreshold,
+    MediaErrors,
+    PercentageUsed,
+    ErrorLogEntries,
+    UncorrectableSectors,
+    ReportedUncorrectableErrors,
+    ReallocatedSectors,
+    PendingSectors,
+    ReallocationEvents
+}
+
+public sealed record SmartIssue(SmartHealth Health, SmartIssueType Type, ulong Value, ulong Limit);
 
 public static class SmartLogic
 {
@@ -155,20 +182,14 @@ public static class SmartLogic
     public static bool IsPreFailure(SmartAttribute attribute) =>
         (attribute.Flags & PreFailureFlag) != 0;
 
-    public static string FormatRawValue(SmartAttribute attribute)
-    {
-        if (attribute.Id is not ((byte)SmartId.Temperature or AirflowTemperature))
-        {
-            return attribute.RawValue.ToString("N0", CultureInfo.InvariantCulture);
-        }
+    public static bool IsTemperature(byte id) =>
+        id is (byte)SmartId.Temperature or AirflowTemperature;
 
-        var current = attribute.RawValue & 0xFF;
-        var minimum = (attribute.RawValue >> 16) & 0xFF;
-        var maximum = (attribute.RawValue >> 32) & 0xFF;
-        return (minimum > 0) && (minimum <= current) && (current <= maximum)
-            ? String.Create(CultureInfo.InvariantCulture, $"{current} ({minimum}/{maximum})")
-            : current.ToString(CultureInfo.InvariantCulture);
-    }
+    public static (ulong Current, ulong Minimum, ulong Maximum) GetTemperatureRange(ulong raw) =>
+        (raw & 0xFF, (raw >> 16) & 0xFF, (raw >> 32) & 0xFF);
+
+    public static IReadOnlyList<string> GetCriticalWarningNames(byte value) =>
+        [.. CriticalWarningNames.Where((_, i) => (value & (1 << i)) != 0)];
 
     public static SmartAttribute? Find(IReadOnlyList<SmartAttribute> attributes, SmartId id) =>
         TryFind(attributes, (byte)id, out var attribute) ? attribute : null;
@@ -213,11 +234,11 @@ public static class SmartLogic
     public static IReadOnlyList<SmartIssue> EvaluateAta(IReadOnlyList<SmartAttribute> attributes)
     {
         var issues = new List<SmartIssue>();
-        AddIssue(issues, attributes, SmartId.UncorrectableSectorCount, "Offline uncorrectable sectors");
-        AddIssue(issues, attributes, SmartId.ReportedUncorrectableErrors, "Reported uncorrectable errors");
-        AddIssue(issues, attributes, SmartId.ReallocatedSectorCount, "Reallocated sectors");
-        AddIssue(issues, attributes, SmartId.CurrentPendingSectorCount, "Pending sectors");
-        AddIssue(issues, attributes, SmartId.ReallocationEventCount, "Reallocation events");
+        AddIssue(issues, attributes, SmartId.UncorrectableSectorCount, SmartIssueType.UncorrectableSectors);
+        AddIssue(issues, attributes, SmartId.ReportedUncorrectableErrors, SmartIssueType.ReportedUncorrectableErrors);
+        AddIssue(issues, attributes, SmartId.ReallocatedSectorCount, SmartIssueType.ReallocatedSectors);
+        AddIssue(issues, attributes, SmartId.CurrentPendingSectorCount, SmartIssueType.PendingSectors);
+        AddIssue(issues, attributes, SmartId.ReallocationEventCount, SmartIssueType.ReallocationEvents);
         return issues;
     }
 
@@ -226,27 +247,27 @@ public static class SmartLogic
         var issues = new List<SmartIssue>();
         if (criticalWarning != 0)
         {
-            issues.Add(new SmartIssue(SmartHealth.Critical, $"Critical warning: {FormatCriticalWarning(criticalWarning)}"));
+            issues.Add(new SmartIssue(SmartHealth.Critical, SmartIssueType.CriticalWarning, criticalWarning, 0));
         }
 
         if (spare < spareThreshold)
         {
-            issues.Add(new SmartIssue(SmartHealth.Critical, String.Create(CultureInfo.InvariantCulture, $"Available spare {spare}% is below {spareThreshold}%")));
+            issues.Add(new SmartIssue(SmartHealth.Critical, SmartIssueType.SpareBelowThreshold, spare, spareThreshold));
         }
 
         if (mediaErrors > 0)
         {
-            issues.Add(new SmartIssue(SmartHealth.Critical, String.Create(CultureInfo.InvariantCulture, $"Media errors: {mediaErrors:N0}")));
+            issues.Add(new SmartIssue(SmartHealth.Critical, SmartIssueType.MediaErrors, mediaErrors, 0));
         }
 
         if (percentageUsed >= UsedWarning)
         {
-            issues.Add(new SmartIssue(SmartHealth.Warning, String.Create(CultureInfo.InvariantCulture, $"Percentage used: {percentageUsed}%")));
+            issues.Add(new SmartIssue(SmartHealth.Warning, SmartIssueType.PercentageUsed, percentageUsed, UsedWarning));
         }
 
         if (errorLogEntries > 0)
         {
-            issues.Add(new SmartIssue(SmartHealth.Warning, String.Create(CultureInfo.InvariantCulture, $"Error log entries: {errorLogEntries:N0}")));
+            issues.Add(new SmartIssue(SmartHealth.Warning, SmartIssueType.ErrorLogEntries, errorLogEntries, 0));
         }
 
         return issues;
@@ -276,22 +297,11 @@ public static class SmartLogic
     public static SmartHealth GetSpareHealth(byte spare, byte threshold) =>
         spare < threshold ? SmartHealth.Critical : SmartHealth.Good;
 
-    public static string FormatCriticalWarning(byte value)
-    {
-        if (value == 0)
-        {
-            return "None";
-        }
-
-        var names = CriticalWarningNames.Where((_, i) => (value & (1 << i)) != 0).ToList();
-        return names.Count > 0 ? String.Join(", ", names) : String.Create(CultureInfo.InvariantCulture, $"0x{value:X2}");
-    }
-
-    private static void AddIssue(List<SmartIssue> issues, IEnumerable<SmartAttribute> attributes, SmartId id, string name)
+    private static void AddIssue(List<SmartIssue> issues, IEnumerable<SmartAttribute> attributes, SmartId id, SmartIssueType type)
     {
         if (TryFind(attributes, (byte)id, out var attribute) && (attribute.RawValue > 0))
         {
-            issues.Add(new SmartIssue(GetAttributeHealth(attribute), String.Create(CultureInfo.InvariantCulture, $"{name}: {attribute.RawValue:N0}")));
+            issues.Add(new SmartIssue(GetAttributeHealth(attribute), type, attribute.RawValue, 0));
         }
     }
 

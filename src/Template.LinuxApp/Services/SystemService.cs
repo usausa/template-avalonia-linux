@@ -1,4 +1,4 @@
-namespace Template.LinuxApp.Components.Platform;
+namespace Template.LinuxApp.Services;
 
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -45,7 +45,7 @@ public sealed record ProcessEntry(
 
 public sealed record ProcessSnapshot(int ProcessCount, int ThreadCount, IReadOnlyList<ProcessEntry> Top);
 
-public interface ISystemInspector
+public interface ISystemService
 {
     bool IsSupported { get; }
 
@@ -60,11 +60,11 @@ public interface ISystemInspector
     IReadOnlyList<UsbDevice> ReadUsbDevices();
 }
 
-public sealed class SystemInspector : ISystemInspector
+public sealed class SystemService : ISystemService
 {
     private readonly Lock sync = new();
 
-    private readonly ILogger<SystemInspector> log;
+    private readonly ILogger<SystemService> log;
 
     private readonly TimeProvider timeProvider;
 
@@ -88,7 +88,7 @@ public sealed class SystemInspector : ISystemInspector
 
     public bool IsSupported => OperatingSystem.IsLinux();
 
-    public SystemInspector(ILogger<SystemInspector> log, TimeProvider timeProvider)
+    public SystemService(ILogger<SystemService> log, TimeProvider timeProvider)
     {
         this.log = log;
         this.timeProvider = timeProvider;

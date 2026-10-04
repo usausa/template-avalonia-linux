@@ -1,4 +1,4 @@
-namespace Template.LinuxApp.Components.Platform;
+namespace Template.LinuxApp.Services;
 
 using LinuxDotNet.Disk;
 
@@ -41,18 +41,18 @@ public sealed record DiskSnapshot(
     NvmeHealth? Nvme,
     IReadOnlyList<SmartAttribute> Attributes);
 
-public interface IDiskInspector
+public interface IDiskService
 {
     bool IsSupported { get; }
 
     IReadOnlyList<DiskSnapshot> ReadDisks(bool rescan);
 }
 
-public sealed class DiskInspector : IDiskInspector, IDisposable
+public sealed class DiskService : IDiskService, IDisposable
 {
     private readonly Lock sync = new();
 
-    private readonly ILogger<DiskInspector> log;
+    private readonly ILogger<DiskService> log;
 
     private IReadOnlyList<IDiskInfo>? disks;
 
@@ -60,7 +60,7 @@ public sealed class DiskInspector : IDiskInspector, IDisposable
 
     public bool IsSupported => OperatingSystem.IsLinux();
 
-    public DiskInspector(ILogger<DiskInspector> log)
+    public DiskService(ILogger<DiskService> log)
     {
         this.log = log;
     }

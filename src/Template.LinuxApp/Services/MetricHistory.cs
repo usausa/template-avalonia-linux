@@ -1,4 +1,4 @@
-namespace Template.LinuxApp.Components.Platform;
+namespace Template.LinuxApp.Services;
 
 public sealed class MetricHistory
 {
