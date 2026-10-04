@@ -12,7 +12,7 @@ using Template.LinuxApp.Settings;
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class DashboardViewModel : AppViewModelBase
 {
-    private readonly IPerformanceService performanceService;
+    private readonly PerformanceService performanceService;
 
     public bool IsSupported => performanceService.IsSupported;
 
@@ -48,7 +48,7 @@ public sealed partial class DashboardViewModel : AppViewModelBase
 
     public ICommand ExitCommand { get; }
 
-    public DashboardViewModel(IHostEnvironment environment, Setting setting, KioskSetting kioskSetting, IPerformanceService performanceService, ThemeService themeService, ExitService exitService)
+    public DashboardViewModel(IHostEnvironment environment, Setting setting, KioskSetting kioskSetting, PerformanceService performanceService, ThemeService themeService, ExitService exitService)
     {
         this.performanceService = performanceService;
         EnvironmentName = environment.EnvironmentName;

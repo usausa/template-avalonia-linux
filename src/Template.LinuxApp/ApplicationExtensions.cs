@@ -84,9 +84,6 @@ public static partial class ApplicationExtensions
         // Service
         builder.Services.AddServices();
         builder.Services.AddSingleton<IDialogService, DialogService>();
-        builder.Services.AddSingleton<IPerformanceService, PerformanceService>();
-        builder.Services.AddSingleton<ISystemService, SystemService>();
-        builder.Services.AddSingleton<IDiskService, DiskService>();
 
         // Report
         builder.Services.AddSingleton<ReceiptReportBuilder>();

@@ -36,7 +36,7 @@ public sealed partial class SystemViewModel : AppViewModelBase
 
     private readonly TimeProvider timeProvider;
 
-    private readonly ISystemService systemService;
+    private readonly SystemService systemService;
 
     private readonly DispatcherTimer timer;
 
@@ -74,7 +74,7 @@ public sealed partial class SystemViewModel : AppViewModelBase
     [ObservableProperty]
     public partial bool HasUsbEvents { get; set; }
 
-    public SystemViewModel(TimeProvider timeProvider, ISystemService systemService)
+    public SystemViewModel(TimeProvider timeProvider, SystemService systemService)
     {
         this.timeProvider = timeProvider;
         this.systemService = systemService;

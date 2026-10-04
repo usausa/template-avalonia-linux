@@ -97,7 +97,7 @@ public sealed partial class PerformanceViewModel : AppViewModelBase
     [ObservableProperty]
     public partial IReadOnlyList<ChartSeries>? Network { get; set; }
 
-    public PerformanceViewModel(IPerformanceService performanceService)
+    public PerformanceViewModel(PerformanceService performanceService)
     {
         IsSupported = performanceService.IsSupported;
         Capacity = performanceService.Capacity;

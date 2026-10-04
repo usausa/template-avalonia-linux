@@ -75,7 +75,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
 
     private readonly TimeProvider timeProvider;
 
-    private readonly IDiskService diskService;
+    private readonly DiskService diskService;
 
     private readonly DispatcherTimer timer;
 
@@ -97,7 +97,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
 
     public ICommand SelectCommand { get; }
 
-    public SmartViewModel(TimeProvider timeProvider, IDiskService diskService)
+    public SmartViewModel(TimeProvider timeProvider, DiskService diskService)
     {
         this.timeProvider = timeProvider;
         this.diskService = diskService;

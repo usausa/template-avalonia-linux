@@ -70,22 +70,7 @@ public sealed class PerformanceSample
     public required MetricValue Commit { get; init; }
 }
 
-public interface IPerformanceService
-{
-    event EventHandler<EventArgs<PerformanceSample>>? Sampled;
-
-    bool IsSupported { get; }
-
-    int Capacity { get; }
-
-    TimeSpan Interval { get; }
-
-    PerformanceSample? Latest { get; }
-
-    void Start();
-}
-
-public sealed partial class PerformanceService : IPerformanceService, IDisposable
+public sealed partial class PerformanceService : IDisposable
 {
     private const int HistoryCapacity = 120;
 
@@ -183,11 +168,11 @@ public sealed partial class PerformanceService : IPerformanceService, IDisposabl
 
     private bool sampleFailed;
 
-    public bool IsSupported => OperatingSystem.IsLinux();
+    public bool IsSupported { get; } = OperatingSystem.IsLinux();
 
-    public int Capacity => HistoryCapacity;
+    public int Capacity { get; } = HistoryCapacity;
 
-    public TimeSpan Interval => SampleInterval;
+    public TimeSpan Interval { get; } = SampleInterval;
 
     public PerformanceSample? Latest { get; private set; }
 

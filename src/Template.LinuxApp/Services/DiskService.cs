@@ -41,14 +41,7 @@ public sealed record DiskSnapshot(
     NvmeHealth? Nvme,
     IReadOnlyList<SmartAttribute> Attributes);
 
-public interface IDiskService
-{
-    bool IsSupported { get; }
-
-    IReadOnlyList<DiskSnapshot> ReadDisks(bool rescan);
-}
-
-public sealed class DiskService : IDiskService, IDisposable
+public sealed class DiskService : IDisposable
 {
     private readonly Lock sync = new();
 
@@ -58,7 +51,7 @@ public sealed class DiskService : IDiskService, IDisposable
 
     private bool failed;
 
-    public bool IsSupported => OperatingSystem.IsLinux();
+    public bool IsSupported { get; } = OperatingSystem.IsLinux();
 
     public DiskService(ILogger<DiskService> log)
     {

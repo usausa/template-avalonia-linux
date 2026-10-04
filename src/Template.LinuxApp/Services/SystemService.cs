@@ -69,22 +69,7 @@ public sealed record ProcessEntry(
 
 public sealed record ProcessSnapshot(int ProcessCount, int ThreadCount, IReadOnlyList<ProcessEntry> Top);
 
-public interface ISystemService
-{
-    bool IsSupported { get; }
-
-    HostSnapshot? ReadHost();
-
-    PowerSnapshot? ReadPower();
-
-    IReadOnlyList<FileSystemEntry> ReadFileSystems();
-
-    ProcessSnapshot? ReadProcesses(int count);
-
-    IReadOnlyList<UsbDevice> ReadUsbDevices();
-}
-
-public sealed class SystemService : ISystemService
+public sealed class SystemService
 {
     private readonly Lock sync = new();
 
@@ -110,7 +95,7 @@ public sealed class SystemService : ISystemService
 
     private long? previousProcessTimestamp;
 
-    public bool IsSupported => OperatingSystem.IsLinux();
+    public bool IsSupported { get; } = OperatingSystem.IsLinux();
 
     public SystemService(ILogger<SystemService> log, TimeProvider timeProvider)
     {
