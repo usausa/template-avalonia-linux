@@ -7,10 +7,20 @@ using LinuxDotNet.Cups;
 using Smart.Reactive;
 
 using Template.LinuxApp.Components.Printer;
-using Template.LinuxApp.Helpers;
+using Template.LinuxApp.Reports;
 using Template.LinuxApp.State;
 
-public sealed record PrintJobItem(int JobId, string Label, string Time, PrintJobState State, bool CanCancel);
+public enum PrintResult
+{
+    TextSent,
+    TextFailed,
+    ImageSent,
+    ImageFailed,
+    Canceled,
+    CancelFailed
+}
+
+public sealed record PrintJobItem(int JobId, string Title, DateTime SubmitTime, PrintJobState State, bool CanCancel);
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class PrinterViewModel : AppViewModelBase
@@ -23,6 +33,8 @@ public sealed partial class PrinterViewModel : AppViewModelBase
 
     private readonly IImagePrinter imagePrinter;
 
+    private readonly ReceiptReportBuilder reportBuilder;
+
     private byte[] imageData = [];
 
     [ObservableProperty]
@@ -32,16 +44,22 @@ public sealed partial class PrinterViewModel : AppViewModelBase
     public partial string PreviewText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial PrinterState QueueState { get; set; }
-
-    [ObservableProperty]
-    public partial string QueueDetail { get; set; } = string.Empty;
+    public partial PrinterQueueInfo Queue { get; set; } = new(default, String.Empty, String.Empty, String.Empty, true);
 
     [ObservableProperty]
     public partial bool HasJobs { get; set; }
 
     [ObservableProperty]
-    public partial string? ResultText { get; set; }
+    public partial bool HasResult { get; set; }
+
+    [ObservableProperty]
+    public partial DateTimeOffset ResultTime { get; set; }
+
+    [ObservableProperty]
+    public partial PrintResult Result { get; set; }
+
+    [ObservableProperty]
+    public partial int? ResultJobId { get; set; }
 
     [ObservableProperty]
     public partial bool IsResultError { get; set; }
@@ -62,11 +80,12 @@ public sealed partial class PrinterViewModel : AppViewModelBase
 
     public ICommand CancelJobCommand { get; }
 
-    public PrinterViewModel(TimeProvider timeProvider, ILinePrinter linePrinter, IImagePrinter imagePrinter)
+    public PrinterViewModel(TimeProvider timeProvider, ILinePrinter linePrinter, IImagePrinter imagePrinter, ReceiptReportBuilder reportBuilder)
     {
         this.timeProvider = timeProvider;
         this.linePrinter = linePrinter;
         this.imagePrinter = imagePrinter;
+        this.reportBuilder = reportBuilder;
 
         Disposables.Add(Observable
             .FromEventPattern<PrinterUpdatedEventArgs>(h => imagePrinter.Updated += h, h => imagePrinter.Updated -= h)
@@ -107,9 +126,7 @@ public sealed partial class PrinterViewModel : AppViewModelBase
 
     private void UpdatePreview()
     {
-        var now = timeProvider.GetLocalNow();
-        PreviewText = ReceiptHelper.CreateText(now);
-        imageData = ReceiptHelper.CreatePng(now);
+        (PreviewText, imageData) = reportBuilder.Build();
 
         var previous = PreviewImage;
         using (var stream = new MemoryStream(imageData))
@@ -124,7 +141,7 @@ public sealed partial class PrinterViewModel : AppViewModelBase
     {
         UpdatePreview();
         var result = await linePrinter.PrintAsync(Encoding.ASCII.GetBytes(PreviewText + "\n\n\n"));
-        ShowResult(result ? "Sent to the line printer." : "Printing to the line printer failed.", !result);
+        ShowResult(result ? PrintResult.TextSent : PrintResult.TextFailed, null, !result);
     }
 
     private async Task PrintImageAsync()
@@ -132,37 +149,33 @@ public sealed partial class PrinterViewModel : AppViewModelBase
         UpdatePreview();
         using var stream = new MemoryStream(imageData);
         var jobId = await imagePrinter.PrintAsync(stream, JobTitle);
-        ShowResult(jobId > 0 ? String.Create(CultureInfo.InvariantCulture, $"Sent to the image printer (job {jobId}).") : "Printing to the image printer failed.", jobId <= 0);
+        ShowResult(jobId > 0 ? PrintResult.ImageSent : PrintResult.ImageFailed, jobId > 0 ? jobId : null, jobId <= 0);
     }
 
     private async Task CancelJobAsync(int jobId)
     {
         var result = await imagePrinter.CancelAsync(jobId);
-        ShowResult(result ? String.Create(CultureInfo.InvariantCulture, $"Canceled job {jobId}.") : String.Create(CultureInfo.InvariantCulture, $"Canceling job {jobId} failed."), !result);
+        ShowResult(result ? PrintResult.Canceled : PrintResult.CancelFailed, jobId, !result);
     }
 
-    private void ShowResult(string text, bool error)
+    private void ShowResult(PrintResult result, int? jobId, bool error)
     {
-        ResultText = String.Create(CultureInfo.InvariantCulture, $"{timeProvider.GetLocalNow():HH:mm:ss}  {text}");
+        ResultTime = timeProvider.GetLocalNow();
+        Result = result;
+        ResultJobId = jobId;
         IsResultError = error;
+        HasResult = true;
     }
 
     private void ApplyQueue(PrinterUpdatedEventArgs args)
     {
-        QueueState = args.Queue.State;
-        List<string> parts = [args.Queue.MakeModel, args.Queue.Reasons, args.Queue.Message];
-        if (!args.Queue.IsAcceptingJobs)
-        {
-            parts.Add("Not accepting jobs");
-        }
-
-        QueueDetail = String.Join("  ", parts.Where(static x => !String.IsNullOrEmpty(x)));
+        Queue = args.Queue;
 
         var items = args.Jobs
             .Select(static x => new PrintJobItem(
                 x.JobId,
-                String.Create(CultureInfo.InvariantCulture, $"#{x.JobId}  {x.Title}"),
-                x.SubmitTime.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture),
+                x.Title,
+                x.SubmitTime,
                 x.State,
                 x.State is PrintJobState.Pending or PrintJobState.Held or PrintJobState.Processing or PrintJobState.Stopped))
             .ToList();
