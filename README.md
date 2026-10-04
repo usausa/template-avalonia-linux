@@ -57,3 +57,12 @@ Linux の x64 機のキオスク端末向けの Avalonia アプリの雛形。
 <img width="50%" src="./docs/graphics.png" />
 
 - アニメーション・イージング・アナログ時計・図形・パーティクル・毎フレーム描く波形・fps
+
+## 🔑 SMART の権限
+
+**設定**
+
+```bash
+sudo usermod -aG disk <ユーザー>
+sudo setcap cap_sys_rawio,cap_sys_admin+ep ~/Template.LinuxApp/Template.LinuxApp
+```
