@@ -64,6 +64,14 @@
                                   Value="Virtual" />
             </s:MapToTextConverter.Entries>
         </s:MapToTextConverter>
+        <s:MapToTextConverter x:Key="AssessmentConverter">
+            <s:MapToTextConverter.Entries>
+                <s:MapToTextEntry Key="{x:Static disk:SmartAssessment.Passed}"
+                                  Value="Self-assessment Passed" />
+                <s:MapToTextEntry Key="{x:Static disk:SmartAssessment.Failed}"
+                                  Value="Self-assessment Failed" />
+            </s:MapToTextConverter.Entries>
+        </s:MapToTextConverter>
         <s:MapToTextConverter x:Key="MessageConverter">
             <s:MapToTextConverter.Entries>
                 <s:MapToTextEntry Key="{x:Static services:SmartState.RequiresPermission}"
@@ -190,7 +198,7 @@
                         Content="{Binding Selected}">
             <ContentControl.ContentTemplate>
                 <DataTemplate x:DataType="local:SmartDiskItem">
-                    <Grid ColumnDefinitions="5*,4*"
+                    <Grid ColumnDefinitions="*,*"
                           ColumnSpacing="{StaticResource SpacingSmall}">
 
                         <Grid Grid.Column="0"
@@ -221,6 +229,9 @@
                                                    Classes="card-meta" />
                                         <TextBlock IsVisible="{Binding Removable}"
                                                    Text="Removable"
+                                                   Classes="card-meta" />
+                                        <TextBlock IsVisible="{Binding HasAssessment}"
+                                                   Text="{Binding Assessment, Converter={StaticResource AssessmentConverter}}"
                                                    Classes="card-meta" />
                                     </WrapPanel>
                                     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
@@ -342,7 +353,7 @@
                                 </Grid>
                                 <Grid Grid.Row="1"
                                       Margin="{StaticResource ScrollGutter}"
-                                      ColumnDefinitions="4,36,*,72,64,56,128,120"
+                                      ColumnDefinitions="4,36,*,64,60,56,76,128,120"
                                       ColumnSpacing="{StaticResource SpacingSmall}"
                                       IsVisible="{Binding IsAta}">
                                     <TextBlock Grid.Column="1"
@@ -361,9 +372,12 @@
                                                Text="Worst"
                                                Classes="panel-header number" />
                                     <TextBlock Grid.Column="6"
-                                               Text="Raw"
+                                               Text="Threshold"
                                                Classes="panel-header number" />
                                     <TextBlock Grid.Column="7"
+                                               Text="Raw"
+                                               Classes="panel-header number" />
+                                    <TextBlock Grid.Column="8"
                                                Text="Raw (hex)"
                                                Classes="panel-header" />
                                 </Grid>
@@ -389,7 +403,7 @@
                                         <ItemsControl ItemsSource="{Binding Attributes}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="local:SmartAttributeItem">
-                                                    <Grid ColumnDefinitions="4,36,*,72,64,56,128,120"
+                                                    <Grid ColumnDefinitions="4,36,*,64,60,56,76,128,120"
                                                           ColumnSpacing="{StaticResource SpacingSmall}"
                                                           Classes="row">
                                                         <Border Grid.Column="0"
@@ -409,6 +423,9 @@
                                                                    Text="{Binding Worst}"
                                                                    Classes="number" />
                                                         <TextBlock Grid.Column="6"
+                                                                   Text="{Binding Threshold}"
+                                                                   Classes="number" />
+                                                        <TextBlock Grid.Column="7"
                                                                    Classes="number">
                                                             <TextBlock.Text>
                                                                 <MultiBinding Converter="{StaticResource RawValueConverter}">
@@ -417,7 +434,7 @@
                                                                 </MultiBinding>
                                                             </TextBlock.Text>
                                                         </TextBlock>
-                                                        <TextBlock Grid.Column="7"
+                                                        <TextBlock Grid.Column="8"
                                                                    Text="{Binding Raw, StringFormat='{}{0:X12}'}"
                                                                    Classes="mono note" />
                                                     </Grid>

@@ -38,11 +38,16 @@ public sealed record DiskSnapshot(
     ulong Size,
     bool Removable,
     SmartState Smart,
+    SmartAssessment Assessment,
     NvmeHealth? Nvme,
     IReadOnlyList<SmartAttribute> Attributes);
 
 public sealed class DiskService : IDisposable
 {
+    private const int OperationNotPermitted = 1;
+
+    private const int PermissionDenied = 13;
+
     private readonly Lock sync = new();
 
     private readonly ILogger<DiskService> log;
@@ -138,7 +143,7 @@ public sealed class DiskService : IDisposable
                 nvme.WarningCompositeTemperatureTime,
                 nvme.CriticalCompositeTemperatureTime,
                 [.. nvme.TemperatureSensors]);
-            return Create(disk, SmartState.Available, health, []);
+            return Create(disk, SmartState.Available, SmartAssessment.Unknown, health, []);
         }
 
         if ((disk.SmartType == SmartType.Generic) && (disk.Smart is ISmartGeneric generic) && generic.Update())
@@ -152,15 +157,15 @@ public sealed class DiskService : IDisposable
                 }
             }
 
-            return Create(disk, SmartState.Available, null, attributes);
+            return Create(disk, SmartState.Available, generic.Assessment, null, attributes);
         }
 
-        var state = (disk.DiskType is DiskType.Nvme or DiskType.Scsi or DiskType.Ide) && !Environment.IsPrivilegedProcess
+        var state = disk.Smart.LastError is OperationNotPermitted or PermissionDenied
             ? SmartState.RequiresPermission
             : SmartState.Unsupported;
-        return Create(disk, state, null, []);
+        return Create(disk, state, SmartAssessment.Unknown, null, []);
     }
 
-    private static DiskSnapshot Create(IDiskInfo disk, SmartState state, NvmeHealth? nvme, IReadOnlyList<SmartAttribute> attributes) =>
-        new(disk.DeviceName, disk.Model, disk.SerialNumber, disk.FirmwareRevision, disk.DiskType, disk.Size, disk.Removable, state, nvme, attributes);
+    private static DiskSnapshot Create(IDiskInfo disk, SmartState state, SmartAssessment assessment, NvmeHealth? nvme, IReadOnlyList<SmartAttribute> attributes) =>
+        new(disk.DeviceName, disk.Model, disk.SerialNumber, disk.FirmwareRevision, disk.DiskType, disk.Size, disk.Removable, state, assessment, nvme, attributes);
 }

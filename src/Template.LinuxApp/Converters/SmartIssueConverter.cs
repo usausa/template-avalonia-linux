@@ -11,6 +11,8 @@ public sealed class SmartIssueConverter : IValueConverter
             ? String.Empty
             : issue.Type switch
             {
+                SmartIssueType.AssessmentFailed => "SMART self-assessment failed",
+                SmartIssueType.AttributeFailing => String.Create(CultureInfo.InvariantCulture, $"{SmartLogic.GetAttributeName(issue.Id)} ({issue.Id:X2}): {issue.Value} is at or below threshold {issue.Limit}"),
                 SmartIssueType.CriticalWarning => $"Critical warning: {SmartValueConverter.FormatCriticalWarning((byte)issue.Value)}",
                 SmartIssueType.SpareBelowThreshold => String.Create(CultureInfo.InvariantCulture, $"Available spare {issue.Value}% is below {issue.Limit}%"),
                 SmartIssueType.MediaErrors => String.Create(CultureInfo.InvariantCulture, $"Media errors: {issue.Value:N0}"),

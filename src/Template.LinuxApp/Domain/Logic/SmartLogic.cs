@@ -27,6 +27,8 @@ public enum SmartValueUnit
 
 public enum SmartIssueType
 {
+    AssessmentFailed,
+    AttributeFailing,
     CriticalWarning,
     SpareBelowThreshold,
     MediaErrors,
@@ -39,7 +41,7 @@ public enum SmartIssueType
     ReallocationEvents
 }
 
-public sealed record SmartIssue(SmartHealth Health, SmartIssueType Type, ulong Value, ulong Limit);
+public sealed record SmartIssue(SmartHealth Health, SmartIssueType Type, ulong Value, ulong Limit, byte Id = 0);
 
 public static class SmartLogic
 {
@@ -182,6 +184,9 @@ public static class SmartLogic
     public static bool IsPreFailure(SmartAttribute attribute) =>
         (attribute.Flags & PreFailureFlag) != 0;
 
+    public static bool IsFailing(SmartAttribute attribute) =>
+        (attribute.Threshold > 0) && (attribute.CurrentValue <= attribute.Threshold);
+
     public static bool IsTemperature(byte id) =>
         id is (byte)SmartId.Temperature or AirflowTemperature;
 
@@ -231,9 +236,19 @@ public static class SmartLogic
             ? attribute.RawValue
             : Double.NaN;
 
-    public static IReadOnlyList<SmartIssue> EvaluateAta(IReadOnlyList<SmartAttribute> attributes)
+    public static IReadOnlyList<SmartIssue> EvaluateAta(IReadOnlyList<SmartAttribute> attributes, SmartAssessment assessment)
     {
         var issues = new List<SmartIssue>();
+        if (assessment == SmartAssessment.Failed)
+        {
+            issues.Add(new SmartIssue(SmartHealth.Critical, SmartIssueType.AssessmentFailed, 0, 0));
+        }
+
+        foreach (var attribute in attributes.Where(IsFailing))
+        {
+            issues.Add(new SmartIssue(GetThresholdHealth(attribute), SmartIssueType.AttributeFailing, attribute.CurrentValue, attribute.Threshold, attribute.Id));
+        }
+
         AddIssue(issues, attributes, SmartId.UncorrectableSectorCount, SmartIssueType.UncorrectableSectors);
         AddIssue(issues, attributes, SmartId.ReportedUncorrectableErrors, SmartIssueType.ReportedUncorrectableErrors);
         AddIssue(issues, attributes, SmartId.ReallocatedSectorCount, SmartIssueType.ReallocatedSectors);
@@ -276,13 +291,17 @@ public static class SmartLogic
     public static SmartHealth GetHealth(IEnumerable<SmartIssue> issues) =>
         issues.Select(static x => x.Health).DefaultIfEmpty(SmartHealth.Good).Max();
 
-    public static SmartHealth GetAttributeHealth(SmartAttribute attribute) =>
-        (SmartId)attribute.Id switch
+    public static SmartHealth GetAttributeHealth(SmartAttribute attribute)
+    {
+        var health = (SmartId)attribute.Id switch
         {
             SmartId.UncorrectableSectorCount or SmartId.ReportedUncorrectableErrors => attribute.RawValue > 0 ? SmartHealth.Critical : SmartHealth.Good,
             SmartId.ReallocatedSectorCount or SmartId.CurrentPendingSectorCount or SmartId.ReallocationEventCount => attribute.RawValue > 0 ? SmartHealth.Warning : SmartHealth.Good,
             _ => SmartHealth.Unknown
         };
+        var threshold = GetThresholdHealth(attribute);
+        return threshold > health ? threshold : health;
+    }
 
     public static SmartHealth GetTemperatureHealth(double celsius) =>
         !Double.IsFinite(celsius)
@@ -296,6 +315,11 @@ public static class SmartLogic
 
     public static SmartHealth GetSpareHealth(byte spare, byte threshold) =>
         spare < threshold ? SmartHealth.Critical : SmartHealth.Good;
+
+    private static SmartHealth GetThresholdHealth(SmartAttribute attribute) =>
+        !IsFailing(attribute)
+            ? SmartHealth.Unknown
+            : IsPreFailure(attribute) ? SmartHealth.Critical : SmartHealth.Warning;
 
     private static void AddIssue(List<SmartIssue> issues, IEnumerable<SmartAttribute> attributes, SmartId id, SmartIssueType type)
     {

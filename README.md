@@ -22,7 +22,7 @@ Linux の x64 機のキオスク端末向けの Avalonia アプリの雛形。
 <img width="50%" src="./docs/smart.png" />
 
 - ディスクごとの SMART の判定・寿命・温度・主な値
-- 属性の生の値の一覧
+- 属性の現在値・最悪値・しきい値・生の値の一覧
 
 <img width="50%" src="./docs/camera.png" />
 

@@ -73,7 +73,7 @@ internal static partial class Log
     [LoggerMessage(Level = LogLevel.Debug, Message = "Suica session reset. attempt=[{attempt}]")]
     public static partial void DebugSuicaSessionReset(this ILogger logger, int attempt);
 
-    // Platform
+    // Service
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Performance sample failed.")]
     public static partial void WarnPerformanceSampleFailed(this ILogger logger, Exception ex);
@@ -88,6 +88,9 @@ internal static partial class Log
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Screen capture failed. path=[{path}]")]
     public static partial void WarnScreenCaptureFailed(this ILogger logger, Exception ex, string path);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Shutter sound failed.")]
+    public static partial void WarnShutterSoundFailed(this ILogger logger, Exception ex);
 
     // Error
 

@@ -9,7 +9,7 @@ using Template.LinuxApp.Services;
 
 public sealed record SmartStatItem(string Title, double Value, SmartValueUnit Unit, SmartHealth Health);
 
-public sealed record SmartAttributeItem(byte Id, bool IsPreFailure, byte Current, byte Worst, ulong Raw, SmartHealth Health);
+public sealed record SmartAttributeItem(byte Id, bool IsPreFailure, byte Current, byte Worst, byte Threshold, ulong Raw, SmartHealth Health);
 
 public sealed record SmartValueItem(string Name, double Value, SmartValueUnit Unit, double Detail, SmartValueUnit DetailUnit, SmartHealth Health);
 
@@ -32,6 +32,8 @@ public sealed record SmartDiskItem
     public required bool Removable { get; init; }
 
     public required SmartState Smart { get; init; }
+
+    public SmartAssessment Assessment { get; init; }
 
     public bool IsNvme { get; init; }
 
@@ -64,6 +66,8 @@ public sealed record SmartDiskItem
     public bool IsAta => HasSmart && !IsNvme;
 
     public bool HasIssues => Issues.Count > 0;
+
+    public bool HasAssessment => Assessment != SmartAssessment.Unknown;
 }
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -179,7 +183,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
             return item;
         }
 
-        return disk.Nvme is { } nvme ? CreateNvme(item, nvme) : CreateAta(item, disk.Attributes);
+        return disk.Nvme is { } nvme ? CreateNvme(item, nvme) : CreateAta(item, disk.Attributes, disk.Assessment);
     }
 
     private static SmartDiskItem CreateNvme(SmartDiskItem item, NvmeHealth nvme)
@@ -243,9 +247,9 @@ public sealed partial class SmartViewModel : AppViewModelBase
         };
     }
 
-    private static SmartDiskItem CreateAta(SmartDiskItem item, IReadOnlyList<SmartAttribute> attributes)
+    private static SmartDiskItem CreateAta(SmartDiskItem item, IReadOnlyList<SmartAttribute> attributes, SmartAssessment assessment)
     {
-        var issues = SmartLogic.EvaluateAta(attributes);
+        var issues = SmartLogic.EvaluateAta(attributes, assessment);
         var temperature = SmartLogic.GetTemperature(attributes);
         var life = SmartLogic.GetLife(attributes);
 
@@ -263,6 +267,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
 
         return item with
         {
+            Assessment = assessment,
             Health = SmartLogic.GetHealth(issues),
             Issues = issues,
             Temperature = Double.IsFinite(temperature) ? temperature : null,
@@ -270,7 +275,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
             Life = Double.IsFinite(life) ? life : null,
             LifeHealth = SmartLogic.GetLifeHealth(life),
             Stats = [.. stats.Take(MaxStats)],
-            Attributes = [.. attributes.Select(static x => new SmartAttributeItem(x.Id, SmartLogic.IsPreFailure(x), x.CurrentValue, x.WorstValue, x.RawValue, SmartLogic.GetAttributeHealth(x)))]
+            Attributes = [.. attributes.Select(static x => new SmartAttributeItem(x.Id, SmartLogic.IsPreFailure(x), x.CurrentValue, x.WorstValue, x.Threshold, x.RawValue, SmartLogic.GetAttributeHealth(x)))]
         };
     }
 
