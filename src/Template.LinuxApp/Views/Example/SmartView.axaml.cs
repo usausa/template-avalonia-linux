@@ -4,10 +4,10 @@ using Avalonia.Controls;
 
 using Smart.Navigation.Attributes;
 
-[View(ViewId.Motor)]
-public partial class MotorView : UserControl
+[View(ViewId.Smart)]
+public partial class SmartView : UserControl
 {
-    public MotorView()
+    public SmartView()
     {
         InitializeComponent();
     }

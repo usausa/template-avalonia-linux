@@ -56,11 +56,17 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
     private const ushort DefaultSystemCode = 0x0003;
 
+    private const int PollAttempts = 3;
+
+    private const int ResetAttempts = 5;
+
     private static readonly TimeSpan RetryInterval = TimeSpan.FromSeconds(2);
 
-    private static readonly TimeSpan RepeatInterval = TimeSpan.FromSeconds(3);
-
     private static readonly TimeSpan SwitchGuardTime = TimeSpan.FromMilliseconds(20);
+
+    private static readonly TimeSpan ResetInterval = TimeSpan.FromMilliseconds(100);
+
+    private static readonly TimeSpan RedetectInterval = TimeSpan.FromMilliseconds(1500);
 
     private static readonly byte[] StartSessionCommand = [0xFF, 0x50, 0x00, 0x00, 0x02, 0x81, 0x00, 0x00];
 
@@ -80,11 +86,9 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
     private volatile string? currentReader;
 
-    private string? lastIdm;
+    private string lastStatus = string.Empty;
 
     private long lastReadTimestamp;
-
-    private string lastStatus = string.Empty;
 
     public event EventHandler<SuicaReadEventArgs>? CardRead;
 
@@ -233,52 +237,76 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
     private void ResetSession(string readerName)
     {
-        try
+        PCSCException? error = null;
+        for (var attempt = 1; attempt <= ResetAttempts; attempt++)
         {
-            using var context = ContextFactory.Instance.Establish(SCardScope.System);
-            using var reader = context.ConnectReader(readerName, SCardShareMode.Direct, SCardProtocol.Unset);
-            Send(reader, EndSessionCommand);
+            try
+            {
+                using var context = ContextFactory.Instance.Establish(SCardScope.System);
+                using var reader = context.ConnectReader(readerName, SCardShareMode.Direct, SCardProtocol.Unset);
+                Transmit(reader, EndSessionCommand, new byte[ResponseSize]);
+                log.DebugSuicaSessionReset(attempt);
+                return;
+            }
+            catch (PCSCException ex)
+            {
+                error = ex;
+            }
+
+            Thread.Sleep(ResetInterval);
         }
-        catch (PCSCException ex)
+
+        if (error is not null)
         {
-            Status.ReportError(ex.Message);
+            log.WarnSuicaSessionResetFailed(error.SCardError.ToString());
+            Status.ReportError(error.Message);
         }
     }
 
     private void OnCardInserted(object sender, CardStatusEventArgs e)
     {
-        var timestamp = timeProvider.GetTimestamp();
+        var atr = Convert.ToHexString(e.Atr ?? []);
+        if ((lastReadTimestamp != 0) && (timeProvider.GetElapsedTime(lastReadTimestamp) < RedetectInterval))
+        {
+            log.DebugSuicaCardIgnored(atr);
+            return;
+        }
+
+        log.DebugSuicaCardInserted(atr);
+
+        SuicaReadEventArgs? args = null;
+        var closed = false;
         try
         {
             using var context = ContextFactory.Instance.Establish(SCardScope.System);
             using var reader = context.ConnectReader(e.ReaderName, SCardShareMode.Direct, SCardProtocol.Unset);
-            var args = ReadCard(reader, Convert.ToHexString(e.Atr ?? []));
-            if (args is null)
-            {
-                ReadFailed?.Invoke(this, EventArgs.Empty);
-                return;
-            }
-
-            var repeated = (args.Idm == lastIdm) && (timeProvider.GetElapsedTime(lastReadTimestamp, timestamp) < RepeatInterval);
-            lastIdm = args.Idm;
-            lastReadTimestamp = timestamp;
-            if (repeated)
-            {
-                return;
-            }
-
-            Status.ReportEvent();
-            CardRead?.Invoke(this, args);
+            args = ReadCard(reader, atr, out closed);
         }
         catch (Exception ex) when (ex is PCSCException or ArgumentException)
         {
             Status.ReportError(ex.Message);
-            ReadFailed?.Invoke(this, EventArgs.Empty);
         }
+
+        if (!closed)
+        {
+            ResetSession(e.ReaderName);
+        }
+
+        if (args is null)
+        {
+            ReadFailed?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        lastReadTimestamp = timeProvider.GetTimestamp();
+        log.DebugSuicaCardRead(args.Idm, args.Balance, args.History.Count);
+        Status.ReportEvent();
+        CardRead?.Invoke(this, args);
     }
 
-    private SuicaReadEventArgs? ReadCard(ICardReader reader, string atr)
+    private SuicaReadEventArgs? ReadCard(ICardReader reader, string atr, out bool closed)
     {
+        closed = false;
         if (Send(reader, StartSessionCommand) is null)
         {
             return Fail("start session", atr);
@@ -296,7 +324,7 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         }
         finally
         {
-            Send(reader, EndSessionCommand);
+            closed = Send(reader, EndSessionCommand) is not null;
         }
     }
 
@@ -350,12 +378,15 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
 
     private byte[]? Poll(ICardReader reader)
     {
-        foreach (var systemCode in systemCodes)
+        for (var attempt = 0; attempt < PollAttempts; attempt++)
         {
-            var response = Exchange(reader, [0x06, 0x00, (byte)(systemCode >> 8), (byte)systemCode, 0x01, 0x0F]);
-            if ((response is not null) && (response.Length >= 18) && (response[1] == 0x01))
+            foreach (var systemCode in systemCodes)
             {
-                return response[2..10];
+                var response = Exchange(reader, [0x06, 0x00, (byte)(systemCode >> 8), (byte)systemCode, 0x01, 0x0F]);
+                if ((response is not null) && (response.Length >= 18) && (response[1] == 0x01))
+                {
+                    return response[2..10];
+                }
             }
         }
 
@@ -447,17 +478,34 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
         return response.ToArray();
     }
 
-    private static int Transmit(ICardReader reader, byte[] command, byte[] buffer)
+    private int Transmit(ICardReader reader, byte[] command, byte[] buffer)
+    {
+        try
+        {
+            return TransmitOnce(reader, command, buffer);
+        }
+        catch (PCSCException ex) when (IsCardChanged(ex))
+        {
+            reader.Reconnect(SCardShareMode.Direct, SCardProtocol.Unset, SCardReaderDisposition.Leave);
+            log.DebugSuicaReconnected(ex.SCardError.ToString());
+            return TransmitOnce(reader, command, buffer);
+        }
+    }
+
+    private static int TransmitOnce(ICardReader reader, byte[] command, byte[] buffer)
     {
         try
         {
             return reader.Transmit(SCardPCI.T1, command, buffer);
         }
-        catch (PCSCException)
+        catch (PCSCException ex) when (!IsCardChanged(ex))
         {
             return reader.Transmit(SCardPCI.Raw, command, buffer);
         }
     }
+
+    private static bool IsCardChanged(PCSCException ex) =>
+        ex.SCardError is SCardError.RemovedCard or SCardError.ResetCard;
 
     private static bool TryFindValue(ReadOnlySpan<byte> data, byte tag, out ReadOnlySpan<byte> value)
     {

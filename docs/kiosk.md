@@ -128,6 +128,33 @@ ssh <ユーザー>@<端末> chmod +x Template.LinuxApp/Template.LinuxApp
 - 既定の `1234` は仮の値
 - 終了: Dashboard の Exit → PIN、ゲームパッドは Back + A を 3 秒 → A・B・X・Y
 
+### SMART
+
+ディスクのデバイスを読むために disk グループに入れ、実行ファイルに SATA 用の CAP_SYS_RAWIO と NVMe 用の CAP_SYS_ADMIN を付ける。
+
+**設定**
+
+```bash
+sudo usermod -aG disk <ユーザー>
+sudo setcap cap_sys_rawio,cap_sys_admin+ep ~/Template.LinuxApp/Template.LinuxApp
+```
+
+- グループは次のログインから有効
+- 実行ファイルを置き換えると外れるので、配置のたびに `setcap` する
+
+### NFC
+
+Suica は PC/SC で読むので、pcscd を入れる(CCID のドライバーの libccid も入る)。
+
+**設定**
+
+```bash
+sudo apt install pcscd
+```
+
+- リーダーは CCID 準拠のもの(RC-S300 など。RC-S380 は使えない)
+- 読むシステムコードは appsettings.json の `Nfc:SystemCodes`(既定は 0003・FFFF)
+
 ## 4. 自動起動
 
 `~/.config/systemd/user/template-linuxapp.service` を作成。

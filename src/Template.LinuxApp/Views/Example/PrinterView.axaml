@@ -81,13 +81,18 @@
                            Text="Image printer"
                            Classes="card-note" />
                 <Border Grid.Row="1" Grid.Column="0"
+                        VerticalAlignment="Top"
+                        Padding="40,24"
                         Classes="paper">
-                    <TextBlock Text="{Binding PreviewText}"
-                               FontFamily="monospace"
-                               FontSize="{StaticResource FontSizeLarge}"
-                               Foreground="Black" />
+                    <Viewbox Stretch="Uniform">
+                        <TextBlock Text="{Binding PreviewText}"
+                                   FontFamily="monospace"
+                                   Foreground="Black" />
+                    </Viewbox>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="1"
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
+                        Padding="0"
                         Classes="paper">
                     <Image Source="{Binding PreviewImage}"
                            Stretch="Uniform" />
@@ -134,7 +139,8 @@
                            Text="No jobs"
                            Classes="card-note" />
                 <ScrollViewer Grid.Row="2"
-                              VerticalScrollBarVisibility="Auto">
+                              VerticalScrollBarVisibility="Auto"
+                              Classes="gutter">
                     <ItemsControl ItemsSource="{Binding Jobs}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

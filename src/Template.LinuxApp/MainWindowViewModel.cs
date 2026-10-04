@@ -15,6 +15,8 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
 {
     private readonly IDialogService dialogService;
 
+    private readonly ScreenCapture screenCapture;
+
     private IDisposable? navigatingBusy;
 
     public INavigator Navigator { get; }
@@ -22,25 +24,26 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
     public IReadOnlyList<NavigationItem> Items { get; } =
     [
         new(ViewId.Dashboard, "Dashboard"),
-        new(ViewId.Performance, "Performance"),
         new(ViewId.System, "System"),
+        new(ViewId.Performance, "Performance"),
+        new(ViewId.Smart, "SMART"),
         new(ViewId.Camera, "Camera"),
         new(ViewId.Barcode, "Barcode"),
         new(ViewId.Nfc, "NFC"),
         new(ViewId.Printer, "Printer"),
-        new(ViewId.Controller, "Controller"),
         new(ViewId.Gamepad, "Gamepad"),
-        new(ViewId.Motor, "Motor"),
+        new(ViewId.Controller, "Controller"),
         new(ViewId.Typography, "Typography"),
         new(ViewId.Graphics, "Graphics")
     ];
 
     public ICommand ForwardCommand { get; }
 
-    public MainWindowViewModel(INavigator navigator, IDialogService dialogService, IInputDevice input)
+    public MainWindowViewModel(INavigator navigator, IDialogService dialogService, IInputDevice input, ScreenCapture screenCapture)
     {
         Navigator = navigator;
         this.dialogService = dialogService;
+        this.screenCapture = screenCapture;
 
         ForwardCommand = MakeAsyncCommand<ViewId>(x => Navigator.ForwardAsync(x));
 
@@ -86,6 +89,7 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
     {
         { Key: InputKey.Select, Action: InputAction.Press } => SwitchViewAsync(),
         { Key: InputKey.Start, Action: InputAction.Press } => Navigator.NotifyAsync(ShellEvent.Start),
+        { Key: InputKey.Capture, Action: InputAction.Press } => screenCapture.CaptureAsync(),
         _ => Task.CompletedTask
     };
 

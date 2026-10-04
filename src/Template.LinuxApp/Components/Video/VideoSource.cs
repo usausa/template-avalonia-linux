@@ -116,6 +116,7 @@ public sealed class VideoSource : IVideoSource, IDisposable
         var token = cts.Token;
         loopTask = Task.Run(() => LoopAsync(token), token);
         status.ReportStarted();
+        faceDetector.Start();
     }
 
     public async ValueTask StopAsync()
@@ -138,6 +139,7 @@ public sealed class VideoSource : IVideoSource, IDisposable
         cts = null;
         loopTask = null;
         status.ReportStopped();
+        await faceDetector.StopAsync().ConfigureAwait(false);
     }
 
     public async ValueTask ChangeAsync(string device, int width, int height)

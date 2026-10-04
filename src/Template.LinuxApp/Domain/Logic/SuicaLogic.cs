@@ -24,9 +24,7 @@ public static class SuicaLogic
         { 27, "携帯電話" },
         { 28, "乗継精算機" },
         { 29, "連絡改札機" },
-        { 31, "簡易入金機" },
-        { 199, "物販端末" },
-        { 200, "自販機" }
+        { 31, "簡易入金機" }
     }.ToFrozenDictionary();
 
     private static readonly FrozenDictionary<byte, string> ProcessNames = new Dictionary<byte, string>
@@ -62,8 +60,15 @@ public static class SuicaLogic
         { 3, "その他" }
     }.ToFrozenDictionary();
 
-    public static string ConvertTerminalString(byte type) =>
-        TerminalNames.TryGetValue(type, out var value) ? value : type.ToString("X", CultureInfo.InvariantCulture);
+    public static string ConvertTerminalString(byte type)
+    {
+        if ((type & 0xF0) == 0xC0)
+        {
+            return "物販端末";
+        }
+
+        return TerminalNames.TryGetValue(type, out var value) ? value : type.ToString("X", CultureInfo.InvariantCulture);
+    }
 
     public static string ConvertProcessString(byte process)
     {

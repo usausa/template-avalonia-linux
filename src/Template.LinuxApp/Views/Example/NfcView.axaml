@@ -116,7 +116,8 @@
                            Text="No history"
                            Classes="card-note" />
                 <ScrollViewer Grid.Row="1"
-                              VerticalScrollBarVisibility="Auto">
+                              VerticalScrollBarVisibility="Auto"
+                              Classes="gutter">
                     <ItemsControl ItemsSource="{Binding History}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

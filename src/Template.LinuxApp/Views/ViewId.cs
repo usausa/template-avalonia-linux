@@ -11,7 +11,7 @@ public enum ViewId
     Printer,
     Controller,
     Gamepad,
-    Motor,
     Typography,
-    Graphics
+    Graphics,
+    Smart
 }

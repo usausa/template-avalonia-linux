@@ -3,7 +3,6 @@ namespace Template.LinuxApp.Components.Platform;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-using LinuxDotNet.Disk;
 using LinuxDotNet.SystemInfo;
 
 public sealed record HostSnapshot(
@@ -35,31 +34,6 @@ public sealed record FileSystemEntry(
     ulong Available,
     double Usage);
 
-public enum SmartState
-{
-    Available,
-    Unsupported,
-    RequiresRoot
-}
-
-public sealed record DiskEntry(
-    string Device,
-    string Model,
-    string SerialNumber,
-    string Firmware,
-    DiskType Type,
-    ulong Size,
-    bool Removable,
-    SmartState Smart,
-    double Temperature,
-    double Life,
-    double PowerOnHours,
-    double PowerCycles,
-    double DataRead,
-    double DataWritten,
-    double UnsafeShutdowns,
-    double MediaErrors);
-
 public sealed record ProcessEntry(
     int ProcessId,
     string Name,
@@ -81,19 +55,13 @@ public interface ISystemInspector
 
     IReadOnlyList<FileSystemEntry> ReadFileSystems();
 
-    IReadOnlyList<DiskEntry> ReadDisks();
-
     ProcessSnapshot? ReadProcesses(int count);
 
     IReadOnlyList<UsbDevice> ReadUsbDevices();
 }
 
-public sealed class SystemInspector : ISystemInspector, IDisposable
+public sealed class SystemInspector : ISystemInspector
 {
-    private const double NvmeDataUnit = 512_000;
-
-    private const double SectorSize = 512;
-
     private readonly Lock sync = new();
 
     private readonly ILogger<SystemInspector> log;
@@ -116,8 +84,6 @@ public sealed class SystemInspector : ISystemInspector, IDisposable
 
     private BatteryDevice? battery;
 
-    private IReadOnlyList<IDiskInfo>? disks;
-
     private long? previousProcessTimestamp;
 
     public bool IsSupported => OperatingSystem.IsLinux();
@@ -126,24 +92,6 @@ public sealed class SystemInspector : ISystemInspector, IDisposable
     {
         this.log = log;
         this.timeProvider = timeProvider;
-    }
-
-    public void Dispose()
-    {
-        lock (sync)
-        {
-            if (disks is null)
-            {
-                return;
-            }
-
-            foreach (var disk in disks)
-            {
-                disk.Dispose();
-            }
-
-            disks = null;
-        }
     }
 
     public HostSnapshot? ReadHost() =>
@@ -221,13 +169,6 @@ public sealed class SystemInspector : ISystemInspector, IDisposable
             return list;
         }, []);
 
-    public IReadOnlyList<DiskEntry> ReadDisks() =>
-        Guard<IReadOnlyList<DiskEntry>>("disks", () =>
-        {
-            disks ??= DiskInfo.GetInformation();
-            return [.. disks.Select(ToDiskEntry)];
-        }, []);
-
     public ProcessSnapshot? ReadProcesses(int count) =>
         Guard("processes", () =>
         {
@@ -301,63 +242,6 @@ public sealed class SystemInspector : ISystemInspector, IDisposable
                 return fallback;
             }
         }
-    }
-
-    private static DiskEntry ToDiskEntry(IDiskInfo disk)
-    {
-        var state = SmartState.Unsupported;
-        var temperature = Double.NaN;
-        var life = Double.NaN;
-        var powerOnHours = Double.NaN;
-        var powerCycles = Double.NaN;
-        var dataRead = Double.NaN;
-        var dataWritten = Double.NaN;
-        var unsafeShutdowns = Double.NaN;
-        var mediaErrors = Double.NaN;
-
-        if ((disk.SmartType == SmartType.Nvme) && (disk.Smart is ISmartNvme nvme) && nvme.Update())
-        {
-            state = SmartState.Available;
-            temperature = nvme.Temperature;
-            life = 100 - nvme.PercentageUsed;
-            powerOnHours = nvme.PowerOnHours;
-            powerCycles = nvme.PowerCycles;
-            dataRead = nvme.DataUnitRead * NvmeDataUnit;
-            dataWritten = nvme.DataUnitWritten * NvmeDataUnit;
-            unsafeShutdowns = nvme.UnsafeShutdowns;
-            mediaErrors = nvme.MediaErrors;
-        }
-        else if ((disk.SmartType == SmartType.Generic) && (disk.Smart is ISmartGeneric generic) && generic.Update())
-        {
-            state = SmartState.Available;
-            temperature = generic.GetAttribute(SmartId.Temperature) is { } t ? t.RawValue & 0xFF : Double.NaN;
-            life = generic.GetAttribute(SmartId.PercentageLifetimeRemaining) is { } l ? 100d - l.RawValue : Double.NaN;
-            powerOnHours = generic.GetAttribute(SmartId.PowerOnHours) is { } h ? h.RawValue : Double.NaN;
-            powerCycles = generic.GetAttribute(SmartId.PowerCycleCount) is { } c ? c.RawValue : Double.NaN;
-            dataWritten = generic.GetAttribute(SmartId.TotalHostSectorWrite) is { } w ? w.RawValue * SectorSize : Double.NaN;
-        }
-        else if ((disk.DiskType is DiskType.Nvme or DiskType.Scsi or DiskType.Ide) && !Environment.IsPrivilegedProcess)
-        {
-            state = SmartState.RequiresRoot;
-        }
-
-        return new DiskEntry(
-            disk.DeviceName,
-            disk.Model,
-            disk.SerialNumber,
-            disk.FirmwareRevision,
-            disk.DiskType,
-            disk.Size,
-            disk.Removable,
-            state,
-            temperature,
-            life,
-            powerOnHours,
-            powerCycles,
-            dataRead,
-            dataWritten,
-            unsafeShutdowns,
-            mediaErrors);
     }
 
     private static List<string> ReadAddresses()

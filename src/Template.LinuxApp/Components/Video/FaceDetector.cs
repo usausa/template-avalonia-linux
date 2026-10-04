@@ -13,6 +13,10 @@ public interface IFaceDetector
 {
     bool IsEnabled { get; }
 
+    void Start();
+
+    ValueTask StopAsync();
+
     void Detect(ReadOnlySpan<byte> image, int width, int height, ICollection<FaceBox> results);
 }
 
@@ -31,6 +35,8 @@ public sealed class FaceDetector : IFaceDetector, IDisposable
     private InferenceSession? session;
 
     private bool failed;
+
+    private bool connected;
 
     private string inputName = string.Empty;
 
@@ -65,6 +71,29 @@ public sealed class FaceDetector : IFaceDetector, IDisposable
         }
     }
 
+    public void Start()
+    {
+        if (status.IsEnabled)
+        {
+            status.ReportStarted();
+        }
+    }
+
+    public ValueTask StopAsync()
+    {
+        lock (sync)
+        {
+            connected = false;
+        }
+
+        if (status.IsEnabled)
+        {
+            status.ReportStopped();
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
     public void Detect(ReadOnlySpan<byte> image, int width, int height, ICollection<FaceBox> results)
     {
         results.Clear();
@@ -78,6 +107,12 @@ public sealed class FaceDetector : IFaceDetector, IDisposable
             if (!LoadSession())
             {
                 return;
+            }
+
+            if (!connected)
+            {
+                connected = true;
+                status.ReportConnected();
             }
 
             var size = 3 * modelWidth * modelHeight;
@@ -169,7 +204,6 @@ public sealed class FaceDetector : IFaceDetector, IDisposable
         modelWidth = input.Value.Dimensions[3];
         dimensions = [1, 3, modelHeight, modelWidth];
         inputBuffer = ArrayPool<float>.Shared.Rent(3 * modelWidth * modelHeight);
-        status.ReportConnected();
         return true;
     }
 

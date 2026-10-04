@@ -122,14 +122,20 @@ public sealed partial class ControllerViewModel : AppViewModelBase
         using var timer = new PeriodicTimer(FrameInterval, timeProvider);
         var frames = 0;
         var fpsTimestamp = timeProvider.GetTimestamp();
+        var frameTimestamp = fpsTimestamp;
         while (await timer.WaitForNextTickAsync(token).ConfigureAwait(false))
         {
+            var timestamp = timeProvider.GetTimestamp();
+            var elapsed = timeProvider.GetElapsedTime(frameTimestamp, timestamp);
+            frameTimestamp = timestamp;
+
             model.Update(
                 gamepadReader.GetAxisValue(0),
                 gamepadReader.GetButtonPressed(1),
                 gamepadReader.GetButtonPressed(0),
                 gamepadReader.GetButtonPressed(2),
-                gamepadReader.GetButtonPressed(3));
+                gamepadReader.GetButtonPressed(3),
+                elapsed);
 
             if (model.IsUpdated)
             {
@@ -189,6 +195,22 @@ public sealed partial class ControllerViewModel : AppViewModelBase
 
         private const double OverSpeedDecay = 48d / 60;
 
+        private const double AxisMaximum = 32767;
+
+        private const double StickDeadZone = 0.08;
+
+        private const double SteerStiffness = 1600;
+
+        private const double SteerDamping = 64;
+
+        private const double SteerDeadband = 0.02;
+
+        private const double DeadbandVelocityFactor = 8;
+
+        private const double SpeedSensitivity = 0.02 / 3.6;
+
+        private static readonly TimeSpan MaxSteerStep = TimeSpan.FromMilliseconds(5);
+
         private static readonly int[] ShiftMaxSpeed = [70, 110, 150, 190, 230, 255];
 
         private static readonly int[] ShiftOptimalStart = [0, 30, 70, 110, 150, 190];
@@ -198,6 +220,10 @@ public sealed partial class ControllerViewModel : AppViewModelBase
         private static readonly int[] ShiftSpeedFluctuation = [3, 3, 4, 4, 5, 5];
 
         private double rawSpeed;
+
+        private double steeringPosition;
+
+        private double steeringVelocity;
 
         public int ShiftValue { get; private set; }
 
@@ -223,7 +249,7 @@ public sealed partial class ControllerViewModel : AppViewModelBase
 
         public bool ThrottleChanged { get; private set; }
 
-        public void Update(short axis, bool accel, bool brake, bool shiftDown, bool shiftUp)
+        public void Update(short axis, bool accel, bool brake, bool shiftDown, bool shiftUp, TimeSpan elapsed)
         {
             var previousShiftValue = ShiftValue;
             var previousSpeed = Speed;
@@ -241,7 +267,7 @@ public sealed partial class ControllerViewModel : AppViewModelBase
             rawSpeed = CalculateSpeed(accel, brake);
             var speed = (int)rawSpeed;
             var throttleAngle = NeutralAngle + (speed * 90 / 255);
-            var steeringAngle = (int)((axis + 32768) * 180.0 / 65535.0);
+            var steeringAngle = (int)Math.Round(NeutralAngle + (CalculateSteering(axis, elapsed) * NeutralAngle));
 
             ShiftChanged = ShiftValue != previousShiftValue;
             SteeringChanged = steeringAngle != SteeringAngle;
@@ -283,6 +309,26 @@ public sealed partial class ControllerViewModel : AppViewModelBase
 
             return Math.Max(0, rawSpeed - DefaultVelocity);
         }
+
+        private double CalculateSteering(short axis, TimeSpan elapsed)
+        {
+            var target = ApplyDeadZone(Math.Clamp(axis / AxisMaximum, -1d, 1d));
+            var steps = Math.Max(1, (int)Math.Ceiling(elapsed / MaxSteerStep));
+            var dt = elapsed.TotalSeconds / steps;
+            for (var i = 0; i < steps; i++)
+            {
+                var acceleration = ((target - steeringPosition) * SteerStiffness) - (steeringVelocity * SteerDamping);
+                steeringVelocity += acceleration * dt;
+                steeringPosition = Math.Clamp(steeringPosition + (steeringVelocity * dt), -1d, 1d);
+            }
+
+            var deadband = SteerDeadband / (1 + (Math.Abs(steeringVelocity) * DeadbandVelocityFactor));
+            var output = Math.Abs(steeringPosition) < deadband ? 0 : steeringPosition;
+            return output / (1 + (rawSpeed * SpeedSensitivity));
+        }
+
+        private static double ApplyDeadZone(double value) =>
+            Math.Abs(value) <= StickDeadZone ? 0 : Math.Sign(value) * (Math.Abs(value) - StickDeadZone) / (1 - StickDeadZone);
 
         private double CalculateAcceleration()
         {

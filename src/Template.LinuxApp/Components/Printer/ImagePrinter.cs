@@ -115,10 +115,14 @@ public sealed class ImagePrinter : IImagePrinter, IDisposable
             Printer = option.ImagePrinterName,
             JobTitle = title,
             Copies = 1,
-            MediaSize = "A4",
-            ColorMode = true,
+            MediaSize = String.IsNullOrEmpty(option.ImageMediaSize) ? null : option.ImageMediaSize,
+            ColorMode = false,
             Orientation = PrintOrientation.Portrait,
-            Quality = PrintQuality.Normal
+            Quality = PrintQuality.Normal,
+            CustomOptions =
+            {
+                ["print-scaling"] = "fit"
+            }
         };
         int jobId;
         try

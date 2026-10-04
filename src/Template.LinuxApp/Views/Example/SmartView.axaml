@@ -1,0 +1,379 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:s="http://smart/avalonia"
+             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
+             xmlns:logic="clr-namespace:Template.LinuxApp.Domain.Logic"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             mc:Ignorable="d"
+             x:Class="Template.LinuxApp.Views.Example.SmartView"
+             x:DataType="local:SmartViewModel"
+             s:DataContextResolver.Type="local:SmartViewModel"
+             d:DesignWidth="1280" d:DesignHeight="740">
+
+    <UserControl.Resources>
+        <converters:SmartHealthBrushConverter x:Key="HealthBrushConverter"
+                                              Unknown="{StaticResource GrayDefault}"
+                                              Good="{StaticResource ChartGreen}"
+                                              Warning="{StaticResource ChartOrange}"
+                                              Critical="{StaticResource ChartRed}" />
+        <converters:SmartHealthBrushConverter x:Key="StatBrushConverter"
+                                              Unknown="{StaticResource ChartBlue}"
+                                              Good="{StaticResource ChartGreen}"
+                                              Warning="{StaticResource ChartOrange}"
+                                              Critical="{StaticResource ChartRed}" />
+        <converters:SmartHealthBrushConverter x:Key="RowBrushConverter"
+                                              Unknown="Transparent"
+                                              Good="{StaticResource ChartGreen}"
+                                              Warning="{StaticResource ChartOrange}"
+                                              Critical="{StaticResource ChartRed}" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="Border.disk-tab">
+            <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessNormal}" />
+        </Style>
+        <Style Selector="Border.disk-tab.selected">
+            <Setter Property="BorderBrush" Value="{StaticResource ChartBlue}" />
+        </Style>
+        <Style Selector="Border.health">
+            <Setter Property="Padding" Value="24,6" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.health > TextBlock">
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Grid.row">
+            <Setter Property="Height" Value="30" />
+        </Style>
+        <Style Selector="Grid.row > TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="{StaticResource FontSizeMedium}" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+        <Style Selector="Grid > TextBlock.number">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        <Style Selector="Grid.row > TextBlock.note">
+            <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        </Style>
+        <Style Selector="Grid.row > TextBlock.mono">
+            <Setter Property="FontFamily" Value="monospace" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*"
+          Margin="{StaticResource PaddingSmall}"
+          RowSpacing="{StaticResource SpacingSmall}">
+
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="{StaticResource SpacingNormal}">
+            <ItemsControl ItemsSource="{Binding Disks}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{StaticResource SpacingSmall}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:SmartDiskItem">
+                        <Button Padding="0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding $parent[ItemsControl].((local:SmartViewModel)DataContext).SelectCommand, FallbackValue={x:Null}}"
+                                CommandParameter="{Binding}">
+                            <Border Width="280"
+                                    Classes="panel disk-tab"
+                                    Classes.selected="{Binding IsSelected}">
+                                <Grid RowDefinitions="Auto,Auto"
+                                      ColumnDefinitions="Auto,*,Auto"
+                                      ColumnSpacing="{StaticResource SpacingSmall}">
+                                    <Border Grid.Row="0" Grid.Column="0"
+                                            Width="16" Height="16"
+                                            Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               Classes="card-title" />
+                                    <TextBlock Grid.Row="0" Grid.Column="2"
+                                               Text="{Binding Temperature}"
+                                               Classes="card-note" />
+                                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                               Text="{Binding Model}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Classes="card-meta" />
+                                </Grid>
+                            </Border>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Grid.Column="1"
+                       VerticalAlignment="Bottom"
+                       Text="{Binding UpdatedText}"
+                       Classes="card-note" />
+        </Grid>
+
+        <ContentControl Grid.Row="1"
+                        Content="{Binding Selected}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate x:DataType="local:SmartDiskItem">
+                    <Grid ColumnDefinitions="5*,4*"
+                          ColumnSpacing="{StaticResource SpacingSmall}">
+
+                        <Grid Grid.Column="0"
+                              RowDefinitions="Auto,*,Auto"
+                              RowSpacing="{StaticResource SpacingSmall}">
+                            <Border Grid.Row="0"
+                                    Classes="panel">
+                                <Grid RowDefinitions="Auto,Auto,Auto"
+                                      ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="{StaticResource SpacingNormal}">
+                                    <TextBlock Grid.Row="0" Grid.Column="0"
+                                               Text="{Binding Model}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Classes="card-title" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0"
+                                               Text="{Binding Detail}"
+                                               TextTrimming="CharacterEllipsis"
+                                               Classes="card-meta" />
+                                    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                                            Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}"
+                                            Classes="health">
+                                        <TextBlock Text="{Binding HealthText}" />
+                                    </Border>
+                                    <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                  Margin="0,8,0,0"
+                                                  ItemsSource="{Binding Issues}"
+                                                  IsVisible="{Binding HasIssues}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Spacing="{StaticResource SpacingXSmall}" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="logic:SmartIssue">
+                                                <StackPanel Orientation="Horizontal"
+                                                            Spacing="{StaticResource SpacingSmall}">
+                                                    <Border Width="14" Height="14"
+                                                            VerticalAlignment="Center"
+                                                            Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}" />
+                                                    <TextBlock Text="{Binding Text}"
+                                                               FontSize="{StaticResource FontSizeLarge}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="1"
+                                    IsVisible="{Binding HasSmart}"
+                                    Classes="panel">
+                                <ItemsControl ItemsSource="{Binding Gauges}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Rows="1"
+                                                         ColumnSpacing="{StaticResource SpacingSmall}" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="local:SmartGaugeItem">
+                                            <controls:RingGauge MaxWidth="440" MaxHeight="440"
+                                                                Margin="{StaticResource PaddingMedium}"
+                                                                Value="{Binding Value}"
+                                                                Maximum="{Binding Maximum}"
+                                                                Text="{Binding Text}"
+                                                                Label="{Binding Label}"
+                                                                Thickness="22"
+                                                                Fill="{Binding Health, Converter={StaticResource HealthBrushConverter}}"
+                                                                Foreground="{DynamicResource PanelNoteBrush}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+
+                            <ItemsControl Grid.Row="2"
+                                          ItemsSource="{Binding Stats}"
+                                          IsVisible="{Binding HasSmart}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4"
+                                                     ColumnSpacing="{StaticResource SpacingSmall}"
+                                                     RowSpacing="{StaticResource SpacingSmall}" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="local:SmartStatItem">
+                                        <controls:StatTile Height="72"
+                                                           Title="{Binding Title}"
+                                                           Value="{Binding Value}"
+                                                           Fill="{Binding Health, Converter={StaticResource StatBrushConverter}}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Border Grid.Row="1" Grid.RowSpan="2"
+                                    IsVisible="{Binding !HasSmart}"
+                                    Classes="panel">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Spacing="{StaticResource SpacingLarge}">
+                                    <Path HorizontalAlignment="Center"
+                                          Data="M4,16 H92 V80 H4 Z M18,62 H46 M70,62 H78"
+                                          Stroke="{DynamicResource PanelNoteBrush}"
+                                          StrokeThickness="6"
+                                          Opacity="0.4" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Text="{Binding Message}"
+                                               FontSize="28" />
+                                    <TextBlock MaxWidth="720"
+                                               HorizontalAlignment="Center"
+                                               Text="{Binding MessageDetail}"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Classes="card-note" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Column="1"
+                                Classes="panel">
+                            <Grid RowDefinitions="Auto,Auto,*"
+                                  RowSpacing="{StaticResource SpacingSmall}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding ListTitle}"
+                                               Classes="card-title" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding ListSummary}"
+                                               Classes="card-note" />
+                                </Grid>
+                                <Grid Grid.Row="1"
+                                      Margin="{StaticResource ScrollGutter}"
+                                      ColumnDefinitions="4,36,*,72,64,56,128,120"
+                                      ColumnSpacing="{StaticResource SpacingSmall}"
+                                      IsVisible="{Binding IsAta}">
+                                    <TextBlock Grid.Column="1"
+                                               Text="ID"
+                                               Classes="panel-header" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="Attribute"
+                                               Classes="panel-header" />
+                                    <TextBlock Grid.Column="3"
+                                               Text="Type"
+                                               Classes="panel-header" />
+                                    <TextBlock Grid.Column="4"
+                                               Text="Current"
+                                               Classes="panel-header number" />
+                                    <TextBlock Grid.Column="5"
+                                               Text="Worst"
+                                               Classes="panel-header number" />
+                                    <TextBlock Grid.Column="6"
+                                               Text="Raw"
+                                               Classes="panel-header number" />
+                                    <TextBlock Grid.Column="7"
+                                               Text="Raw (hex)"
+                                               Classes="panel-header" />
+                                </Grid>
+                                <Grid Grid.Row="1"
+                                      Margin="{StaticResource ScrollGutter}"
+                                      ColumnDefinitions="4,*,180,200"
+                                      ColumnSpacing="{StaticResource SpacingSmall}"
+                                      IsVisible="{Binding IsNvme}">
+                                    <TextBlock Grid.Column="1"
+                                               Text="Item"
+                                               Classes="panel-header" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="Value"
+                                               Classes="panel-header number" />
+                                    <TextBlock Grid.Column="3"
+                                               Text="Detail"
+                                               Classes="panel-header" />
+                                </Grid>
+                                <ScrollViewer Grid.Row="2"
+                                              VerticalScrollBarVisibility="Auto"
+                                              Classes="gutter">
+                                    <StackPanel>
+                                        <ItemsControl ItemsSource="{Binding Attributes}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="local:SmartAttributeItem">
+                                                    <Grid ColumnDefinitions="4,36,*,72,64,56,128,120"
+                                                          ColumnSpacing="{StaticResource SpacingSmall}"
+                                                          Classes="row">
+                                                        <Border Grid.Column="0"
+                                                                Background="{Binding Health, Converter={StaticResource RowBrushConverter}}" />
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding Id}"
+                                                                   Classes="mono" />
+                                                        <TextBlock Grid.Column="2"
+                                                                   Text="{Binding Name}" />
+                                                        <TextBlock Grid.Column="3"
+                                                                   Text="{Binding Type}"
+                                                                   Classes="note" />
+                                                        <TextBlock Grid.Column="4"
+                                                                   Text="{Binding Current}"
+                                                                   Classes="number" />
+                                                        <TextBlock Grid.Column="5"
+                                                                   Text="{Binding Worst}"
+                                                                   Classes="number" />
+                                                        <TextBlock Grid.Column="6"
+                                                                   Text="{Binding Raw}"
+                                                                   Classes="number" />
+                                                        <TextBlock Grid.Column="7"
+                                                                   Text="{Binding RawHex}"
+                                                                   Classes="mono note" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <ItemsControl ItemsSource="{Binding Values}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="local:SmartValueItem">
+                                                    <Grid ColumnDefinitions="4,*,180,200"
+                                                          ColumnSpacing="{StaticResource SpacingSmall}"
+                                                          Classes="row">
+                                                        <Border Grid.Column="0"
+                                                                Background="{Binding Health, Converter={StaticResource RowBrushConverter}}" />
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding Name}" />
+                                                        <TextBlock Grid.Column="2"
+                                                                   Text="{Binding Value}"
+                                                                   Classes="number" />
+                                                        <TextBlock Grid.Column="3"
+                                                                   Text="{Binding Detail}"
+                                                                   Classes="note" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </ScrollViewer>
+                                <TextBlock Grid.Row="2"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           IsVisible="{Binding !HasSmart}"
+                                           Text="No SMART data"
+                                           Classes="card-note" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
+
+        <TextBlock Grid.Row="1"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   IsVisible="{Binding !IsSupported}"
+                   Text="Disk information is available on Linux."
+                   Classes="card-note" />
+
+        <TextBlock Grid.Row="1"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                   IsVisible="{Binding IsEmpty}"
+                   Text="No disks found"
+                   Classes="card-note" />
+    </Grid>
+
+</UserControl>

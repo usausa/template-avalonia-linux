@@ -55,6 +55,24 @@ internal static partial class Log
     [LoggerMessage(Level = LogLevel.Warning, Message = "Suica read failed. step=[{step}], status=[{status}], atr=[{atr}]")]
     public static partial void WarnSuicaReadFailed(this ILogger logger, string step, string status, string atr);
 
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Suica session reset failed. status=[{status}]")]
+    public static partial void WarnSuicaSessionResetFailed(this ILogger logger, string status);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Suica card inserted. atr=[{atr}]")]
+    public static partial void DebugSuicaCardInserted(this ILogger logger, string atr);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Suica card ignored. atr=[{atr}]")]
+    public static partial void DebugSuicaCardIgnored(this ILogger logger, string atr);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Suica card read. idm=[{idm}], balance=[{balance}], history=[{history}]")]
+    public static partial void DebugSuicaCardRead(this ILogger logger, string idm, int balance, int history);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Suica reader reconnected. status=[{status}]")]
+    public static partial void DebugSuicaReconnected(this ILogger logger, string status);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Suica session reset. attempt=[{attempt}]")]
+    public static partial void DebugSuicaSessionReset(this ILogger logger, int attempt);
+
     // Platform
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Performance sample failed.")]
@@ -62,6 +80,14 @@ internal static partial class Log
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "System read failed. section=[{section}]")]
     public static partial void WarnSystemReadFailed(this ILogger logger, string section, Exception ex);
+
+    // Capture
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Screen captured. path=[{path}]")]
+    public static partial void InfoScreenCaptured(this ILogger logger, string path);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Screen capture failed. path=[{path}]")]
+    public static partial void WarnScreenCaptureFailed(this ILogger logger, Exception ex, string path);
 
     // Error
 

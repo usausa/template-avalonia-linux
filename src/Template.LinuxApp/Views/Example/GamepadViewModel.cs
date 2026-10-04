@@ -1,5 +1,6 @@
 namespace Template.LinuxApp.Views.Example;
 
+using Avalonia;
 using Avalonia.Threading;
 
 using Template.LinuxApp.Components.Gamepad;
@@ -39,12 +40,67 @@ public sealed partial class GamepadAxisItem : ObservableObject
     }
 }
 
+public sealed partial class GamepadStickItem : ObservableObject
+{
+    public string Name { get; }
+
+    public int AxisX { get; }
+
+    public int AxisY { get; }
+
+    [ObservableProperty]
+    public partial Point Position { get; set; }
+
+    [ObservableProperty]
+    public partial string XText { get; set; } = "0.0%";
+
+    [ObservableProperty]
+    public partial string YText { get; set; } = "0.0%";
+
+    [ObservableProperty]
+    public partial string OffsetText { get; set; } = "0.0%";
+
+    [ObservableProperty]
+    public partial bool IsOutside { get; set; }
+
+    [ObservableProperty]
+    public partial string StateText { get; set; } = "Inside deadzone";
+
+    public GamepadStickItem(string name, int axisX, int axisY)
+    {
+        Name = name;
+        AxisX = axisX;
+        AxisY = axisY;
+    }
+
+    public void Update(double x, double y)
+    {
+        var offset = Math.Sqrt((x * x) + (y * y));
+        Position = new Point(x, y);
+        XText = String.Create(CultureInfo.InvariantCulture, $"{x * 100:+0.0;-0.0;0.0}%");
+        YText = String.Create(CultureInfo.InvariantCulture, $"{y * 100:+0.0;-0.0;0.0}%");
+        OffsetText = String.Create(CultureInfo.InvariantCulture, $"{offset * 100:0.0}%");
+        IsOutside = offset > GamepadViewModel.Deadzone;
+        StateText = IsOutside ? "Outside deadzone" : "Inside deadzone";
+    }
+}
+
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class GamepadViewModel : AppViewModelBase
 {
+    public const double Deadzone = 0.08;
+
     private const int ButtonCount = 16;
 
     private const int AxisCount = 8;
+
+    private const int AxisLx = 0;
+
+    private const int AxisLy = 1;
+
+    private const int AxisRx = 3;
+
+    private const int AxisRy = 4;
 
     private const int AxisDpadX = 6;
 
@@ -73,6 +129,12 @@ public sealed partial class GamepadViewModel : AppViewModelBase
     public IReadOnlyList<GamepadButtonItem> ButtonItems { get; }
 
     public IReadOnlyList<GamepadAxisItem> AxisItems { get; }
+
+    public IReadOnlyList<GamepadStickItem> StickItems { get; } =
+    [
+        new("Left stick", AxisLx, AxisLy),
+        new("Right stick", AxisRx, AxisRy)
+    ];
 
     public ObservableCollection<string> Events { get; } = [];
 
@@ -202,6 +264,11 @@ public sealed partial class GamepadViewModel : AppViewModelBase
         {
             AxisItems[i].Value = axes[i] / AxisScale;
             AxisItems[i].Text = axes[i].ToString(CultureInfo.InvariantCulture);
+        }
+
+        foreach (var stick in StickItems)
+        {
+            stick.Update(axes[stick.AxisX] / AxisScale, axes[stick.AxisY] / AxisScale);
         }
 
         if (previousAxes is not null)

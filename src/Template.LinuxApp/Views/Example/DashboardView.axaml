@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
-             xmlns:state="clr-namespace:Template.LinuxApp.State"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.DashboardView"
              x:DataType="local:DashboardViewModel"
@@ -23,15 +23,11 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
-        <Style Selector="TextBlock.device-header">
-            <Setter Property="FontSize" Value="22" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+        <Style Selector="controls|RingGauge">
+            <Setter Property="MaxWidth" Value="400" />
+            <Setter Property="MaxHeight" Value="400" />
+            <Setter Property="Thickness" Value="24" />
             <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
-        </Style>
-        <Style Selector="TextBlock.device-text">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="28" />
-            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
         </Style>
     </UserControl.Styles>
 
@@ -45,52 +41,26 @@
                 Classes="panel">
             <StackPanel>
                 <TextBlock Margin="0,0,0,8"
-                           Text="System"
+                           Text="Application"
                            Classes="title" />
-                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-                      ColumnDefinitions="220,*"
-                      RowSpacing="{StaticResource SpacingXSmall}">
-                    <TextBlock Grid.Row="0" Grid.Column="0"
-                               Text="Setting"
-                               Classes="dashboard-name" />
-                    <TextBlock Grid.Row="0" Grid.Column="1"
-                               Text="{Binding SettingValue}"
-                               Classes="dashboard-value" />
-                    <TextBlock Grid.Row="1" Grid.Column="0"
-                               Text="CPU"
-                               Classes="dashboard-name" />
-                    <TextBlock Grid.Row="1" Grid.Column="1"
-                               Text="{Binding Cpu}"
-                               Classes="dashboard-value" />
-                    <TextBlock Grid.Row="2" Grid.Column="0"
-                               Text="Memory"
-                               Classes="dashboard-name" />
-                    <TextBlock Grid.Row="2" Grid.Column="1"
-                               Text="{Binding Memory}"
-                               Classes="dashboard-value" />
-                    <TextBlock Grid.Row="3" Grid.Column="0"
-                               Text="Load average"
-                               Classes="dashboard-name" />
-                    <TextBlock Grid.Row="3" Grid.Column="1"
-                               Text="{Binding LoadAverage}"
-                               Classes="dashboard-value" />
-                    <TextBlock Grid.Row="4" Grid.Column="0"
-                               Text="Temperature"
-                               Classes="dashboard-name" />
-                    <TextBlock Grid.Row="4" Grid.Column="1"
-                               Text="{Binding Temperature}"
-                               Classes="dashboard-value" />
-                    <TextBlock Grid.Row="5" Grid.Column="0"
-                               Text="Uptime"
-                               Classes="dashboard-name" />
-                    <TextBlock Grid.Row="5" Grid.Column="1"
-                               Text="{Binding Uptime}"
-                               Classes="dashboard-value" />
-                </Grid>
-                <TextBlock Margin="0,8,0,0"
-                           IsVisible="{Binding !IsSystemSupported}"
-                           Text="System information is available on Linux."
-                           Classes="dashboard-name" />
+                <ItemsControl ItemsSource="{Binding Application}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="{StaticResource SpacingXSmall}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="local:InfoItem">
+                            <Grid ColumnDefinitions="220,*">
+                                <TextBlock Text="{Binding Name}"
+                                           Classes="dashboard-name" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Value}"
+                                           Classes="dashboard-value" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </Border>
 
@@ -115,7 +85,7 @@
                             Classes="command" />
                 </UniformGrid>
                 <TextBlock Margin="0,16,0,0"
-                           Text="Application"
+                           Text="Actions"
                            Classes="title" />
                 <Button Command="{Binding ExitCommand}"
                         Content="Exit"
@@ -125,68 +95,38 @@
 
         <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                 Classes="panel">
-            <DockPanel>
-                <TextBlock DockPanel.Dock="Top"
-                           Margin="0,0,0,8"
-                           Text="Devices"
-                           Classes="title" />
-                <Grid DockPanel.Dock="Top"
-                      Margin="0,0,0,8"
-                      ColumnDefinitions="48,300,240,220,180,*">
+            <Grid RowDefinitions="Auto,*"
+                  RowSpacing="{StaticResource SpacingSmall}">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Status"
+                               Classes="title" />
                     <TextBlock Grid.Column="1"
-                               Text="Name"
-                               Classes="device-header" />
-                    <TextBlock Grid.Column="2"
-                               Text="State"
-                               Classes="device-header" />
-                    <TextBlock Grid.Column="3"
-                               Text="Last event"
-                               Classes="device-header" />
-                    <TextBlock Grid.Column="4"
-                               Text="Reconnect"
-                               Classes="device-header" />
-                    <TextBlock Grid.Column="5"
-                               Text="Error"
-                               Classes="device-header" />
+                               VerticalAlignment="Center"
+                               IsVisible="{Binding !IsSupported}"
+                               Text="System information is available on Linux."
+                               Classes="dashboard-name" />
                 </Grid>
-                <ScrollViewer>
-                    <ItemsControl ItemsSource="{Binding Devices}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Spacing="{StaticResource SpacingSmall}" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="state:DeviceStatus">
-                                <Grid ColumnDefinitions="48,300,240,220,180,*">
-                                    <Border Grid.Column="0"
-                                            HorizontalAlignment="Left"
-                                            Classes="device-state"
-                                            Classes.running="{Binding IsRunning}"
-                                            Classes.connected="{Binding IsConnected}"
-                                            Classes.error="{Binding LastError, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                            Classes.disabled="{Binding !IsEnabled}" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding Name}"
-                                               Classes="device-text" />
-                                    <TextBlock Grid.Column="2"
-                                               Text="{Binding Condition}"
-                                               Classes="device-text" />
-                                    <TextBlock Grid.Column="3"
-                                               Text="{Binding LastEventAt, StringFormat={}{0:HH:mm:ss}}"
-                                               Classes="device-text" />
-                                    <TextBlock Grid.Column="4"
-                                               Text="{Binding ReconnectCount}"
-                                               Classes="device-text" />
-                                    <TextBlock Grid.Column="5"
-                                               Text="{Binding LastError}"
-                                               Classes="device-text" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
-            </DockPanel>
+                <UniformGrid Grid.Row="1"
+                             Rows="1"
+                             ColumnSpacing="{StaticResource SpacingSmall}">
+                    <controls:RingGauge Value="{Binding Cpu.Value}"
+                                        Text="{Binding Cpu.Text}"
+                                        Label="CPU"
+                                        Fill="{StaticResource ChartBlue}" />
+                    <controls:RingGauge Value="{Binding Memory.Value}"
+                                        Text="{Binding Memory.Text}"
+                                        Label="Memory"
+                                        Fill="{StaticResource ChartPurple}" />
+                    <controls:RingGauge Value="{Binding Swap.Value}"
+                                        Text="{Binding Swap.Text}"
+                                        Label="Swap"
+                                        Fill="{StaticResource ChartOrange}" />
+                    <controls:RingGauge Value="{Binding Temperature.Value}"
+                                        Text="{Binding Temperature.Text}"
+                                        Label="Temperature"
+                                        Fill="{StaticResource ChartRed}" />
+                </UniformGrid>
+            </Grid>
         </Border>
 
     </Grid>

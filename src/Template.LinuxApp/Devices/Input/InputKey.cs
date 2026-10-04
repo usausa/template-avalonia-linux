@@ -4,5 +4,6 @@ public enum InputKey
 {
     Unknown,
     Select,
-    Start
+    Start,
+    Capture
 }

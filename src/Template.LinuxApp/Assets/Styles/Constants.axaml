@@ -35,4 +35,6 @@
     <Thickness x:Key="PaddingMedium">16,8</Thickness>
     <Thickness x:Key="PaddingLarge">20,10</Thickness>
 
+    <Thickness x:Key="ScrollGutter">0,0,16,0</Thickness>
+
 </ResourceDictionary>

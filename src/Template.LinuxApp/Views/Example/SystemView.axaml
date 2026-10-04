@@ -35,7 +35,8 @@
           ColumnSpacing="{StaticResource SpacingSmall}">
 
         <ScrollViewer Grid.Column="0"
-                      VerticalScrollBarVisibility="Auto">
+                      VerticalScrollBarVisibility="Auto"
+                      Classes="gutter">
             <StackPanel Spacing="{StaticResource SpacingSmall}">
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingXSmall}">
@@ -70,25 +71,9 @@
                 </Border>
 
                 <Border Classes="panel">
-                    <StackPanel Spacing="{StaticResource SpacingXSmall}">
-                        <TextBlock Text="Application"
-                                   Classes="panel-title" />
-                        <ItemsControl ItemsSource="{Binding Application}"
-                                      ItemTemplate="{StaticResource InfoItemTemplate}" />
-                    </StackPanel>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
-
-        <ScrollViewer Grid.Column="1"
-                      VerticalScrollBarVisibility="Auto">
-            <StackPanel Spacing="{StaticResource SpacingSmall}">
-                <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingSmall}">
-                        <TextBlock Text="Storage"
-                                   Classes="panel-title" />
                         <TextBlock Text="File systems"
-                                   Classes="panel-header" />
+                                   Classes="panel-title" />
                         <ItemsControl ItemsSource="{Binding FileSystems}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -110,54 +95,26 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Text="Disks"
-                                   Classes="panel-header" />
-                        <ItemsControl ItemsSource="{Binding Disks}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Spacing="{StaticResource SpacingNormal}" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="local:DiskItem">
-                                    <StackPanel Spacing="{StaticResource SpacingXSmall}">
-                                        <TextBlock Text="{Binding Title}"
-                                                   FontWeight="SemiBold"
-                                                   Classes="panel-text" />
-                                        <TextBlock Text="{Binding Detail}"
-                                                   Classes="panel-name" />
-                                        <TextBlock Text="{Binding Smart}"
-                                                   IsVisible="{Binding !HasSmart}"
-                                                   Classes="panel-name" />
-                                        <controls:SegmentGauge Label="Life"
-                                                               Value="{Binding Life}"
-                                                               Text="{Binding LifeText}"
-                                                               Fill="{StaticResource ChartGreen}"
-                                                               IsVisible="{Binding HasSmart}" />
-                                        <controls:SegmentGauge Label="Temperature"
-                                                               Value="{Binding Temperature}"
-                                                               Text="{Binding TemperatureText}"
-                                                               Maximum="80"
-                                                               Fill="{StaticResource ChartRed}"
-                                                               IsVisible="{Binding HasSmart}" />
-                                        <ItemsControl ItemsSource="{Binding Attributes}"
-                                                      ItemTemplate="{StaticResource InfoItemTemplate}" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
                     </StackPanel>
                 </Border>
+            </StackPanel>
+        </ScrollViewer>
 
-                <Border Classes="panel">
+        <Border Grid.Column="1"
+                Classes="panel">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top"
+                      Margin="0,0,0,8"
+                      ColumnDefinitions="*,Auto">
+                    <TextBlock Text="USB devices"
+                               Classes="panel-title" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding UsbSummary}"
+                               Classes="panel-name" />
+                </Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              Classes="gutter">
                     <StackPanel Spacing="{StaticResource SpacingSmall}">
-                        <Grid ColumnDefinitions="*,Auto">
-                            <TextBlock Text="USB devices"
-                                       Classes="panel-title" />
-                            <TextBlock Grid.Column="1"
-                                       Text="{Binding UsbSummary}"
-                                       Classes="panel-name" />
-                        </Grid>
                         <ItemsControl ItemsSource="{Binding UsbDevices}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -194,9 +151,9 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
-                </Border>
-            </StackPanel>
-        </ScrollViewer>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
 
         <Border Grid.Column="2"
                 Classes="panel">

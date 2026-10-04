@@ -15,11 +15,19 @@ public sealed partial class NfcViewModel : AppViewModelBase
 {
     private static readonly TimeSpan FlashDuration = TimeSpan.FromMilliseconds(400);
 
+    private static readonly TimeSpan RepeatInterval = TimeSpan.FromSeconds(3);
+
+    private static readonly TimeSpan ErrorDelay = TimeSpan.FromSeconds(1);
+
     private readonly TimeProvider timeProvider;
 
     private readonly ISuicaReader suicaReader;
 
     private readonly DispatcherTimer flashTimer;
+
+    private readonly DispatcherTimer errorTimer;
+
+    private long lastReadTimestamp;
 
     [ObservableProperty]
     public partial bool HasCard { get; set; }
@@ -67,6 +75,13 @@ public sealed partial class NfcViewModel : AppViewModelBase
             IsFlashing = false;
         };
 
+        errorTimer = new DispatcherTimer { Interval = ErrorDelay };
+        errorTimer.Tick += (_, _) =>
+        {
+            errorTimer.Stop();
+            ErrorText = "Could not read the card.";
+        };
+
         Disposables.Add(Observable
             .FromEventPattern<SuicaReadEventArgs>(h => suicaReader.CardRead += h, h => suicaReader.CardRead -= h)
             .ObserveOnCurrentContext()
@@ -74,7 +89,13 @@ public sealed partial class NfcViewModel : AppViewModelBase
         Disposables.Add(Observable
             .FromEventPattern(h => suicaReader.ReadFailed += h, h => suicaReader.ReadFailed -= h)
             .ObserveOnCurrentContext()
-            .Subscribe(_ => ErrorText = "Could not read the card."));
+            .Subscribe(_ =>
+            {
+                if (!errorTimer.IsEnabled)
+                {
+                    errorTimer.Start();
+                }
+            }));
         Disposables.Add(Observable
             .FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => suicaReader.Status.PropertyChanged += h, h => suicaReader.Status.PropertyChanged -= h)
             .ObserveOnCurrentContext()
@@ -88,6 +109,7 @@ public sealed partial class NfcViewModel : AppViewModelBase
         if (disposing)
         {
             flashTimer.Stop();
+            errorTimer.Stop();
         }
 
         base.Dispose(disposing);
@@ -106,6 +128,14 @@ public sealed partial class NfcViewModel : AppViewModelBase
 
     private void ApplyCard(SuicaReadEventArgs args)
     {
+        errorTimer.Stop();
+        var timestamp = timeProvider.GetTimestamp();
+        if (HasCard && (ErrorText is null) && (args.Idm == Idm) && (timeProvider.GetElapsedTime(lastReadTimestamp, timestamp) < RepeatInterval))
+        {
+            return;
+        }
+
+        lastReadTimestamp = timestamp;
         Idm = args.Idm;
         Balance = args.Balance;
         ReadTime = timeProvider.GetLocalNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture);
@@ -128,6 +158,7 @@ public sealed partial class NfcViewModel : AppViewModelBase
 
     private void Clear()
     {
+        errorTimer.Stop();
         History.Clear();
         HasHistory = false;
         HistorySummary = string.Empty;

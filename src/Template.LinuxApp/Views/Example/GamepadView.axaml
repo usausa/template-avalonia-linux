@@ -38,6 +38,19 @@
             <Setter Property="Fill" Value="{StaticResource ChartBlue}" />
             <Setter Property="TrackBrush" Value="{DynamicResource PanelBorderBrush}" />
         </Style>
+        <Style Selector="controls|StickScope">
+            <Setter Property="Fill" Value="{StaticResource ChartGreen}" />
+            <Setter Property="OutsideFill" Value="{StaticResource ChartOrange}" />
+            <Setter Property="Stroke" Value="{DynamicResource PanelBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
+        </Style>
+        <Style Selector="TextBlock.stick-state">
+            <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}" />
+            <Setter Property="Foreground" Value="{StaticResource ChartGreen}" />
+        </Style>
+        <Style Selector="TextBlock.stick-state.outside">
+            <Setter Property="Foreground" Value="{StaticResource ChartOrange}" />
+        </Style>
     </UserControl.Styles>
 
     <Grid ColumnDefinitions="2*,*"
@@ -68,7 +81,7 @@
         </Border>
 
         <Grid Grid.Column="1"
-              RowDefinitions="Auto,Auto,*"
+              RowDefinitions="Auto,Auto,2*,3*"
               RowSpacing="{StaticResource SpacingSmall}">
 
             <Border Grid.Row="0"
@@ -137,6 +150,77 @@
             </Border>
 
             <Border Grid.Row="2"
+                    Classes="panel">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top"
+                               Margin="0,0,0,6"
+                               Text="Sticks"
+                               Classes="panel-title" />
+                    <ItemsControl ItemsSource="{Binding StickItems}"
+                                  ClipToBounds="True">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2"
+                                             ColumnSpacing="{StaticResource SpacingSmall}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="local:GamepadStickItem">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="{StaticResource SpacingSmall}">
+                                    <controls:StickScope Position="{Binding Position}"
+                                                         Deadzone="{x:Static local:GamepadViewModel.Deadzone}" />
+                                    <Grid Grid.Column="1"
+                                          VerticalAlignment="Center"
+                                          ColumnDefinitions="Auto,64"
+                                          RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                                          ColumnSpacing="{StaticResource SpacingSmall}"
+                                          RowSpacing="{StaticResource SpacingXSmall}">
+                                        <TextBlock Grid.ColumnSpan="2"
+                                                   Text="{Binding Name}"
+                                                   Classes="panel-title" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Text="X"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   HorizontalAlignment="Right"
+                                                   Text="{Binding XText}"
+                                                   Classes="panel-text" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="0"
+                                                   Text="Y"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Row="2"
+                                                   Grid.Column="1"
+                                                   HorizontalAlignment="Right"
+                                                   Text="{Binding YText}"
+                                                   Classes="panel-text" />
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="0"
+                                                   Text="Offset"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Row="3"
+                                                   Grid.Column="1"
+                                                   HorizontalAlignment="Right"
+                                                   Text="{Binding OffsetText}"
+                                                   Classes="panel-text" />
+                                        <TextBlock Grid.Row="4"
+                                                   Grid.Column="0"
+                                                   Grid.ColumnSpan="2"
+                                                   Text="{Binding StateText}"
+                                                   Classes="stick-state"
+                                                   Classes.outside="{Binding IsOutside}" />
+                                    </Grid>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </DockPanel>
+            </Border>
+
+            <Border Grid.Row="3"
                     Classes="panel">
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top"

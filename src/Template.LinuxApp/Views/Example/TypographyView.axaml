@@ -16,7 +16,7 @@
         </Style>
     </UserControl.Styles>
 
-    <ScrollViewer>
+    <ScrollViewer Classes="gutter">
         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
               ColumnDefinitions="Auto,32,*"
               Margin="10"

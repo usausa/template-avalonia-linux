@@ -2,27 +2,27 @@ namespace Template.LinuxApp.Helpers;
 
 using SkiaSharp;
 
-using ZXing;
-
 public static class ReceiptHelper
 {
     private const string StoreName = "TEMPLATE STORE";
 
-    private const string JanCode = "4901234567894";
+    private const string ReceiptNumber = "0001";
 
-    private const string QrText = "https://example.com/receipt/0001";
+    private const string QrText = "https://example.com/receipt/" + ReceiptNumber;
 
     private const int TextColumns = 32;
 
-    private const int ImageWidth = 800;
+    private const int LabelWidth = 320;
 
-    private const int ImageHeight = 1200;
+    private const int LabelHeight = 240;
 
-    private const float Margin = 60;
+    private const int QrModule = 6;
 
-    private const float BarcodeModule = 4;
+    private const float LabelMargin = 18;
 
-    private const float BarcodeHeight = 120;
+    private const float TextMargin = 10;
+
+    private const float LineSpacing = 6;
 
     private static readonly (string Name, int Price)[] Items =
     [
@@ -51,7 +51,7 @@ public static class ReceiptHelper
 
     public static byte[] CreatePng(DateTimeOffset now)
     {
-        using var bitmap = new SKBitmap(ImageWidth, ImageHeight);
+        using var bitmap = new SKBitmap(LabelWidth, LabelHeight);
         using (var canvas = new SKCanvas(bitmap))
         {
             Draw(canvas, now);
@@ -66,61 +66,51 @@ public static class ReceiptHelper
     {
         canvas.Clear(SKColors.White);
 
+        using var qr = SkiaHelper.CreateQrBitmap(QrText, QrModule, false);
+        canvas.DrawBitmap(qr, LabelMargin, (LabelHeight - qr.Height) / 2f);
+
+        var left = LabelMargin + qr.Width + LabelMargin;
+        var width = LabelWidth - left - TextMargin;
         using var paint = new SKPaint();
         paint.Color = SKColors.Black;
         paint.IsAntialias = true;
-        using var rulePaint = new SKPaint();
-        rulePaint.Color = SKColors.Black;
-        rulePaint.StrokeWidth = 2;
-        rulePaint.PathEffect = SKPathEffect.CreateDash([12, 8], 0);
         using var regular = SKFontManager.Default.MatchCharacter("sans-serif", 'A');
         using var bold = regular is null ? null : SKFontManager.Default.MatchFamily(regular.FamilyName, SKFontStyle.Bold);
-        using var titleFont = new SKFont(bold ?? regular, 56);
-        using var totalFont = new SKFont(bold ?? regular, 44);
-        using var textFont = new SKFont(regular, 32);
+        var date = now.ToString("MM/dd", CultureInfo.InvariantCulture);
+        var time = now.ToString("HH:mm", CultureInfo.InvariantCulture);
+        using var labelFont = CreateFont(regular, "No.", width, 24);
+        using var numberFont = CreateFont(bold ?? regular, ReceiptNumber, width, 64);
+        using var dateFont = CreateFont(regular, date, width, 32);
+        using var timeFont = CreateFont(regular, time, width, 32);
+        (string Text, SKFont Font)[] lines =
+        [
+            ("No.", labelFont),
+            (ReceiptNumber, numberFont),
+            (date, dateFont),
+            (time, timeFont)
+        ];
 
-        var center = ImageWidth / 2f;
-        var y = Margin + 56;
-        canvas.DrawText(StoreName, center, y, SKTextAlign.Center, titleFont, paint);
-        y += 52;
-        canvas.DrawText(now.ToString("yyyy/MM/dd HH:mm", CultureInfo.InvariantCulture), center, y, SKTextAlign.Center, textFont, paint);
-        y += 40;
-        canvas.DrawLine(Margin, y, ImageWidth - Margin, y, rulePaint);
-        y += 56;
-        foreach (var (name, price) in Items)
+        var height = lines.Sum(static x => x.Font.Metrics.Descent - x.Font.Metrics.Ascent) + (LineSpacing * (lines.Length - 1));
+        var center = left + (width / 2);
+        var y = (LabelHeight - height) / 2;
+        foreach (var (text, font) in lines)
         {
-            canvas.DrawText(name, Margin, y, SKTextAlign.Left, textFont, paint);
-            canvas.DrawText($"¥{FormatPrice(price)}", ImageWidth - Margin, y, SKTextAlign.Right, textFont, paint);
-            y += 48;
+            y -= font.Metrics.Ascent;
+            canvas.DrawText(text, center, y, SKTextAlign.Center, font, paint);
+            y += font.Metrics.Descent + LineSpacing;
         }
-
-        canvas.DrawLine(Margin, y - 16, ImageWidth - Margin, y - 16, rulePaint);
-        y += 48;
-        canvas.DrawText("TOTAL", Margin, y, SKTextAlign.Left, totalFont, paint);
-        canvas.DrawText($"¥{FormatPrice(Items.Sum(static x => x.Price))}", ImageWidth - Margin, y, SKTextAlign.Right, totalFont, paint);
-        y += 56;
-        DrawBarcode(canvas, y, textFont, paint);
-        y += BarcodeHeight + 72;
-
-        using var qr = SkiaHelper.CreateQrBitmap(QrText, 8);
-        canvas.DrawBitmap(qr, (ImageWidth - qr.Width) / 2f, y);
-        y += qr.Height + 48;
-        canvas.DrawText("Thank you", center, y, SKTextAlign.Center, textFont, paint);
     }
 
-    private static void DrawBarcode(SKCanvas canvas, float top, SKFont font, SKPaint paint)
+    private static SKFont CreateFont(SKTypeface? typeface, string text, float width, float size)
     {
-        var matrix = new MultiFormatWriter().encode(JanCode, BarcodeFormat.EAN_13, 0, 0, new Dictionary<EncodeHintType, object> { [EncodeHintType.MARGIN] = 0 });
-        var left = (ImageWidth - (matrix.Width * BarcodeModule)) / 2f;
-        for (var x = 0; x < matrix.Width; x++)
+        var font = new SKFont(typeface, size);
+        var measured = font.MeasureText(text);
+        if (measured > width)
         {
-            if (matrix[x, 0])
-            {
-                canvas.DrawRect(left + (x * BarcodeModule), top, BarcodeModule, BarcodeHeight, paint);
-            }
+            font.Size = size * width / measured;
         }
 
-        canvas.DrawText(JanCode, ImageWidth / 2f, top + BarcodeHeight + 36, SKTextAlign.Center, font, paint);
+        return font;
     }
 
     private static void AppendLine(StringBuilder builder, string line) => builder.Append(line).Append('\n');

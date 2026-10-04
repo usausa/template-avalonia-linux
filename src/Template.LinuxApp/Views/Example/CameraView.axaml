@@ -80,7 +80,8 @@
         </Border>
 
         <ScrollViewer Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-                      VerticalScrollBarVisibility="Auto">
+                      VerticalScrollBarVisibility="Auto"
+                      Classes="gutter">
             <StackPanel Margin="{StaticResource PaddingSmall}"
                         Spacing="{StaticResource SpacingSmall}">
                 <Border Classes="panel">
