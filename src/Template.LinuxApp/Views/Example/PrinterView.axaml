@@ -5,7 +5,7 @@
              xmlns:s="http://smart/avalonia"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
-             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             xmlns:cups="using:LinuxDotNet.Cups"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.PrinterView"
              x:DataType="local:PrinterViewModel"
@@ -13,16 +13,48 @@
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
-        <converters:PrinterStateBrushConverter x:Key="PrinterStateBrushConverter"
-                                               Idle="{StaticResource ChartGreen}"
-                                               Processing="{StaticResource ChartBlue}"
-                                               Stopped="{StaticResource ChartRed}" />
-        <converters:PrintJobStateBrushConverter x:Key="JobStateBrushConverter"
-                                                Processing="{StaticResource ChartBlue}"
-                                                Held="{StaticResource ChartYellow}"
-                                                Stopped="{StaticResource ChartOrange}"
-                                                Aborted="{StaticResource ChartRed}"
-                                                Completed="{StaticResource ChartGreen}" />
+        <s:MapToBrushConverter x:Key="PrinterStateBrushConverter"
+                               DefaultValue="Gray">
+            <s:MapToBrushConverter.Entries>
+                <s:MapToBrushEntry Key="{x:Static cups:PrinterState.Idle}"
+                                   Value="{StaticResource ChartGreen}" />
+                <s:MapToBrushEntry Key="{x:Static cups:PrinterState.Processing}"
+                                   Value="{StaticResource ChartBlue}" />
+                <s:MapToBrushEntry Key="{x:Static cups:PrinterState.Stopped}"
+                                   Value="{StaticResource ChartRed}" />
+            </s:MapToBrushConverter.Entries>
+        </s:MapToBrushConverter>
+        <s:MapToBrushConverter x:Key="JobStateBrushConverter"
+                               DefaultValue="Gray">
+            <s:MapToBrushConverter.Entries>
+                <s:MapToBrushEntry Key="{x:Static cups:PrintJobState.Processing}"
+                                   Value="{StaticResource ChartBlue}" />
+                <s:MapToBrushEntry Key="{x:Static cups:PrintJobState.Held}"
+                                   Value="{StaticResource ChartYellow}" />
+                <s:MapToBrushEntry Key="{x:Static cups:PrintJobState.Stopped}"
+                                   Value="{StaticResource ChartOrange}" />
+                <s:MapToBrushEntry Key="{x:Static cups:PrintJobState.Aborted}"
+                                   Value="{StaticResource ChartRed}" />
+                <s:MapToBrushEntry Key="{x:Static cups:PrintJobState.Completed}"
+                                   Value="{StaticResource ChartGreen}" />
+            </s:MapToBrushConverter.Entries>
+        </s:MapToBrushConverter>
+        <s:MapToTextConverter x:Key="ResultTextConverter">
+            <s:MapToTextConverter.Entries>
+                <s:MapToTextEntry Key="{x:Static local:PrintResult.TextSent}"
+                                  Value="Sent to the line printer" />
+                <s:MapToTextEntry Key="{x:Static local:PrintResult.TextFailed}"
+                                  Value="Printing to the line printer failed" />
+                <s:MapToTextEntry Key="{x:Static local:PrintResult.ImageSent}"
+                                  Value="Sent to the image printer" />
+                <s:MapToTextEntry Key="{x:Static local:PrintResult.ImageFailed}"
+                                  Value="Printing to the image printer failed" />
+                <s:MapToTextEntry Key="{x:Static local:PrintResult.Canceled}"
+                                  Value="Canceled" />
+                <s:MapToTextEntry Key="{x:Static local:PrintResult.CancelFailed}"
+                                  Value="Canceling failed" />
+            </s:MapToTextConverter.Entries>
+        </s:MapToTextConverter>
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -97,10 +129,21 @@
                     <Image Source="{Binding PreviewImage}"
                            Stretch="Uniform" />
                 </Border>
-                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                           Text="{Binding ResultText}"
-                           Classes="result"
-                           Classes.error="{Binding IsResultError}" />
+                <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            Orientation="Horizontal"
+                            Spacing="{StaticResource SpacingNormal}"
+                            IsVisible="{Binding HasResult}">
+                    <TextBlock Text="{Binding ResultTime, StringFormat='{}{0:HH:mm:ss}'}"
+                               Classes="result"
+                               Classes.error="{Binding IsResultError}" />
+                    <TextBlock Text="{Binding Result, Converter={StaticResource ResultTextConverter}}"
+                               Classes="result"
+                               Classes.error="{Binding IsResultError}" />
+                    <TextBlock IsVisible="{Binding ResultJobId, Converter={x:Static ObjectConverters.IsNotNull}}"
+                               Text="{Binding ResultJobId, StringFormat='#{0}'}"
+                               Classes="result"
+                               Classes.error="{Binding IsResultError}" />
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -123,16 +166,27 @@
                     <TextBlock Text="Jobs"
                                Classes="card-title" />
                     <Border Grid.Column="1"
-                            Background="{Binding QueueState, Converter={StaticResource PrinterStateBrushConverter}}"
+                            Background="{Binding Queue.State, Converter={StaticResource PrinterStateBrushConverter}}"
                             Classes="state-chip">
-                        <TextBlock Text="{Binding QueueState}"
+                        <TextBlock Text="{Binding Queue.State}"
                                    FontSize="{StaticResource FontSizeLarge}" />
                     </Border>
                 </Grid>
-                <TextBlock Grid.Row="1"
-                           Text="{Binding QueueDetail}"
-                           TextWrapping="Wrap"
-                           Classes="card-meta" />
+                <WrapPanel Grid.Row="1"
+                           ItemSpacing="{StaticResource SpacingNormal}">
+                    <TextBlock IsVisible="{Binding Queue.MakeModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               Text="{Binding Queue.MakeModel}"
+                               Classes="card-meta" />
+                    <TextBlock IsVisible="{Binding Queue.Reasons, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               Text="{Binding Queue.Reasons}"
+                               Classes="card-meta" />
+                    <TextBlock IsVisible="{Binding Queue.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               Text="{Binding Queue.Message}"
+                               Classes="card-meta" />
+                    <TextBlock IsVisible="{Binding !Queue.IsAcceptingJobs}"
+                               Text="Not accepting jobs"
+                               Classes="card-meta" />
+                </WrapPanel>
                 <TextBlock Grid.Row="2"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            IsVisible="{Binding !HasJobs}"
@@ -154,9 +208,15 @@
                                       ColumnSpacing="{StaticResource SpacingSmall}">
                                     <TextBlock Grid.Row="0" Grid.Column="0"
                                                VerticalAlignment="Center"
-                                               Text="{Binding Label}"
                                                FontSize="{StaticResource FontSizeLarge}"
-                                               TextTrimming="CharacterEllipsis" />
+                                               TextTrimming="CharacterEllipsis">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}#{0}  {1}">
+                                                <Binding Path="JobId" />
+                                                <Binding Path="Title" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                     <Border Grid.Row="0" Grid.Column="1"
                                             HorizontalAlignment="Right"
                                             Background="{Binding State, Converter={StaticResource JobStateBrushConverter}}"
@@ -166,7 +226,7 @@
                                     </Border>
                                     <TextBlock Grid.Row="1" Grid.Column="0"
                                                VerticalAlignment="Center"
-                                               Text="{Binding Time}"
+                                               Text="{Binding SubmitTime, StringFormat='{}{0:yyyy/MM/dd HH:mm:ss}'}"
                                                Classes="card-meta" />
                                     <Button Grid.Row="1" Grid.Column="1"
                                             Command="{Binding $parent[ItemsControl].((local:PrinterViewModel)DataContext).CancelJobCommand, FallbackValue={x:Null}}"

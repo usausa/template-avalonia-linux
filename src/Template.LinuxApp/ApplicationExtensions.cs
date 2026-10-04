@@ -19,6 +19,7 @@ using Template.LinuxApp.Components.Nfc;
 using Template.LinuxApp.Components.Printer;
 using Template.LinuxApp.Components.Video;
 using Template.LinuxApp.Devices.Input;
+using Template.LinuxApp.Reports;
 using Template.LinuxApp.Services;
 using Template.LinuxApp.Settings;
 using Template.LinuxApp.Shell;
@@ -83,6 +84,12 @@ public static partial class ApplicationExtensions
         // Service
         builder.Services.AddServices();
         builder.Services.AddSingleton<IDialogService, DialogService>();
+        builder.Services.AddSingleton<IPerformanceService, PerformanceService>();
+        builder.Services.AddSingleton<ISystemService, SystemService>();
+        builder.Services.AddSingleton<IDiskService, DiskService>();
+
+        // Report
+        builder.Services.AddSingleton<ReceiptReportBuilder>();
 
         // State
         builder.Services.AddSingleton(TimeProvider.System);
@@ -129,9 +136,6 @@ public static partial class ApplicationExtensions
         builder.Services.AddOptions<SuicaReaderOption>().BindConfiguration("Nfc").ValidateDataAnnotations().ValidateOnStart();
         builder.Services.AddSingleton(static p => p.GetRequiredService<IOptions<SuicaReaderOption>>().Value);
         builder.Services.AddSingleton<ISuicaReader, SuicaReader>();
-        builder.Services.AddSingleton<IPerformanceService, PerformanceService>();
-        builder.Services.AddSingleton<ISystemService, SystemService>();
-        builder.Services.AddSingleton<IDiskService, DiskService>();
 
         // Window
         builder.Services.AddSingleton<MainWindow>();
