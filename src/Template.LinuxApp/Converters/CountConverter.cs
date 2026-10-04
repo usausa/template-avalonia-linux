@@ -8,9 +8,12 @@ public sealed class CountConverter : IValueConverter
 
     public string Plural { get; set; } = String.Empty;
 
+    public string Zero { get; set; } = String.Empty;
+
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         value switch
         {
+            0 => Zero,
             1 => String.Create(CultureInfo.InvariantCulture, $"1 {Singular}"),
             int count => String.Create(CultureInfo.InvariantCulture, $"{count:N0} {Plural}"),
             _ => String.Empty

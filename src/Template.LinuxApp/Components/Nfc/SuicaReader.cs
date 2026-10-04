@@ -321,7 +321,7 @@ public sealed class SuicaReader : ISuicaReader, IDisposable
             return (Fail("start session", atr), false);
         }
 
-        SuicaReadEventArgs? args = null;
+        SuicaReadEventArgs? args;
         bool closed;
         try
         {

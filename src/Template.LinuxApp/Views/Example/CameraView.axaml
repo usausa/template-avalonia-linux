@@ -5,6 +5,8 @@
              xmlns:s="http://smart/avalonia"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:video="clr-namespace:Template.LinuxApp.Components.Video"
+             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.CameraView"
              x:DataType="local:CameraViewModel"
@@ -12,16 +14,7 @@
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="InfoItemTemplate"
-                      x:DataType="local:InfoItem">
-            <Grid ColumnDefinitions="72,*">
-                <TextBlock Text="{Binding Name}"
-                           Classes="panel-name" />
-                <TextBlock Grid.Column="1"
-                           Text="{Binding Value}"
-                           Classes="panel-text" />
-            </Grid>
-        </DataTemplate>
+        <converters:CameraFormatsConverter x:Key="FormatsConverter" />
     </UserControl.Resources>
 
     <Grid RowDefinitions="*,Auto"
@@ -99,18 +92,75 @@
                                    Classes="panel-header" />
                         <ComboBox HorizontalAlignment="Stretch"
                                   ItemsSource="{Binding Cameras}"
-                                  SelectedItem="{Binding SelectedCamera}" />
+                                  SelectedItem="{Binding SelectedCamera}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="video:CameraDevice">
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}  {1}">
+                                                <Binding Path="Device" />
+                                                <Binding Path="Name" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                         <TextBlock Text="Resolution (YUYV)"
                                    Classes="panel-header" />
                         <ComboBox HorizontalAlignment="Stretch"
                                   ItemsSource="{Binding Resolutions}"
-                                  SelectedItem="{Binding SelectedResolution}" />
+                                  SelectedItem="{Binding SelectedResolution}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="video:CameraResolution">
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} x {1}">
+                                                <Binding Path="Width" />
+                                                <Binding Path="Height" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                         <Button HorizontalAlignment="Stretch"
                                 Command="{Binding ApplyCommand}"
                                 Content="Apply"
                                 Classes="panel-button" />
-                        <ItemsControl ItemsSource="{Binding CameraInfo}"
-                                      ItemTemplate="{StaticResource InfoItemTemplate}" />
+                        <ContentControl Content="{Binding SelectedCamera}">
+                            <ContentControl.ContentTemplate>
+                                <DataTemplate x:DataType="video:CameraDevice">
+                                    <Grid ColumnDefinitions="72,*"
+                                          RowDefinitions="Auto,Auto,Auto,Auto">
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   Text="Name"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Row="0" Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   Classes="panel-text" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                                   Text="Driver"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                                   Text="{Binding Driver}"
+                                                   Classes="panel-text" />
+                                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                                   Text="Bus"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Row="2" Grid.Column="1"
+                                                   Text="{Binding BusInfo}"
+                                                   Classes="panel-text" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                                   Text="Formats"
+                                                   Classes="panel-name" />
+                                        <TextBlock Grid.Row="3" Grid.Column="1"
+                                                   Text="{Binding Formats, Converter={StaticResource FormatsConverter}}"
+                                                   Classes="panel-text" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ContentControl.ContentTemplate>
+                        </ContentControl>
                     </StackPanel>
                 </Border>
 
@@ -125,15 +175,21 @@
                                       IsChecked="{Binding IsQrScan}"
                                       IsEnabled="{Binding IsQrEnabled}" />
                         </Grid>
-                        <TextBlock Text="{Binding QrText}"
+                        <TextBlock Text="{Binding QrText, TargetNullValue=—}"
                                    FontSize="{StaticResource FontSizeXLarge}"
                                    FontWeight="SemiBold"
                                    TextWrapping="Wrap" />
                         <ItemsControl ItemsSource="{Binding QrHistory}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="x:String">
-                                    <TextBlock Text="{Binding}"
-                                               Classes="panel-name" />
+                                <DataTemplate x:DataType="local:QrHistoryItem">
+                                    <TextBlock Classes="panel-name">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0:HH:mm:ss}  {1}">
+                                                <Binding Path="Time" />
+                                                <Binding Path="Text" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -150,7 +206,20 @@
                             <Image Source="{Binding LastSnapshot}"
                                    Stretch="Uniform" />
                         </Border>
-                        <TextBlock Text="{Binding SnapshotText}"
+                        <TextBlock IsVisible="{Binding SnapshotFile, Converter={x:Static ObjectConverters.IsNull}}"
+                                   Text="{Binding SnapshotFolder}"
+                                   Classes="panel-note" />
+                        <TextBlock IsVisible="{Binding SnapshotFile, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                   Classes="panel-note">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} ({1})">
+                                    <Binding Path="SnapshotFile" />
+                                    <Binding Path="SnapshotCount" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock IsVisible="{Binding SnapshotError, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                   Text="{Binding SnapshotError}"
                                    Classes="panel-note" />
                     </StackPanel>
                 </Border>

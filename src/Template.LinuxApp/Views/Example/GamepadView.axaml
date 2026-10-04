@@ -64,9 +64,18 @@
                       ColumnDefinitions="*,Auto">
                     <TextBlock Text="Controller"
                                Classes="panel-title" />
-                    <TextBlock Grid.Column="1"
-                               Text="{Binding Status}"
-                               Classes="panel-name" />
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="{StaticResource SpacingSmall}">
+                        <TextBlock IsVisible="{Binding IsConnected}"
+                                   Text="{Binding DeviceName}"
+                                   Classes="panel-name" />
+                        <TextBlock IsVisible="{Binding !IsConnected}"
+                                   Text="Disconnected"
+                                   Classes="panel-name" />
+                        <TextBlock Text="{Binding Device}"
+                                   Classes="panel-name" />
+                    </StackPanel>
                 </Grid>
                 <controls:GamepadDiagram Margin="{StaticResource PaddingLarge}"
                                          Buttons="{Binding Buttons}"
@@ -140,7 +149,7 @@
                                                       Value="{Binding Value}" />
                                     <TextBlock Grid.Column="3"
                                                HorizontalAlignment="Right"
-                                               Text="{Binding Text}"
+                                               Text="{Binding Raw}"
                                                Classes="panel-text" />
                                 </Grid>
                             </DataTemplate>
@@ -186,7 +195,7 @@
                                         <TextBlock Grid.Row="1"
                                                    Grid.Column="1"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding XText}"
+                                                   Text="{Binding X, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}"
                                                    Classes="panel-text" />
                                         <TextBlock Grid.Row="2"
                                                    Grid.Column="0"
@@ -195,7 +204,7 @@
                                         <TextBlock Grid.Row="2"
                                                    Grid.Column="1"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding YText}"
+                                                   Text="{Binding Y, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}"
                                                    Classes="panel-text" />
                                         <TextBlock Grid.Row="3"
                                                    Grid.Column="0"
@@ -204,12 +213,12 @@
                                         <TextBlock Grid.Row="3"
                                                    Grid.Column="1"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding OffsetText}"
+                                                   Text="{Binding Offset, StringFormat='{}{0:0.0%}'}"
                                                    Classes="panel-text" />
                                         <TextBlock Grid.Row="4"
                                                    Grid.Column="0"
                                                    Grid.ColumnSpan="2"
-                                                   Text="{Binding StateText}"
+                                                   Text="{Binding IsOutside, Converter={s:BoolToText True='Outside deadzone', False='Inside deadzone'}}"
                                                    Classes="stick-state"
                                                    Classes.outside="{Binding IsOutside}" />
                                     </Grid>
@@ -230,9 +239,15 @@
                     <ItemsControl ItemsSource="{Binding Events}"
                                   ClipToBounds="True">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
-                                <TextBlock Text="{Binding}"
-                                           Classes="panel-text" />
+                            <DataTemplate x:DataType="local:GamepadEventItem">
+                                <TextBlock Classes="panel-text">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0:HH:mm:ss.fff}  {1}">
+                                            <Binding Path="Time" />
+                                            <Binding Path="Message" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

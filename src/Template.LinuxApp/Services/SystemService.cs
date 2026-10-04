@@ -2,27 +2,51 @@ namespace Template.LinuxApp.Services;
 
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 
 using LinuxDotNet.SystemInfo;
 
+public sealed record NetworkAddress(string Interface, string Address);
+
+public sealed record WirelessLink(string Interface, double SignalLevel, double LinkQuality);
+
 public sealed record HostSnapshot(
-    HardwareInfo Hardware,
-    KernelInfo Kernel,
+    string Vendor,
+    string ProductName,
+    string BoardVendor,
+    string BoardName,
+    string BiosVendor,
+    string BiosVersion,
+    string BiosDate,
+    string Cpu,
+    int Cores,
+    int Threads,
+    double? ClockMhz,
+    ulong L1DCache,
+    ulong L1ICache,
+    ulong L2Cache,
+    ulong L3Cache,
+    ulong Memory,
+    string Distribution,
+    string OsType,
+    string OsRelease,
+    Architecture Architecture,
     string HostName,
-    IReadOnlyList<string> Addresses,
-    IReadOnlyList<WirelessStatEntry> Wireless,
+    IReadOnlyList<NetworkAddress> Addresses,
+    IReadOnlyList<WirelessLink> Wireless,
+    DateTimeOffset? BootTime,
     TimeSpan Uptime);
 
 public sealed record PowerSnapshot(
     bool HasMains,
-    bool MainsOnline,
+    bool? MainsOnline,
     bool HasBattery,
-    int Capacity,
-    string Status,
-    double Voltage,
-    double Current,
-    double Charge,
-    double ChargeFull);
+    int? Capacity,
+    string? Status,
+    double? Voltage,
+    double? Current,
+    double? Charge,
+    double? ChargeFull);
 
 public sealed record FileSystemEntry(
     string MountPoint,
@@ -32,13 +56,13 @@ public sealed record FileSystemEntry(
     ulong Total,
     ulong Used,
     ulong Available,
-    double Usage);
+    double? Usage);
 
 public sealed record ProcessEntry(
     int ProcessId,
     string Name,
     string User,
-    double CpuUsage,
+    double? CpuUsage,
     ulong Memory,
     int Threads,
     ProcessState State);
@@ -108,7 +132,32 @@ public sealed class SystemService : ISystemService
                 uptime.Update();
             }
 
-            return new HostSnapshot(hardware, kernel, Environment.MachineName, ReadAddresses(), PlatformProvider.GetWirelessStat().Interfaces, uptime.Elapsed);
+            return new HostSnapshot(
+                hardware.Vendor.Trim(),
+                hardware.ProductName.Trim(),
+                hardware.BoardVendor.Trim(),
+                hardware.BoardName.Trim(),
+                hardware.BiosVendor.Trim(),
+                hardware.BiosVersion.Trim(),
+                hardware.BiosDate.Trim(),
+                hardware.CpuBrandString.Trim(),
+                hardware.CoresPerSocket * hardware.PhysicalCpu,
+                hardware.LogicalCpu,
+                hardware.CpuFrequencyMax > 0 ? hardware.CpuFrequencyMax / 1e6 : null,
+                hardware.L1DCacheSize,
+                hardware.L1ICacheSize,
+                hardware.L2CacheSize,
+                hardware.L3CacheSize,
+                hardware.MemoryTotal,
+                kernel.OsPrettyName?.Trim() ?? String.Empty,
+                kernel.OsType.Trim(),
+                kernel.OsRelease.Trim(),
+                RuntimeInformation.OSArchitecture,
+                Environment.MachineName,
+                ReadAddresses(),
+                [.. PlatformProvider.GetWirelessStat().Interfaces.Select(static x => new WirelessLink(x.Interface, x.SignalLevel, x.LinkQuality))],
+                kernel.BootTime > DateTimeOffset.MinValue ? kernel.BootTime.ToLocalTime() : null,
+                uptime.Elapsed);
         }, null);
 
     public PowerSnapshot? ReadPower() =>
@@ -134,14 +183,14 @@ public sealed class SystemService : ISystemService
 
             return new PowerSnapshot(
                 mains.Supported,
-                mains.Supported && mains.Online,
+                mains.Supported ? mains.Online : null,
                 battery.Supported,
-                battery.Capacity,
-                battery.Status,
-                battery.Voltage / 1e6,
-                battery.Current / 1e6,
-                battery.Charge / 1e3,
-                battery.ChargeFull / 1e3);
+                battery.Supported ? battery.Capacity : null,
+                battery.Supported ? battery.Status : null,
+                battery.Supported ? battery.Voltage / 1e6 : null,
+                battery.Supported ? battery.Current / 1e6 : null,
+                battery.Supported ? battery.Charge / 1e3 : null,
+                battery.Supported ? battery.ChargeFull / 1e3 : null);
         }, null);
 
     public IReadOnlyList<FileSystemEntry> ReadFileSystems() =>
@@ -163,7 +212,7 @@ public sealed class SystemService : ISystemService
                     usage.TotalSize,
                     used,
                     usage.AvailableSize,
-                    capacity > 0 ? 100d * used / capacity : Double.NaN));
+                    capacity > 0 ? 100d * used / capacity : null));
             }
 
             return list;
@@ -184,7 +233,7 @@ public sealed class SystemService : ISystemService
             {
                 alive.Add(process.ProcessId);
                 var cpuSeconds = (process.UserTime + process.SystemTime).TotalSeconds;
-                var usage = Double.NaN;
+                double? usage = null;
                 if ((seconds > 0) && previousProcesses.TryGetValue(process.ProcessId, out var previous) && (previous.StartTime == process.StartTime))
                 {
                     usage = Math.Max(0, 100d * (cpuSeconds - previous.CpuSeconds) / seconds);
@@ -207,7 +256,7 @@ public sealed class SystemService : ISystemService
             }
 
             var top = entries
-                .OrderByDescending(static x => Double.IsFinite(x.CpuUsage) ? x.CpuUsage : 0d)
+                .OrderByDescending(static x => x.CpuUsage ?? 0d)
                 .ThenByDescending(static x => x.Memory)
                 .Take(count)
                 .ToList();
@@ -244,9 +293,9 @@ public sealed class SystemService : ISystemService
         }
     }
 
-    private static List<string> ReadAddresses()
+    private static List<NetworkAddress> ReadAddresses()
     {
-        var list = new List<string>();
+        var list = new List<NetworkAddress>();
         foreach (var network in NetworkInterface.GetAllNetworkInterfaces())
         {
             if ((network.OperationalStatus != OperationalStatus.Up) || (network.NetworkInterfaceType == NetworkInterfaceType.Loopback))
@@ -258,7 +307,7 @@ public sealed class SystemService : ISystemService
             {
                 if (address.Address.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    list.Add($"{network.Name} {address.Address}");
+                    list.Add(new NetworkAddress(network.Name, address.Address.ToString()));
                 }
             }
         }

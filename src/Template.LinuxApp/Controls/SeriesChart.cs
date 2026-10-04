@@ -2,10 +2,11 @@ namespace Template.LinuxApp.Controls;
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data.Converters;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
 
-public sealed record ChartSeries(string Name, IReadOnlyList<double> Values, string Last);
+public sealed record ChartSeries(string Name, IReadOnlyList<double> Values, double Last);
 
 public sealed class SeriesChart : Control
 {
@@ -28,6 +29,10 @@ public sealed class SeriesChart : Control
     public static readonly StyledProperty<double> MaximumProperty = AvaloniaProperty.Register<SeriesChart, double>(nameof(Maximum), Double.NaN);
 
     public static readonly StyledProperty<double> LegendWidthProperty = AvaloniaProperty.Register<SeriesChart, double>(nameof(LegendWidth), 180);
+
+    public static readonly StyledProperty<string> ValueFormatProperty = AvaloniaProperty.Register<SeriesChart, string>(nameof(ValueFormat), "{0}");
+
+    public static readonly StyledProperty<IValueConverter?> ValueConverterProperty = AvaloniaProperty.Register<SeriesChart, IValueConverter?>(nameof(ValueConverter));
 
     public static readonly StyledProperty<IBrush?> ForegroundProperty = AvaloniaProperty.Register<SeriesChart, IBrush?>(nameof(Foreground));
 
@@ -81,6 +86,18 @@ public sealed class SeriesChart : Control
         set => SetValue(LegendWidthProperty, value);
     }
 
+    public string ValueFormat
+    {
+        get => GetValue(ValueFormatProperty);
+        set => SetValue(ValueFormatProperty, value);
+    }
+
+    public IValueConverter? ValueConverter
+    {
+        get => GetValue(ValueConverterProperty);
+        set => SetValue(ValueConverterProperty, value);
+    }
+
     public IBrush? Foreground
     {
         get => GetValue(ForegroundProperty);
@@ -95,7 +112,7 @@ public sealed class SeriesChart : Control
 
     static SeriesChart()
     {
-        AffectsRender<SeriesChart>(SeriesProperty, PaletteProperty, CapacityProperty, TimeProperty, IntervalProperty, MinimumProperty, MaximumProperty, LegendWidthProperty, ForegroundProperty, GridBrushProperty);
+        AffectsRender<SeriesChart>(SeriesProperty, PaletteProperty, CapacityProperty, TimeProperty, IntervalProperty, MinimumProperty, MaximumProperty, LegendWidthProperty, ValueFormatProperty, ValueConverterProperty, ForegroundProperty, GridBrushProperty);
     }
 
     public override void Render(DrawingContext context)
@@ -170,7 +187,7 @@ public sealed class SeriesChart : Control
         return brushes;
     }
 
-    private static void DrawLegend(DrawingContext context, IReadOnlyList<ChartSeries> series, IBrush[] brushes, Rect area, IBrush textBrush)
+    private void DrawLegend(DrawingContext context, IReadOnlyList<ChartSeries> series, IBrush[] brushes, Rect area, IBrush textBrush)
     {
         var header = ChartHelper.CreateText("Name", 11, textBrush);
         context.DrawText(header, new Point(area.Left + 18, area.Top + 2));
@@ -182,7 +199,7 @@ public sealed class SeriesChart : Control
         {
             var y = area.Top + RowHeight + (i * RowHeight);
             context.DrawRectangle(brushes[i], null, new Rect(area.Left + 2, y + 7, 12, 3));
-            var value = ChartHelper.CreateText(series[i].Last, 12, textBrush);
+            var value = ChartHelper.CreateText(FormatValue(series[i].Last), 12, textBrush);
             var valueLeft = area.Right - value.Width - 4;
             var name = ChartHelper.CreateText(series[i].Name, 12, textBrush);
             name.MaxTextWidth = Math.Max(0, valueLeft - area.Left - 24);
@@ -191,5 +208,15 @@ public sealed class SeriesChart : Control
             context.DrawText(name, new Point(area.Left + 18, y));
             context.DrawText(value, new Point(valueLeft, y));
         }
+    }
+
+    private string FormatValue(double value)
+    {
+        if (ValueConverter is { } converter)
+        {
+            return converter.Convert(value, typeof(string), null, CultureInfo.CurrentCulture) as string ?? String.Empty;
+        }
+
+        return Double.IsFinite(value) ? String.Format(CultureInfo.InvariantCulture, ValueFormat, value) : "—";
     }
 }

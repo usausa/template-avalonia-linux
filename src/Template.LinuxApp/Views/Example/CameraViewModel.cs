@@ -8,6 +8,9 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using Template.LinuxApp.Components.Video;
+using Template.LinuxApp.Services;
+
+public sealed record QrHistoryItem(DateTimeOffset Time, string Text);
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class CameraViewModel : AppViewModelBase
@@ -18,10 +21,6 @@ public sealed partial class CameraViewModel : AppViewModelBase
 
     private static readonly TimeSpan QrRepeatInterval = TimeSpan.FromSeconds(3);
 
-    private static readonly string SnapshotDirectory = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) is { Length: > 0 } pictures ? pictures : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Template.LinuxApp");
-
     private readonly TimeProvider timeProvider;
 
     private readonly IDispatcher dispatcher;
@@ -29,6 +28,8 @@ public sealed partial class CameraViewModel : AppViewModelBase
     private readonly IVideoSource videoSource;
 
     private readonly IQrCodeDetector qrCodeDetector;
+
+    private readonly SnapshotService snapshotService;
 
     private readonly DispatcherTimer statusTimer;
 
@@ -49,8 +50,6 @@ public sealed partial class CameraViewModel : AppViewModelBase
     private int lastGc1Count;
 
     private int lastGc2Count;
-
-    private int snapshotCount;
 
     private string? lastQrText;
 
@@ -95,13 +94,18 @@ public sealed partial class CameraViewModel : AppViewModelBase
     public partial CameraResolution? SelectedResolution { get; set; }
 
     [ObservableProperty]
-    public partial IReadOnlyList<InfoItem> CameraInfo { get; set; } = [];
-
-    [ObservableProperty]
     public partial Bitmap? LastSnapshot { get; set; }
 
+    public string SnapshotFolder => snapshotService.Folder;
+
     [ObservableProperty]
-    public partial string SnapshotText { get; set; } = SnapshotDirectory;
+    public partial string? SnapshotFile { get; set; }
+
+    [ObservableProperty]
+    public partial int SnapshotCount { get; set; }
+
+    [ObservableProperty]
+    public partial string? SnapshotError { get; set; }
 
     public bool IsQrEnabled => qrCodeDetector.IsEnabled;
 
@@ -112,9 +116,9 @@ public sealed partial class CameraViewModel : AppViewModelBase
     public partial IReadOnlyList<QrCodeBox>? QrCodes { get; set; }
 
     [ObservableProperty]
-    public partial string QrText { get; set; } = "—";
+    public partial string? QrText { get; set; }
 
-    public ObservableCollection<string> QrHistory { get; } = [];
+    public ObservableCollection<QrHistoryItem> QrHistory { get; } = [];
 
     public ICommand StartCommand { get; }
 
@@ -126,12 +130,13 @@ public sealed partial class CameraViewModel : AppViewModelBase
 
     public ICommand SnapshotCommand { get; }
 
-    public CameraViewModel(TimeProvider timeProvider, IDispatcher dispatcher, IVideoSource videoSource, IQrCodeDetector qrCodeDetector)
+    public CameraViewModel(TimeProvider timeProvider, IDispatcher dispatcher, IVideoSource videoSource, IQrCodeDetector qrCodeDetector, SnapshotService snapshotService)
     {
         this.timeProvider = timeProvider;
         this.dispatcher = dispatcher;
         this.videoSource = videoSource;
         this.qrCodeDetector = qrCodeDetector;
+        this.snapshotService = snapshotService;
 
         statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         statusTimer.Tick += (_, _) => UpdateStatus();
@@ -153,7 +158,6 @@ public sealed partial class CameraViewModel : AppViewModelBase
         {
             Resolutions = x?.Resolutions ?? [];
             SelectedResolution = Resolutions.FirstOrDefault(r => (r.Width == videoSource.RequestedWidth) && (r.Height == videoSource.RequestedHeight)) ?? (Resolutions.Count > 0 ? Resolutions[^1] : null);
-            CameraInfo = FormatCamera(x);
         });
         SubscribeIsQrScan(x =>
         {
@@ -229,39 +233,18 @@ public sealed partial class CameraViewModel : AppViewModelBase
 
         try
         {
-            Directory.CreateDirectory(SnapshotDirectory);
-            var file = Path.Combine(SnapshotDirectory, String.Create(CultureInfo.InvariantCulture, $"snapshot-{timeProvider.GetLocalNow():yyyyMMdd-HHmmss-fff}.png"));
-            using (var stream = File.Create(file))
-            {
-                bitmap.Save(stream, PngBitmapEncoderOptions.Default);
-            }
-
+            var file = snapshotService.Save(bitmap);
             var previous = LastSnapshot;
             LastSnapshot = new Bitmap(file);
             previous?.Dispose();
-            snapshotCount++;
-            SnapshotText = String.Create(CultureInfo.InvariantCulture, $"{file} ({snapshotCount})");
+            SnapshotFile = file;
+            SnapshotCount++;
+            SnapshotError = null;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            SnapshotText = ex.Message;
+            SnapshotError = ex.Message;
         }
-    }
-
-    private static List<InfoItem> FormatCamera(CameraDevice? camera)
-    {
-        if (camera is null)
-        {
-            return [];
-        }
-
-        return
-        [
-            new InfoItem("Name", camera.Name),
-            new InfoItem("Driver", camera.Driver),
-            new InfoItem("Bus", camera.BusInfo),
-            new InfoItem("Formats", camera.Formats)
-        ];
     }
 
     private void StartCapture()
@@ -312,7 +295,7 @@ public sealed partial class CameraViewModel : AppViewModelBase
         var now = timeProvider.GetTimestamp();
         if ((text != lastQrText) || (timeProvider.GetElapsedTime(lastQrTimestamp, now) >= QrRepeatInterval))
         {
-            QrHistory.Insert(0, String.Create(CultureInfo.InvariantCulture, $"{timeProvider.GetLocalNow():HH:mm:ss}  {text}"));
+            QrHistory.Insert(0, new QrHistoryItem(timeProvider.GetLocalNow(), text));
             while (QrHistory.Count > MaxQrHistory)
             {
                 QrHistory.RemoveAt(QrHistory.Count - 1);

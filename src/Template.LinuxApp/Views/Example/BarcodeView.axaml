@@ -5,11 +5,18 @@
              xmlns:s="http://smart/avalonia"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.BarcodeView"
              x:DataType="local:BarcodeViewModel"
              s:DataContextResolver.Type="local:BarcodeViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
+
+    <UserControl.Resources>
+        <converters:CountConverter x:Key="ScanCountConverter"
+                                   Singular="scan"
+                                   Plural="scans" />
+    </UserControl.Resources>
 
     <UserControl.Styles>
         <Style Selector="Border.source-chip">
@@ -99,12 +106,12 @@
                                     </Border>
                                     <Border IsVisible="{Binding IsRepeated}"
                                             Classes="count-badge">
-                                        <TextBlock Text="{Binding CountText}"
+                                        <TextBlock Text="{Binding Count, StringFormat='×{0}'}"
                                                    FontSize="{StaticResource FontSizeLarge}"
                                                    FontWeight="SemiBold"
                                                    Foreground="White" />
                                     </Border>
-                                    <TextBlock Text="{Binding Time}"
+                                    <TextBlock Text="{Binding Time, StringFormat='{}{0:HH:mm:ss}'}"
                                                Classes="card-note" />
                                     <TextBlock Text="{Binding Code.Length, StringFormat='{}{0} characters'}"
                                                Classes="card-note" />
@@ -129,7 +136,7 @@
                     <TextBlock Text="History"
                                Classes="card-title" />
                     <TextBlock Grid.Column="1"
-                               Text="{Binding HistorySummary}"
+                               Text="{Binding ScanCount, Converter={StaticResource ScanCountConverter}}"
                                Classes="card-note" />
                     <Button Grid.Column="2"
                             Command="{Binding ClearCommand}"
@@ -167,7 +174,7 @@
                                                     VerticalAlignment="Top"
                                                     IsVisible="{Binding IsRepeated}"
                                                     Classes="count-badge">
-                                                <TextBlock Text="{Binding CountText}"
+                                                <TextBlock Text="{Binding Count, StringFormat='×{0}'}"
                                                            FontSize="{StaticResource FontSizeNormal}"
                                                            FontWeight="SemiBold"
                                                            Foreground="White" />
@@ -175,7 +182,7 @@
                                         </Grid>
                                         <StackPanel Orientation="Horizontal"
                                                     Spacing="{StaticResource SpacingSmall}">
-                                            <TextBlock Text="{Binding Time}"
+                                            <TextBlock Text="{Binding Time, StringFormat='{}{0:HH:mm:ss}'}"
                                                        Classes="card-meta" />
                                             <TextBlock Text="{Binding Source}"
                                                        Classes="card-meta" />

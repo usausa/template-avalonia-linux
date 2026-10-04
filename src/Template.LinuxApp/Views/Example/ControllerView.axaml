@@ -5,7 +5,6 @@
              xmlns:s="http://smart/avalonia"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
-             xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.ControllerView"
              x:DataType="local:ControllerViewModel"
@@ -13,8 +12,9 @@
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
-        <converters:ShiftColorConverter x:Key="ShiftColorConverter"
-                                        ActiveColor="Turquoise" InactiveColor="#484D5F" />
+        <s:CompareToBrushConverter x:Key="ShiftColorConverter"
+                                   TrueValue="Turquoise"
+                                   FalseValue="#484D5F" />
     </UserControl.Resources>
 
     <UserControl.Styles>

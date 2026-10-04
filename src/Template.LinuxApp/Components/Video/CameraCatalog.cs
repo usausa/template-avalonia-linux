@@ -2,21 +2,17 @@ namespace Template.LinuxApp.Components.Video;
 
 using LinuxDotNet.Video4Linux2;
 
-public sealed record CameraResolution(int Width, int Height)
-{
-    public override string ToString() => String.Create(CultureInfo.InvariantCulture, $"{Width} x {Height}");
-}
+public sealed record CameraResolution(int Width, int Height);
+
+public sealed record CameraFormat(PixelFormat PixelFormat, int Sizes);
 
 public sealed record CameraDevice(
     string Device,
     string Name,
     string Driver,
     string BusInfo,
-    string Formats,
-    IReadOnlyList<CameraResolution> Resolutions)
-{
-    public override string ToString() => $"{Device}  {Name}";
-}
+    IReadOnlyList<CameraFormat> Formats,
+    IReadOnlyList<CameraResolution> Resolutions);
 
 public static class CameraCatalog
 {
@@ -50,7 +46,7 @@ public static class CameraCatalog
             .Distinct()
             .OrderBy(static x => x.Width * x.Height)
             .ToList();
-        var formats = String.Join(", ", info.SupportedFormats.Select(static x => String.Create(CultureInfo.InvariantCulture, $"{x.PixelFormat} {x.SupportedResolutions.Count} sizes")));
+        var formats = info.SupportedFormats.Select(static x => new CameraFormat(x.PixelFormat, x.SupportedResolutions.Count)).ToList();
         return new CameraDevice(info.Device, info.Name, info.Driver, info.BusInfo, formats, resolutions);
     }
 }

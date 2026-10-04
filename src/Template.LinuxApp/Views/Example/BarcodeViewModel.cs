@@ -7,11 +7,9 @@ using Smart.Reactive;
 using Template.LinuxApp.Components.Barcode;
 using Template.LinuxApp.State;
 
-public sealed record BarcodeHistoryItem(string Code, string Source, bool IsQr, string Time, int Count)
+public sealed record BarcodeHistoryItem(string Code, string Source, bool IsQr, DateTimeOffset Time, int Count)
 {
     public bool IsRepeated => Count > 1;
-
-    public string CountText => String.Create(CultureInfo.InvariantCulture, $"×{Count}");
 }
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -31,8 +29,6 @@ public sealed partial class BarcodeViewModel : AppViewModelBase
 
     private readonly DispatcherTimer flashTimer;
 
-    private int scanCount;
-
     private long lastScanTimestamp;
 
     [ObservableProperty]
@@ -42,7 +38,7 @@ public sealed partial class BarcodeViewModel : AppViewModelBase
     public partial bool IsFlashing { get; set; }
 
     [ObservableProperty]
-    public partial string HistorySummary { get; set; } = string.Empty;
+    public partial int ScanCount { get; set; }
 
     public ObservableCollection<BarcodeHistoryItem> History { get; } = [];
 
@@ -118,7 +114,7 @@ public sealed partial class BarcodeViewModel : AppViewModelBase
         }
 
         var timestamp = timeProvider.GetTimestamp();
-        var time = timeProvider.GetLocalNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture);
+        var time = timeProvider.GetLocalNow();
         if ((Latest is { } latest) &&
             (latest.IsQr == isQr) &&
             (latest.Code == code) &&
@@ -141,8 +137,7 @@ public sealed partial class BarcodeViewModel : AppViewModelBase
         }
 
         lastScanTimestamp = timestamp;
-        scanCount++;
-        HistorySummary = scanCount == 1 ? "1 scan" : String.Create(CultureInfo.InvariantCulture, $"{scanCount} scans");
+        ScanCount++;
 
         IsFlashing = true;
         flashTimer.Stop();
@@ -153,7 +148,6 @@ public sealed partial class BarcodeViewModel : AppViewModelBase
     {
         History.Clear();
         Latest = null;
-        scanCount = 0;
-        HistorySummary = string.Empty;
+        ScanCount = 0;
     }
 }

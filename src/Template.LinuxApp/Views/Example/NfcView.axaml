@@ -14,6 +14,11 @@
 
     <UserControl.Resources>
         <converters:SuicaProcessBrushConverter x:Key="ProcessBrushConverter" />
+        <converters:SuicaTerminalConverter x:Key="TerminalConverter" />
+        <converters:SuicaProcessConverter x:Key="ProcessConverter" />
+        <converters:CountConverter x:Key="RecordCountConverter"
+                                   Singular="record"
+                                   Plural="records" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -65,7 +70,7 @@
                                 Spacing="{StaticResource SpacingNormal}">
                         <TextBlock Text="Balance"
                                    Classes="card-note" />
-                        <TextBlock Text="{Binding ReadTime}"
+                        <TextBlock Text="{Binding ReadTime, StringFormat='{}{0:HH:mm:ss}', TargetNullValue=''}"
                                    Classes="card-note" />
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Center"
@@ -87,8 +92,8 @@
                                Classes="code" />
                 </StackPanel>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                           IsVisible="{Binding ErrorText, Converter={x:Static ObjectConverters.IsNotNull}}"
-                           Text="{Binding ErrorText}"
+                           IsVisible="{Binding HasError}"
+                           Text="Could not read the card."
                            FontSize="{StaticResource FontSizeXLarge}"
                            Foreground="{StaticResource ChartRed}" />
             </Panel>
@@ -103,7 +108,7 @@
                     <TextBlock Text="History"
                                Classes="card-title" />
                     <TextBlock Grid.Column="1"
-                               Text="{Binding HistorySummary}"
+                               Text="{Binding History.Count, Converter={StaticResource RecordCountConverter}}"
                                Classes="card-note" />
                     <Button Grid.Column="2"
                             Command="{Binding ClearCommand}"
@@ -136,19 +141,32 @@
                                           ColumnDefinitions="*,Auto"
                                           ColumnSpacing="{StaticResource SpacingSmall}">
                                         <TextBlock Grid.Row="0" Grid.Column="0"
-                                                   Text="{Binding Date}"
+                                                   IsVisible="{Binding IsSales}"
+                                                   Text="{Binding DateTime, StringFormat='{}{0:yyyy/MM/dd HH:mm}'}"
+                                                   Classes="card-meta" />
+                                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                                   IsVisible="{Binding !IsSales}"
+                                                   Text="{Binding DateTime, StringFormat='{}{0:yyyy/MM/dd}'}"
                                                    Classes="card-meta" />
                                         <TextBlock Grid.Row="0" Grid.Column="1"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding Amount}"
+                                                   Text="{Binding Amount, StringFormat='{}{0:+¥#,0;-¥#,0;¥0}', TargetNullValue=''}"
                                                    Classes="amount"
                                                    Classes.income="{Binding IsIncome}" />
                                         <TextBlock Grid.Row="1" Grid.Column="0"
-                                                   Text="{Binding Title}"
-                                                   FontSize="{StaticResource FontSizeLarge}" />
+                                                   FontSize="{StaticResource FontSizeLarge}">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} - {1}">
+                                                    <Binding Path="Terminal"
+                                                             Converter="{StaticResource TerminalConverter}" />
+                                                    <Binding Path="Process"
+                                                             Converter="{StaticResource ProcessConverter}" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
                                         <TextBlock Grid.Row="1" Grid.Column="1"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding Balance}"
+                                                   Text="{Binding Balance, StringFormat='¥{0:#,0}'}"
                                                    Classes="card-note" />
                                     </Grid>
                                 </Grid>

@@ -8,7 +8,10 @@ using Template.LinuxApp.Components.Nfc;
 using Template.LinuxApp.Domain.Logic;
 using Template.LinuxApp.State;
 
-public sealed record SuicaHistoryItem(string Date, string Title, string Balance, string Amount, bool IsIncome, byte Process);
+public sealed record SuicaHistoryItem(DateTime DateTime, bool IsSales, byte Terminal, byte Process, int Balance, int? Amount)
+{
+    public bool IsIncome => Amount > 0;
+}
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class NfcViewModel : AppViewModelBase
@@ -39,19 +42,16 @@ public sealed partial class NfcViewModel : AppViewModelBase
     public partial string Idm { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string ReadTime { get; set; } = string.Empty;
+    public partial DateTimeOffset? ReadTime { get; set; }
 
     [ObservableProperty]
-    public partial string? ErrorText { get; set; }
+    public partial bool HasError { get; set; }
 
     [ObservableProperty]
     public partial bool IsFlashing { get; set; }
 
     [ObservableProperty]
     public partial bool HasHistory { get; set; }
-
-    [ObservableProperty]
-    public partial string HistorySummary { get; set; } = string.Empty;
 
     [ObservableProperty]
     public partial string ReaderDevice { get; set; }
@@ -79,7 +79,7 @@ public sealed partial class NfcViewModel : AppViewModelBase
         errorTimer.Tick += (_, _) =>
         {
             errorTimer.Stop();
-            ErrorText = "Could not read the card.";
+            HasError = true;
         };
 
         Disposables.Add(Observable
@@ -130,7 +130,7 @@ public sealed partial class NfcViewModel : AppViewModelBase
     {
         errorTimer.Stop();
         var timestamp = timeProvider.GetTimestamp();
-        if (HasCard && (ErrorText is null) && (args.Idm == Idm) && (timeProvider.GetElapsedTime(lastReadTimestamp, timestamp) < RepeatInterval))
+        if (HasCard && !HasError && (args.Idm == Idm) && (timeProvider.GetElapsedTime(lastReadTimestamp, timestamp) < RepeatInterval))
         {
             return;
         }
@@ -138,18 +138,17 @@ public sealed partial class NfcViewModel : AppViewModelBase
         lastReadTimestamp = timestamp;
         Idm = args.Idm;
         Balance = args.Balance;
-        ReadTime = timeProvider.GetLocalNow().ToString("HH:mm:ss", CultureInfo.InvariantCulture);
-        ErrorText = null;
+        ReadTime = timeProvider.GetLocalNow();
+        HasError = false;
         HasCard = true;
 
         History.Clear();
         for (var i = 0; i < args.History.Count; i++)
         {
-            History.Add(FormatHistory(args.History[i], i + 1 < args.History.Count ? args.History[i + 1] : null));
+            History.Add(CreateHistory(args.History[i], i + 1 < args.History.Count ? args.History[i + 1] : null));
         }
 
         HasHistory = History.Count > 0;
-        HistorySummary = History.Count == 1 ? "1 record" : String.Create(CultureInfo.InvariantCulture, $"{History.Count} records");
 
         IsFlashing = true;
         flashTimer.Stop();
@@ -161,34 +160,16 @@ public sealed partial class NfcViewModel : AppViewModelBase
         errorTimer.Stop();
         History.Clear();
         HasHistory = false;
-        HistorySummary = string.Empty;
         HasCard = false;
         Balance = 0;
         Idm = string.Empty;
-        ReadTime = string.Empty;
-        ErrorText = null;
+        ReadTime = null;
+        HasError = false;
     }
 
-    private static SuicaHistoryItem FormatHistory(SuicaHistoryRecord record, SuicaHistoryRecord? previous)
+    private static SuicaHistoryItem CreateHistory(SuicaHistoryRecord record, SuicaHistoryRecord? previous)
     {
-        var date = record.DateTime.ToString(SuicaLogic.IsProcessOfSales(record.Process) ? "yyyy/MM/dd HH:mm" : "yyyy/MM/dd", CultureInfo.InvariantCulture);
-        var title = $"{SuicaLogic.ConvertTerminalString(record.Terminal)} - {SuicaLogic.ConvertProcessString(record.Process)}";
         var amount = (previous is not null) && (((record.TransactionId - previous.TransactionId) & 0xFFFF) == 1) ? record.Balance - previous.Balance : (int?)null;
-        return new SuicaHistoryItem(
-            date,
-            title,
-            String.Create(CultureInfo.InvariantCulture, $"¥{record.Balance:#,0}"),
-            FormatAmount(amount),
-            amount > 0,
-            record.Process);
+        return new SuicaHistoryItem(record.DateTime, SuicaLogic.IsProcessOfSales(record.Process), record.Terminal, record.Process, record.Balance, amount);
     }
-
-    private static string FormatAmount(int? amount) =>
-        amount switch
-        {
-            null => string.Empty,
-            > 0 => String.Create(CultureInfo.InvariantCulture, $"+¥{amount.Value:#,0}"),
-            < 0 => String.Create(CultureInfo.InvariantCulture, $"-¥{-amount.Value:#,0}"),
-            _ => "¥0"
-        };
 }

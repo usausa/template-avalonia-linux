@@ -31,7 +31,7 @@ public sealed partial class GamepadAxisItem : ObservableObject
     public partial double Value { get; set; }
 
     [ObservableProperty]
-    public partial string Text { get; set; } = "0";
+    public partial short Raw { get; set; }
 
     public GamepadAxisItem(int index, string name)
     {
@@ -52,19 +52,16 @@ public sealed partial class GamepadStickItem : ObservableObject
     public partial Point Position { get; set; }
 
     [ObservableProperty]
-    public partial string XText { get; set; } = "0.0%";
+    public partial double X { get; set; }
 
     [ObservableProperty]
-    public partial string YText { get; set; } = "0.0%";
+    public partial double Y { get; set; }
 
     [ObservableProperty]
-    public partial string OffsetText { get; set; } = "0.0%";
+    public partial double Offset { get; set; }
 
     [ObservableProperty]
     public partial bool IsOutside { get; set; }
-
-    [ObservableProperty]
-    public partial string StateText { get; set; } = "Inside deadzone";
 
     public GamepadStickItem(string name, int axisX, int axisY)
     {
@@ -75,15 +72,15 @@ public sealed partial class GamepadStickItem : ObservableObject
 
     public void Update(double x, double y)
     {
-        var offset = Math.Sqrt((x * x) + (y * y));
         Position = new Point(x, y);
-        XText = String.Create(CultureInfo.InvariantCulture, $"{x * 100:+0.0;-0.0;0.0}%");
-        YText = String.Create(CultureInfo.InvariantCulture, $"{y * 100:+0.0;-0.0;0.0}%");
-        OffsetText = String.Create(CultureInfo.InvariantCulture, $"{offset * 100:0.0}%");
-        IsOutside = offset > GamepadViewModel.Deadzone;
-        StateText = IsOutside ? "Outside deadzone" : "Inside deadzone";
+        X = x;
+        Y = y;
+        Offset = Math.Sqrt((x * x) + (y * y));
+        IsOutside = Offset > GamepadViewModel.Deadzone;
     }
 }
+
+public sealed record GamepadEventItem(DateTimeOffset Time, string Message);
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class GamepadViewModel : AppViewModelBase
@@ -136,7 +133,7 @@ public sealed partial class GamepadViewModel : AppViewModelBase
         new("Right stick", AxisRx, AxisRy)
     ];
 
-    public ObservableCollection<string> Events { get; } = [];
+    public ObservableCollection<GamepadEventItem> Events { get; } = [];
 
     public string Device { get; }
 
@@ -144,7 +141,7 @@ public sealed partial class GamepadViewModel : AppViewModelBase
     public partial bool IsConnected { get; set; }
 
     [ObservableProperty]
-    public partial string Status { get; set; } = String.Empty;
+    public partial string DeviceName { get; set; } = String.Empty;
 
     [ObservableProperty]
     public partial IReadOnlyList<bool>? Buttons { get; set; }
@@ -263,7 +260,7 @@ public sealed partial class GamepadViewModel : AppViewModelBase
         for (var i = 0; i < AxisCount; i++)
         {
             AxisItems[i].Value = axes[i] / AxisScale;
-            AxisItems[i].Text = axes[i].ToString(CultureInfo.InvariantCulture);
+            AxisItems[i].Raw = axes[i];
         }
 
         foreach (var stick in StickItems)
@@ -287,12 +284,12 @@ public sealed partial class GamepadViewModel : AppViewModelBase
     private void UpdateConnection(bool connected)
     {
         IsConnected = connected;
-        Status = connected ? $"{gamepadReader.Name}  {Device}" : $"Disconnected  {Device}";
+        DeviceName = gamepadReader.Name;
     }
 
     private void AddEvent(string message)
     {
-        Events.Insert(0, String.Create(CultureInfo.InvariantCulture, $"{timeProvider.GetLocalNow():HH:mm:ss.fff}  {message}"));
+        Events.Insert(0, new GamepadEventItem(timeProvider.GetLocalNow(), message));
         while (Events.Count > MaxEvents)
         {
             Events.RemoveAt(Events.Count - 1);

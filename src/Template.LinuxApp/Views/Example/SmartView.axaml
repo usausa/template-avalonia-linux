@@ -3,8 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
+             xmlns:sys="using:System"
+             xmlns:disk="using:LinuxDotNet.Disk"
              xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:logic="clr-namespace:Template.LinuxApp.Domain.Logic"
+             xmlns:services="clr-namespace:Template.LinuxApp.Services"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
              mc:Ignorable="d"
@@ -14,21 +17,79 @@
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
-        <converters:SmartHealthBrushConverter x:Key="HealthBrushConverter"
-                                              Unknown="{StaticResource GrayDefault}"
-                                              Good="{StaticResource ChartGreen}"
-                                              Warning="{StaticResource ChartOrange}"
-                                              Critical="{StaticResource ChartRed}" />
-        <converters:SmartHealthBrushConverter x:Key="StatBrushConverter"
-                                              Unknown="{StaticResource ChartBlue}"
-                                              Good="{StaticResource ChartGreen}"
-                                              Warning="{StaticResource ChartOrange}"
-                                              Critical="{StaticResource ChartRed}" />
-        <converters:SmartHealthBrushConverter x:Key="RowBrushConverter"
-                                              Unknown="Transparent"
-                                              Good="{StaticResource ChartGreen}"
-                                              Warning="{StaticResource ChartOrange}"
-                                              Critical="{StaticResource ChartRed}" />
+        <s:MapToBrushConverter x:Key="HealthBrushConverter"
+                               DefaultValue="{StaticResource GrayDefault}">
+            <s:MapToBrushConverter.Entries>
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Good}"
+                                   Value="{StaticResource ChartGreen}" />
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Warning}"
+                                   Value="{StaticResource ChartOrange}" />
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Critical}"
+                                   Value="{StaticResource ChartRed}" />
+            </s:MapToBrushConverter.Entries>
+        </s:MapToBrushConverter>
+        <s:MapToBrushConverter x:Key="StatBrushConverter"
+                               DefaultValue="{StaticResource ChartBlue}">
+            <s:MapToBrushConverter.Entries>
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Good}"
+                                   Value="{StaticResource ChartGreen}" />
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Warning}"
+                                   Value="{StaticResource ChartOrange}" />
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Critical}"
+                                   Value="{StaticResource ChartRed}" />
+            </s:MapToBrushConverter.Entries>
+        </s:MapToBrushConverter>
+        <s:MapToBrushConverter x:Key="RowBrushConverter"
+                               DefaultValue="Transparent">
+            <s:MapToBrushConverter.Entries>
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Good}"
+                                   Value="{StaticResource ChartGreen}" />
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Warning}"
+                                   Value="{StaticResource ChartOrange}" />
+                <s:MapToBrushEntry Key="{x:Static logic:SmartHealth.Critical}"
+                                   Value="{StaticResource ChartRed}" />
+            </s:MapToBrushConverter.Entries>
+        </s:MapToBrushConverter>
+        <s:MapToTextConverter x:Key="DiskTypeConverter">
+            <s:MapToTextConverter.Entries>
+                <s:MapToTextEntry Key="{x:Static disk:DiskType.Nvme}"
+                                  Value="NVMe" />
+                <s:MapToTextEntry Key="{x:Static disk:DiskType.Scsi}"
+                                  Value="SATA/SCSI" />
+                <s:MapToTextEntry Key="{x:Static disk:DiskType.Ide}"
+                                  Value="IDE" />
+                <s:MapToTextEntry Key="{x:Static disk:DiskType.Mmc}"
+                                  Value="MMC" />
+                <s:MapToTextEntry Key="{x:Static disk:DiskType.Virtual}"
+                                  Value="Virtual" />
+            </s:MapToTextConverter.Entries>
+        </s:MapToTextConverter>
+        <s:MapToTextConverter x:Key="MessageConverter">
+            <s:MapToTextConverter.Entries>
+                <s:MapToTextEntry Key="{x:Static services:SmartState.RequiresPermission}"
+                                  Value="SMART needs permission" />
+                <s:MapToTextEntry Key="{x:Static services:SmartState.Unsupported}"
+                                  Value="SMART is not supported" />
+            </s:MapToTextConverter.Entries>
+        </s:MapToTextConverter>
+        <s:MapToTextConverter x:Key="MessageDetailConverter">
+            <s:MapToTextConverter.Entries>
+                <s:MapToTextEntry Key="{x:Static services:SmartState.RequiresPermission}"
+                                  Value="Run as root, or give the executable CAP_SYS_RAWIO (SATA) and CAP_SYS_ADMIN (NVMe) and add the user to the disk group. See docs/kiosk.md." />
+                <s:MapToTextEntry Key="{x:Static services:SmartState.Unsupported}"
+                                  Value="Memory cards, virtual disks and some USB adapters do not report SMART." />
+            </s:MapToTextConverter.Entries>
+        </s:MapToTextConverter>
+        <converters:SmartAttributeNameConverter x:Key="AttributeNameConverter" />
+        <converters:SmartRawValueConverter x:Key="RawValueConverter" />
+        <converters:SmartIssueConverter x:Key="IssueConverter" />
+        <converters:SmartValueConverter x:Key="ValueConverter" />
+        <converters:CountConverter x:Key="AttributeCountConverter"
+                                   Singular="attribute"
+                                   Plural="attributes" />
+        <converters:CountConverter x:Key="ValueCountConverter"
+                                   Singular="value"
+                                   Plural="values" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -63,6 +124,13 @@
         </Style>
         <Style Selector="Grid.row > TextBlock.mono">
             <Setter Property="FontFamily" Value="monospace" />
+        </Style>
+        <Style Selector="controls|RingGauge">
+            <Setter Property="MaxWidth" Value="440" />
+            <Setter Property="MaxHeight" Value="440" />
+            <Setter Property="Margin" Value="{StaticResource PaddingMedium}" />
+            <Setter Property="Thickness" Value="22" />
+            <Setter Property="Foreground" Value="{DynamicResource PanelNoteBrush}" />
         </Style>
     </UserControl.Styles>
 
@@ -100,7 +168,7 @@
                                                Text="{Binding Name}"
                                                Classes="card-title" />
                                     <TextBlock Grid.Row="0" Grid.Column="2"
-                                               Text="{Binding Temperature}"
+                                               Text="{Binding Temperature, StringFormat='{}{0:F0} °C', TargetNullValue=—}"
                                                Classes="card-note" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
                                                Text="{Binding Model}"
@@ -114,7 +182,7 @@
             </ItemsControl>
             <TextBlock Grid.Column="1"
                        VerticalAlignment="Bottom"
-                       Text="{Binding UpdatedText}"
+                       Text="{Binding Updated, StringFormat='Updated {0:HH:mm:ss}', TargetNullValue=''}"
                        Classes="card-note" />
         </Grid>
 
@@ -137,14 +205,28 @@
                                                Text="{Binding Model}"
                                                TextTrimming="CharacterEllipsis"
                                                Classes="card-title" />
-                                    <TextBlock Grid.Row="1" Grid.Column="0"
-                                               Text="{Binding Detail}"
-                                               TextTrimming="CharacterEllipsis"
-                                               Classes="card-meta" />
+                                    <WrapPanel Grid.Row="1" Grid.Column="0"
+                                               ItemSpacing="{StaticResource SpacingNormal}">
+                                        <TextBlock Text="{Binding Device}"
+                                                   Classes="card-meta" />
+                                        <TextBlock Text="{Binding Type, Converter={StaticResource DiskTypeConverter}}"
+                                                   Classes="card-meta" />
+                                        <TextBlock Text="{Binding Size, Converter={StaticResource DiskSizeConverter}}"
+                                                   Classes="card-meta" />
+                                        <TextBlock IsVisible="{Binding Firmware, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   Text="{Binding Firmware, StringFormat='FW {0}'}"
+                                                   Classes="card-meta" />
+                                        <TextBlock IsVisible="{Binding SerialNumber, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   Text="{Binding SerialNumber, StringFormat='S/N {0}'}"
+                                                   Classes="card-meta" />
+                                        <TextBlock IsVisible="{Binding Removable}"
+                                                   Text="Removable"
+                                                   Classes="card-meta" />
+                                    </WrapPanel>
                                     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
                                             Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}"
                                             Classes="health">
-                                        <TextBlock Text="{Binding HealthText}" />
+                                        <TextBlock Text="{Binding Health}" />
                                     </Border>
                                     <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
                                                   Margin="0,8,0,0"
@@ -162,7 +244,7 @@
                                                     <Border Width="14" Height="14"
                                                             VerticalAlignment="Center"
                                                             Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}" />
-                                                    <TextBlock Text="{Binding Text}"
+                                                    <TextBlock Text="{Binding Converter={StaticResource IssueConverter}}"
                                                                FontSize="{StaticResource FontSizeLarge}" />
                                                 </StackPanel>
                                             </DataTemplate>
@@ -174,27 +256,23 @@
                             <Border Grid.Row="1"
                                     IsVisible="{Binding HasSmart}"
                                     Classes="panel">
-                                <ItemsControl ItemsSource="{Binding Gauges}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Rows="1"
-                                                         ColumnSpacing="{StaticResource SpacingSmall}" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate x:DataType="local:SmartGaugeItem">
-                                            <controls:RingGauge MaxWidth="440" MaxHeight="440"
-                                                                Margin="{StaticResource PaddingMedium}"
-                                                                Value="{Binding Value}"
-                                                                Maximum="{Binding Maximum}"
-                                                                Text="{Binding Text}"
-                                                                Label="{Binding Label}"
-                                                                Thickness="22"
-                                                                Fill="{Binding Health, Converter={StaticResource HealthBrushConverter}}"
-                                                                Foreground="{DynamicResource PanelNoteBrush}" />
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                <UniformGrid Rows="1"
+                                             ColumnSpacing="{StaticResource SpacingSmall}">
+                                    <controls:RingGauge Value="{Binding Life, TargetNullValue={x:Static sys:Double.NaN}}"
+                                                        Text="{Binding Life, StringFormat='{}{0:F0}%', TargetNullValue=—}"
+                                                        Label="Life"
+                                                        Fill="{Binding LifeHealth, Converter={StaticResource HealthBrushConverter}}" />
+                                    <controls:RingGauge Value="{Binding Temperature, TargetNullValue={x:Static sys:Double.NaN}}"
+                                                        Maximum="80"
+                                                        Text="{Binding Temperature, StringFormat='{}{0:F0} °C', TargetNullValue=—}"
+                                                        Label="Temperature"
+                                                        Fill="{Binding TemperatureHealth, Converter={StaticResource HealthBrushConverter}}" />
+                                    <controls:RingGauge IsVisible="{Binding IsNvme}"
+                                                        Value="{Binding Spare, TargetNullValue={x:Static sys:Double.NaN}}"
+                                                        Text="{Binding Spare, StringFormat='{}{0:F0}%', TargetNullValue=—}"
+                                                        Label="Spare"
+                                                        Fill="{Binding SpareHealth, Converter={StaticResource HealthBrushConverter}}" />
+                                </UniformGrid>
                             </Border>
 
                             <ItemsControl Grid.Row="2"
@@ -211,8 +289,14 @@
                                     <DataTemplate x:DataType="local:SmartStatItem">
                                         <controls:StatTile Height="72"
                                                            Title="{Binding Title}"
-                                                           Value="{Binding Value}"
-                                                           Fill="{Binding Health, Converter={StaticResource StatBrushConverter}}" />
+                                                           Fill="{Binding Health, Converter={StaticResource StatBrushConverter}}">
+                                            <controls:StatTile.Value>
+                                                <MultiBinding Converter="{StaticResource ValueConverter}">
+                                                    <Binding Path="Value" />
+                                                    <Binding Path="Unit" />
+                                                </MultiBinding>
+                                            </controls:StatTile.Value>
+                                        </controls:StatTile>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
@@ -228,11 +312,11 @@
                                           StrokeThickness="6"
                                           Opacity="0.4" />
                                     <TextBlock HorizontalAlignment="Center"
-                                               Text="{Binding Message}"
+                                               Text="{Binding Smart, Converter={StaticResource MessageConverter}}"
                                                FontSize="28" />
                                     <TextBlock MaxWidth="720"
                                                HorizontalAlignment="Center"
-                                               Text="{Binding MessageDetail}"
+                                               Text="{Binding Smart, Converter={StaticResource MessageDetailConverter}}"
                                                TextAlignment="Center"
                                                TextWrapping="Wrap"
                                                Classes="card-note" />
@@ -245,10 +329,15 @@
                             <Grid RowDefinitions="Auto,Auto,*"
                                   RowSpacing="{StaticResource SpacingSmall}">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Text="{Binding ListTitle}"
+                                    <TextBlock Text="{Binding IsNvme, Converter={s:BoolToText True='NVMe health log', False='SMART attributes'}}"
                                                Classes="card-title" />
                                     <TextBlock Grid.Column="1"
-                                               Text="{Binding ListSummary}"
+                                               IsVisible="{Binding IsAta}"
+                                               Text="{Binding Attributes.Count, Converter={StaticResource AttributeCountConverter}}"
+                                               Classes="card-note" />
+                                    <TextBlock Grid.Column="1"
+                                               IsVisible="{Binding IsNvme}"
+                                               Text="{Binding Values.Count, Converter={StaticResource ValueCountConverter}}"
                                                Classes="card-note" />
                                 </Grid>
                                 <Grid Grid.Row="1"
@@ -306,12 +395,12 @@
                                                         <Border Grid.Column="0"
                                                                 Background="{Binding Health, Converter={StaticResource RowBrushConverter}}" />
                                                         <TextBlock Grid.Column="1"
-                                                                   Text="{Binding Id}"
+                                                                   Text="{Binding Id, StringFormat='{}{0:X2}'}"
                                                                    Classes="mono" />
                                                         <TextBlock Grid.Column="2"
-                                                                   Text="{Binding Name}" />
+                                                                   Text="{Binding Id, Converter={StaticResource AttributeNameConverter}}" />
                                                         <TextBlock Grid.Column="3"
-                                                                   Text="{Binding Type}"
+                                                                   Text="{Binding IsPreFailure, Converter={s:BoolToText True='Pre-fail', False='Old age'}}"
                                                                    Classes="note" />
                                                         <TextBlock Grid.Column="4"
                                                                    Text="{Binding Current}"
@@ -320,10 +409,16 @@
                                                                    Text="{Binding Worst}"
                                                                    Classes="number" />
                                                         <TextBlock Grid.Column="6"
-                                                                   Text="{Binding Raw}"
-                                                                   Classes="number" />
+                                                                   Classes="number">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding Converter="{StaticResource RawValueConverter}">
+                                                                    <Binding Path="Id" />
+                                                                    <Binding Path="Raw" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
                                                         <TextBlock Grid.Column="7"
-                                                                   Text="{Binding RawHex}"
+                                                                   Text="{Binding Raw, StringFormat='{}{0:X12}'}"
                                                                    Classes="mono note" />
                                                     </Grid>
                                                 </DataTemplate>
@@ -340,11 +435,23 @@
                                                         <TextBlock Grid.Column="1"
                                                                    Text="{Binding Name}" />
                                                         <TextBlock Grid.Column="2"
-                                                                   Text="{Binding Value}"
-                                                                   Classes="number" />
+                                                                   Classes="number">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding Converter="{StaticResource ValueConverter}">
+                                                                    <Binding Path="Value" />
+                                                                    <Binding Path="Unit" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
                                                         <TextBlock Grid.Column="3"
-                                                                   Text="{Binding Detail}"
-                                                                   Classes="note" />
+                                                                   Classes="note">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding Converter="{StaticResource ValueConverter}">
+                                                                    <Binding Path="Detail" />
+                                                                    <Binding Path="DetailUnit" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
                                                     </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>

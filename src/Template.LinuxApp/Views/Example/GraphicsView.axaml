@@ -259,7 +259,7 @@
                                           Time="{Binding Time}" />
                     <TextBlock Grid.Row="2"
                                HorizontalAlignment="Center"
-                               Text="{Binding TimeText}"
+                               Text="{Binding Now, StringFormat='{}{0:HH:mm:ss}', TargetNullValue='--:--:--'}"
                                FontFamily="{StaticResource Dseg7}"
                                FontSize="36"
                                Foreground="{DynamicResource PanelTitleBrush}" />
