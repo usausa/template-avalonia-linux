@@ -200,6 +200,12 @@ public sealed partial class PerformanceService : IDisposable
 
         cts.Dispose();
         cts = null;
+
+        lock (sync)
+        {
+            readers?.Dispose();
+            readers = null;
+        }
     }
 
     public void Start()
@@ -481,8 +487,10 @@ public sealed partial class PerformanceService : IDisposable
         public IReadOnlyList<MetricSeries> ToSeries() => [.. entries.Select(static x => new MetricSeries(x.Name, x.History.Last, x.History.ToArray()))];
     }
 
-    private sealed class Readers
+    private sealed class Readers : IDisposable
     {
+        private readonly IReadOnlyList<HardwareMonitor> monitors;
+
         public Uptime Uptime { get; } = PlatformProvider.GetUptime();
 
         public LoadAverage Load { get; } = PlatformProvider.GetLoadAverage();
@@ -515,7 +523,8 @@ public sealed partial class PerformanceService : IDisposable
 
         public Readers()
         {
-            var sensors = PlatformProvider.GetHardwareMonitors()
+            monitors = PlatformProvider.GetHardwareMonitors();
+            var sensors = monitors
                 .SelectMany(static monitor => monitor.Sensors
                     .Where(static x => x.Type == "temp")
                     .Select(x => (Monitor: monitor.Name, Sensor: x)))
@@ -524,6 +533,27 @@ public sealed partial class PerformanceService : IDisposable
                 .Take(MaxTemperatureSensors)
                 .Select(static x => (String.IsNullOrEmpty(x.Sensor.Label) ? x.Monitor : $"{x.Monitor} {x.Sensor.Label}", x.Sensor))];
             CpuTemperature = FindCpuTemperature(sensors);
+        }
+
+        public void Dispose()
+        {
+            Uptime.Dispose();
+            Load.Dispose();
+            Stat.Dispose();
+            Memory.Dispose();
+            VirtualMemory.Dispose();
+            Disk.Dispose();
+            Network.Dispose();
+            Tcp4.Dispose();
+            Tcp6.Dispose();
+            Processes.Dispose();
+            FileHandles.Dispose();
+            Battery.Dispose();
+            Cpu.Dispose();
+            foreach (var monitor in monitors)
+            {
+                monitor.Dispose();
+            }
         }
 
         public void Update()

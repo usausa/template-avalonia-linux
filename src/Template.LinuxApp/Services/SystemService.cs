@@ -69,7 +69,7 @@ public sealed record ProcessEntry(
 
 public sealed record ProcessSnapshot(int ProcessCount, int ThreadCount, IReadOnlyList<ProcessEntry> Top);
 
-public sealed class SystemService
+public sealed class SystemService : IDisposable
 {
     private readonly Lock sync = new();
 
@@ -93,6 +93,8 @@ public sealed class SystemService
 
     private BatteryDevice? battery;
 
+    private bool disposed;
+
     private long? previousProcessTimestamp;
 
     public bool IsSupported { get; } = OperatingSystem.IsLinux();
@@ -101,6 +103,17 @@ public sealed class SystemService
     {
         this.log = log;
         this.timeProvider = timeProvider;
+    }
+
+    public void Dispose()
+    {
+        lock (sync)
+        {
+            disposed = true;
+            uptime?.Dispose();
+            mains?.Dispose();
+            battery?.Dispose();
+        }
     }
 
     public HostSnapshot? ReadHost() =>
@@ -117,6 +130,7 @@ public sealed class SystemService
                 uptime.Update();
             }
 
+            using var wireless = PlatformProvider.GetWirelessStat();
             return new HostSnapshot(
                 hardware.Vendor.Trim(),
                 hardware.ProductName.Trim(),
@@ -140,7 +154,7 @@ public sealed class SystemService
                 RuntimeInformation.OSArchitecture,
                 Environment.MachineName,
                 ReadAddresses(),
-                [.. PlatformProvider.GetWirelessStat().Interfaces.Select(static x => new WirelessLink(x.Interface, x.SignalLevel, x.LinkQuality))],
+                [.. wireless.Interfaces.Select(static x => new WirelessLink(x.Interface, x.SignalLevel, x.LinkQuality))],
                 kernel.BootTime > DateTimeOffset.MinValue ? kernel.BootTime.ToLocalTime() : null,
                 uptime.Elapsed);
         }, null);
@@ -186,7 +200,7 @@ public sealed class SystemService
                 .Where(static x => x.DeviceName.StartsWith("/dev/", StringComparison.Ordinal) && !x.DeviceName.StartsWith("/dev/loop", StringComparison.Ordinal))
                 .DistinctBy(static x => x.MountPoint))
             {
-                var usage = PlatformProvider.GetFileSystemUsage(mount.MountPoint);
+                using var usage = PlatformProvider.GetFileSystemUsage(mount.MountPoint);
                 var used = usage.TotalSize - usage.FreeSize;
                 var capacity = used + usage.AvailableSize;
                 list.Add(new FileSystemEntry(
@@ -260,6 +274,11 @@ public sealed class SystemService
 
         lock (sync)
         {
+            if (disposed)
+            {
+                return fallback;
+            }
+
             try
             {
                 var result = func();
