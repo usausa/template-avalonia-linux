@@ -353,8 +353,7 @@
                                                     <Binding Path="FileSystem" />
                                                     <Binding Path="Device" />
                                                     <Binding Path="ReadOnly"
-                                                             Converter="{s:BoolToText True='  ro',
-                                                                                      False=''}" />
+                                                             Converter="{s:BoolToText True='  ro', False=''}" />
                                                 </MultiBinding>
                                             </controls:SegmentGauge.Label>
                                         </controls:SegmentGauge>
@@ -465,8 +464,7 @@
                                             <MultiBinding StringFormat="{}{0:HH:mm:ss} {1} {2} ({3})">
                                                 <Binding Path="Time" />
                                                 <Binding Path="Connected"
-                                                         Converter="{s:BoolToText True=Connected,
-                                                                                  False=Disconnected}" />
+                                                         Converter="{s:BoolToText True=Connected, False=Disconnected}" />
                                                 <Binding Path="Name" />
                                                 <Binding Path="Port" />
                                             </MultiBinding>
