@@ -25,15 +25,16 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                        Margin="0,0,0,10"
                        Text="フォント表示サンプル"
-                       FontSize="20"
-                       FontWeight="Bold" />
+                       FontSize="20" FontWeight="Bold" />
 
             <TextBlock Grid.Row="1" Grid.Column="0"
+                       TextAlignment="Center"
                        Text="フォント名"
-                       FontWeight="SemiBold" TextAlignment="Center" />
+                       FontWeight="SemiBold" />
             <TextBlock Grid.Row="1" Grid.Column="2"
+                       TextAlignment="Center"
                        Text="表示サンプル (テキストの内容)"
-                       FontWeight="SemiBold" TextAlignment="Center" />
+                       FontWeight="SemiBold" />
 
             <Rectangle Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
                        Height="1"

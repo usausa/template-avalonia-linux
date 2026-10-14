@@ -25,16 +25,16 @@
                           Background="{StaticResource BlueDarken4}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <UniformGrid Columns="8" Rows="2" />
+                        <UniformGrid Rows="2" Columns="8" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="shell:NavigationItem">
-                        <Button Command="{Binding $parent[ItemsControl].((application:MainWindowViewModel)DataContext).ForwardCommand, FallbackValue={x:Null}}"
+                        <Button Classes="toolbar"
+                                Classes.selected="{Binding IsSelected}"
+                                Command="{Binding $parent[ItemsControl].((application:MainWindowViewModel)DataContext).ForwardCommand, FallbackValue={x:Null}}"
                                 CommandParameter="{Binding Id}"
-                                Content="{Binding Title}"
-                                Classes="toolbar"
-                                Classes.selected="{Binding IsSelected}" />
+                                Content="{Binding Title}" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

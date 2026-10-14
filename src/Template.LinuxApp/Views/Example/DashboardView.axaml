@@ -41,21 +41,21 @@
         <Border Grid.Row="0" Grid.Column="0"
                 Classes="panel">
             <StackPanel>
-                <TextBlock Margin="0,0,0,8"
-                           Text="Application"
-                           Classes="title" />
+                <TextBlock Classes="title"
+                           Margin="0,0,0,8"
+                           Text="Application" />
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
                       ColumnDefinitions="220,*"
                       RowSpacing="{StaticResource SpacingXSmall}">
                     <TextBlock Grid.Row="0" Grid.Column="0"
-                               Text="Version"
-                               Classes="dashboard-name" />
+                               Classes="dashboard-name"
+                               Text="Version" />
                     <TextBlock Grid.Row="0" Grid.Column="1"
-                               Text="{Binding Version, TargetNullValue=—}"
-                               Classes="dashboard-value" />
+                               Classes="dashboard-value"
+                               Text="{Binding Version, TargetNullValue=—}" />
                     <TextBlock Grid.Row="1" Grid.Column="0"
-                               Text="Runtime"
-                               Classes="dashboard-name" />
+                               Classes="dashboard-name"
+                               Text="Runtime" />
                     <TextBlock Grid.Row="1" Grid.Column="1"
                                Classes="dashboard-value">
                         <TextBlock.Text>
@@ -66,8 +66,8 @@
                         </TextBlock.Text>
                     </TextBlock>
                     <TextBlock Grid.Row="2" Grid.Column="0"
-                               Text="Environment"
-                               Classes="dashboard-name" />
+                               Classes="dashboard-name"
+                               Text="Environment" />
                     <TextBlock Grid.Row="2" Grid.Column="1"
                                Classes="dashboard-value">
                         <TextBlock.Text>
@@ -78,23 +78,23 @@
                         </TextBlock.Text>
                     </TextBlock>
                     <TextBlock Grid.Row="3" Grid.Column="0"
-                               Text="Kiosk"
-                               Classes="dashboard-name" />
+                               Classes="dashboard-name"
+                               Text="Kiosk" />
                     <TextBlock Grid.Row="3" Grid.Column="1"
-                               Text="{Binding IsKiosk, Converter={s:BoolToText True=Enabled, False=Disabled}}"
-                               Classes="dashboard-value" />
+                               Classes="dashboard-value"
+                               Text="{Binding IsKiosk, Converter={s:BoolToText True=Enabled, False=Disabled}}" />
                     <TextBlock Grid.Row="4" Grid.Column="0"
-                               Text="Process"
-                               Classes="dashboard-name" />
+                               Classes="dashboard-name"
+                               Text="Process" />
                     <TextBlock Grid.Row="4" Grid.Column="1"
-                               Text="{Binding ProcessId, StringFormat='PID {0}'}"
-                               Classes="dashboard-value" />
+                               Classes="dashboard-value"
+                               Text="{Binding ProcessId, StringFormat='PID {0}'}" />
                     <TextBlock Grid.Row="5" Grid.Column="0"
-                               Text="Started"
-                               Classes="dashboard-name" />
+                               Classes="dashboard-name"
+                               Text="Started" />
                     <TextBlock Grid.Row="5" Grid.Column="1"
-                               Text="{Binding StartTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
-                               Classes="dashboard-value" />
+                               Classes="dashboard-value"
+                               Text="{Binding StartTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" />
                 </Grid>
             </StackPanel>
         </Border>
@@ -102,29 +102,29 @@
         <Border Grid.Row="0" Grid.Column="1"
                 Classes="panel">
             <StackPanel Spacing="{StaticResource SpacingSmall}">
-                <TextBlock Text="Theme"
-                           Classes="title" />
-                <UniformGrid ColumnSpacing="{StaticResource SpacingSmall}"
-                             Columns="3">
-                    <Button Command="{Binding ThemeCommand}"
+                <TextBlock Classes="title"
+                           Text="Theme" />
+                <UniformGrid Columns="3"
+                             ColumnSpacing="{StaticResource SpacingSmall}">
+                    <Button Classes="command"
+                            Command="{Binding ThemeCommand}"
                             CommandParameter="Light"
-                            Content="Light"
-                            Classes="command" />
-                    <Button Command="{Binding ThemeCommand}"
+                            Content="Light" />
+                    <Button Classes="command"
+                            Command="{Binding ThemeCommand}"
                             CommandParameter="Dark"
-                            Content="Dark"
-                            Classes="command" />
-                    <Button Command="{Binding ThemeCommand}"
+                            Content="Dark" />
+                    <Button Classes="command"
+                            Command="{Binding ThemeCommand}"
                             CommandParameter="System"
-                            Content="System"
-                            Classes="command" />
+                            Content="System" />
                 </UniformGrid>
-                <TextBlock Margin="0,16,0,0"
-                           Text="Actions"
-                           Classes="title" />
-                <Button Command="{Binding ExitCommand}"
-                        Content="Exit"
-                        Classes="command" />
+                <TextBlock Classes="title"
+                           Margin="0,16,0,0"
+                           Text="Actions" />
+                <Button Classes="command"
+                        Command="{Binding ExitCommand}"
+                        Content="Exit" />
             </StackPanel>
         </Border>
 
@@ -133,17 +133,17 @@
             <Grid RowDefinitions="Auto,*"
                   RowSpacing="{StaticResource SpacingSmall}">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Text="Status"
-                               Classes="title" />
+                    <TextBlock Classes="title"
+                               Text="Status" />
                     <TextBlock Grid.Column="1"
+                               Classes="dashboard-name"
                                VerticalAlignment="Center"
                                IsVisible="{Binding !IsSupported}"
-                               Text="System information is available on Linux."
-                               Classes="dashboard-name" />
+                               Text="System information is available on Linux." />
                 </Grid>
                 <UniformGrid Grid.Row="1"
-                             ColumnSpacing="{StaticResource SpacingSmall}"
-                             Rows="1">
+                             Rows="1"
+                             ColumnSpacing="{StaticResource SpacingSmall}">
                     <controls:RingGauge Value="{Binding Cpu, TargetNullValue={x:Static sys:Double.NaN}}"
                                         Text="{Binding Cpu, StringFormat='{}{0:F0}%', TargetNullValue=—}"
                                         Fill="{StaticResource ChartBlue}"

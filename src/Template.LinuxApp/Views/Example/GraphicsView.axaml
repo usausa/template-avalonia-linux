@@ -24,8 +24,7 @@
         </Style>
         <Style Selector="Rectangle.rotate">
             <Style.Animations>
-                <Animation Duration="0:0:3"
-                           IterationCount="INFINITE">
+                <Animation Duration="0:0:3" IterationCount="INFINITE">
                     <KeyFrame Cue="0%">
                         <Setter Property="RotateTransform.Angle" Value="0" />
                     </KeyFrame>
@@ -37,8 +36,7 @@
         </Style>
         <Style Selector="Ellipse.translate">
             <Style.Animations>
-                <Animation Duration="0:0:1.2"
-                           Easing="SineEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:1.2" Easing="SineEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="TranslateTransform.Y" Value="0" />
                     </KeyFrame>
@@ -50,8 +48,7 @@
         </Style>
         <Style Selector="Ellipse.scale">
             <Style.Animations>
-                <Animation Duration="0:0:1.6"
-                           Easing="SineEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:1.6" Easing="SineEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="ScaleTransform.ScaleX" Value="0.4" />
                         <Setter Property="ScaleTransform.ScaleY" Value="0.4" />
@@ -73,8 +70,7 @@
         </Style>
         <Style Selector="Ellipse.linear">
             <Style.Animations>
-                <Animation Duration="0:0:2"
-                           IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:2" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="TranslateTransform.X" Value="0" />
                     </KeyFrame>
@@ -86,8 +82,7 @@
         </Style>
         <Style Selector="Ellipse.sine">
             <Style.Animations>
-                <Animation Duration="0:0:2"
-                           Easing="SineEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:2" Easing="SineEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="TranslateTransform.X" Value="0" />
                     </KeyFrame>
@@ -99,8 +94,7 @@
         </Style>
         <Style Selector="Ellipse.cubic">
             <Style.Animations>
-                <Animation Duration="0:0:2"
-                           Easing="CubicEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:2" Easing="CubicEaseInOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="TranslateTransform.X" Value="0" />
                     </KeyFrame>
@@ -112,8 +106,7 @@
         </Style>
         <Style Selector="Ellipse.back">
             <Style.Animations>
-                <Animation Duration="0:0:2"
-                           Easing="BackEaseOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:2" Easing="BackEaseOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="TranslateTransform.X" Value="0" />
                     </KeyFrame>
@@ -125,8 +118,7 @@
         </Style>
         <Style Selector="Ellipse.bounce">
             <Style.Animations>
-                <Animation Duration="0:0:2"
-                           Easing="BounceEaseOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:2" Easing="BounceEaseOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="TranslateTransform.X" Value="0" />
                     </KeyFrame>
@@ -138,8 +130,7 @@
         </Style>
         <Style Selector="Ellipse.elastic">
             <Style.Animations>
-                <Animation Duration="0:0:2"
-                           Easing="ElasticEaseOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
+                <Animation Duration="0:0:2" Easing="ElasticEaseOut" IterationCount="INFINITE" PlaybackDirection="Alternate">
                     <KeyFrame Cue="0%">
                         <Setter Property="TranslateTransform.X" Value="0" />
                     </KeyFrame>
@@ -163,31 +154,31 @@
                 <Grid RowDefinitions="Auto,*,Auto"
                       ColumnDefinitions="*,*,*">
                     <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
-                               Text="Animation"
-                               Classes="panel-title" />
+                               Classes="panel-title"
+                               Text="Animation" />
                     <Rectangle Grid.Row="1" Grid.Column="0"
+                               Classes="rotate"
                                Width="72" Height="72"
-                               Fill="{StaticResource ChartGreen}"
-                               Classes="rotate" />
+                               Fill="{StaticResource ChartGreen}" />
                     <Ellipse Grid.Row="1" Grid.Column="1"
+                             Classes="translate"
                              Width="44" Height="44"
                              Margin="0,0,0,8"
                              VerticalAlignment="Bottom"
-                             Fill="{StaticResource ChartOrange}"
-                             Classes="translate" />
+                             Fill="{StaticResource ChartOrange}" />
                     <Ellipse Grid.Row="1" Grid.Column="2"
+                             Classes="scale"
                              Width="88" Height="88"
-                             Fill="{StaticResource ChartPurple}"
-                             Classes="scale" />
+                             Fill="{StaticResource ChartPurple}" />
                     <TextBlock Grid.Row="2" Grid.Column="0"
-                               Text="Rotate"
-                               Classes="caption" />
+                               Classes="caption"
+                               Text="Rotate" />
                     <TextBlock Grid.Row="2" Grid.Column="1"
-                               Text="Translate"
-                               Classes="caption" />
+                               Classes="caption"
+                               Text="Translate" />
                     <TextBlock Grid.Row="2" Grid.Column="2"
-                               Text="Scale"
-                               Classes="caption" />
+                               Classes="caption"
+                               Text="Scale" />
                 </Grid>
             </Border>
 
@@ -195,51 +186,51 @@
                     Classes="panel">
                 <Grid RowDefinitions="Auto,*">
                     <TextBlock Grid.Row="0"
-                               Text="Easing"
-                               Classes="panel-title" />
+                               Classes="panel-title"
+                               Text="Easing" />
                     <UniformGrid Grid.Row="1"
                                  Columns="1">
                         <Grid ColumnDefinitions="96,*">
-                            <TextBlock Text="Linear"
-                                       Classes="easing-name" />
+                            <TextBlock Classes="easing-name"
+                                       Text="Linear" />
                             <Ellipse Grid.Column="1"
-                                     Fill="{StaticResource ChartBlue}"
-                                     Classes="easing linear" />
+                                     Classes="easing linear"
+                                     Fill="{StaticResource ChartBlue}" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
-                            <TextBlock Text="Sine"
-                                       Classes="easing-name" />
+                            <TextBlock Classes="easing-name"
+                                       Text="Sine" />
                             <Ellipse Grid.Column="1"
-                                     Fill="{StaticResource ChartGreen}"
-                                     Classes="easing sine" />
+                                     Classes="easing sine"
+                                     Fill="{StaticResource ChartGreen}" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
-                            <TextBlock Text="Cubic"
-                                       Classes="easing-name" />
+                            <TextBlock Classes="easing-name"
+                                       Text="Cubic" />
                             <Ellipse Grid.Column="1"
-                                     Fill="{StaticResource ChartYellow}"
-                                     Classes="easing cubic" />
+                                     Classes="easing cubic"
+                                     Fill="{StaticResource ChartYellow}" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
-                            <TextBlock Text="Back"
-                                       Classes="easing-name" />
+                            <TextBlock Classes="easing-name"
+                                       Text="Back" />
                             <Ellipse Grid.Column="1"
-                                     Fill="{StaticResource ChartOrange}"
-                                     Classes="easing back" />
+                                     Classes="easing back"
+                                     Fill="{StaticResource ChartOrange}" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
-                            <TextBlock Text="Bounce"
-                                       Classes="easing-name" />
+                            <TextBlock Classes="easing-name"
+                                       Text="Bounce" />
                             <Ellipse Grid.Column="1"
-                                     Fill="{StaticResource ChartRed}"
-                                     Classes="easing bounce" />
+                                     Classes="easing bounce"
+                                     Fill="{StaticResource ChartRed}" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
-                            <TextBlock Text="Elastic"
-                                       Classes="easing-name" />
+                            <TextBlock Classes="easing-name"
+                                       Text="Elastic" />
                             <Ellipse Grid.Column="1"
-                                     Fill="{StaticResource ChartPurple}"
-                                     Classes="easing elastic" />
+                                     Classes="easing elastic"
+                                     Fill="{StaticResource ChartPurple}" />
                         </Grid>
                     </UniformGrid>
                 </Grid>
@@ -250,8 +241,8 @@
                 <Grid RowDefinitions="Auto,*,Auto"
                       RowSpacing="{StaticResource SpacingXSmall}">
                     <TextBlock Grid.Row="0"
-                               Text="Clock"
-                               Classes="panel-title" />
+                               Classes="panel-title"
+                               Text="Clock" />
                     <controls:AnalogClock Grid.Row="1"
                                           DialBrush="{DynamicResource PanelNoteBrush}"
                                           HandBrush="{DynamicResource PanelTitleBrush}"
@@ -270,10 +261,10 @@
                     Classes="panel">
                 <Grid RowDefinitions="Auto,*">
                     <TextBlock Grid.Row="0"
-                               Text="Shapes"
-                               Classes="panel-title" />
+                               Classes="panel-title"
+                               Text="Shapes" />
                     <UniformGrid Grid.Row="1"
-                                 Columns="3" Rows="2">
+                                 Rows="2" Columns="3">
                         <Rectangle Width="100" Height="64">
                             <Rectangle.Fill>
                                 <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -303,18 +294,20 @@
                             </Ellipse.Fill>
                         </Ellipse>
                         <Path Width="84" Height="80"
-                              Fill="{StaticResource ChartRed}"
-                              Data="M 28,0 L 34.6,19.9 55.6,20 38.6,32.4 45,52.4 28,40.1 11,52.4 17.4,32.4 0.4,20 21.4,19.9 Z" Stretch="Uniform" />
+                              Data="M 28,0 L 34.6,19.9 55.6,20 38.6,32.4 45,52.4 28,40.1 11,52.4 17.4,32.4 0.4,20 21.4,19.9 Z"
+                              Stretch="Uniform"
+                              Fill="{StaticResource ChartRed}" />
                         <Viewbox Width="100" Height="64">
-                            <Polyline Stroke="{StaticResource ChartGreen}"
+                            <Polyline Points="0,36 16,8 32,36 48,8 64,36"
+                                      Stroke="{StaticResource ChartGreen}"
                                       StrokeThickness="4"
-                                      Points="0,36 16,8 32,36 48,8 64,36" StrokeDashArray="2,1.5" StrokeJoin="Round" StrokeLineCap="Round" />
+                                      StrokeDashArray="2,1.5" StrokeLineCap="Round" StrokeJoin="Round" />
                         </Viewbox>
                         <Border Width="100" Height="64"
-                                CornerRadius="{StaticResource CornerRadiusSmall}"
                                 Background="{DynamicResource PanelBackgroundBrush}"
                                 BorderBrush="{DynamicResource PanelBorderBrush}"
                                 BorderThickness="{StaticResource BorderThicknessThin}"
+                                CornerRadius="{StaticResource CornerRadiusSmall}"
                                 BoxShadow="0 6 16 0 #66000000" />
                     </UniformGrid>
                 </Grid>
@@ -331,12 +324,12 @@
                     <Grid Grid.Row="0"
                           ColumnDefinitions="Auto,*"
                           ColumnSpacing="{StaticResource SpacingMedium}">
-                        <TextBlock Text="Particles"
-                                   Classes="panel-title" />
+                        <TextBlock Classes="panel-title"
+                                   Text="Particles" />
                         <TextBlock Grid.Column="1"
+                                   Classes="panel-note"
                                    VerticalAlignment="Center"
-                                   Text="120 particles, linked within 110 px, moved on every frame"
-                                   Classes="panel-note" />
+                                   Text="120 particles, linked within 110 px, moved on every frame" />
                     </Grid>
                     <controls:ParticleField Grid.Row="1"
                                             Fill="{StaticResource ChartBlue}"
@@ -352,12 +345,12 @@
                     <Grid Grid.Row="0"
                           ColumnDefinitions="Auto,*,Auto"
                           ColumnSpacing="{StaticResource SpacingMedium}">
-                        <TextBlock Text="Wave"
-                                   Classes="panel-title" />
+                        <TextBlock Classes="panel-title"
+                                   Text="Wave" />
                         <TextBlock Grid.Column="1"
+                                   Classes="panel-note"
                                    VerticalAlignment="Center"
-                                   Text="Redrawn on every frame (RequestAnimationFrame)"
-                                   Classes="panel-note" />
+                                   Text="Redrawn on every frame (RequestAnimationFrame)" />
                         <controls:FrameRateCounter Grid.Column="2"
                                                    VerticalAlignment="Center"
                                                    FontSize="{StaticResource FontSizeLarge}"

@@ -12,51 +12,67 @@
   "AttributeOrderingRuleGroups": [
     "xmlns",
     "xmlns:x",
+    "xmlns:sys",
     "xmlns:d",
     "xmlns:mc",
+
+    "xmlns:info",
+    "xmlns:disk",
+    "xmlns:cups",
 
     "xmlns:s",
     "xmlns:navigation",
 
-    "xmlns:app",
-    "xmlns:local",
-    "xmlns:dialog",
-    "xmlns:core",
-    "xmlns:resources",
+    "xmlns:fonts",
+    "xmlns:strings",
+
+    "xmlns:application",
     "xmlns:shell",
+    "xmlns:diagnostics",
+
+    "xmlns:animations",
     "xmlns:behaviors",
     "xmlns:controls",
     "xmlns:converters",
     "xmlns:effects",
-    "xmlns:helpers",
     "xmlns:markup",
+
+    "xmlns:domain",
+    "xmlns:logic",
+    "xmlns:helpers",
+
+    "xmlns:components",
+    "xmlns:video",
+    "xmlns:services",
+
+    "xmlns:state",
+
+    "xmlns:models",
+
+    "xmlns:modules",
     "xmlns:module",
-    "xmlns:views",
 
     "xmlns:*",
 
-    "mc:Ignorable, d:IsDataSource, d:LayoutOverrides, d:IsStaticText",
+    "mc:Ignorable",
 
     "x:TypeArguments",
     "x:Class",
     "x:Type",
     "x:Key, Key",
     "x:Name, Name",
-    "x:Uid, Uid",
 
     "s:Behavior.Key",
-    "s:ValidationProperty.*",
 
     "TargetType, BasedOn",
 
-    "Class",
+    "Selector",
 
-    "TargetName",
     "Property",
 
     "Grid.Row, Grid.RowSpan, Grid.Column, Grid.ColumnSpan",
     "Canvas.Left, Canvas.Top, Canvas.Right, Canvas.Bottom",
-    "AbsoluteLayout.LayoutBounds, AbsoluteLayout.LayoutFlags",
+    "DockPanel.Dock",
 
     "x:DataType",
     "s:DataContextResolver.*",
@@ -64,61 +80,109 @@
     "d:DataContext",
 
     "Style",
-    "StyleClass",
+    "Classes",
+    "Classes.*",
+    "RequestedThemeVariant",
 
     "RowDefinitions",
     "ColumnDefinitions",
-    "Width, Height, MinWidth, MinHeight, MaxWidth, MaxHeight, WidthRequest, HeightRequest",
+    "Rows, Columns",
+    "Width, Height, MinWidth, MinHeight, MaxWidth, MaxHeight",
     "d:DesignWidth, d:DesignHeight",
-
     "CanResize",
     "WindowState",
+    "WindowStartupLocation, SizeToContent, ShowInTaskbar",
 
-    "Title",
-    "Icon",
-
+    "controls:*",
     "behaviors:*",
     "s:*",
+    "navigation:*",
     "effects:*",
-
-    "Platform",
 
     "Orientation",
     "Margin, Padding",
-    "HorizontalTextAlignment, VerticalTextAlignment",
+    "Spacing, RowSpacing, ColumnSpacing, ItemSpacing, LineSpacing",
     "HorizontalAlignment, VerticalAlignment",
-    "Panel.ZIndex",
+    "TextAlignment, HorizontalContentAlignment, VerticalContentAlignment, ZIndex",
+    "TextWrapping, TextTrimming",
 
     "ItemsSource",
+    "ItemTemplate",
+    "SelectedItem",
+    "SelectionMode",
+    "HorizontalScrollBarVisibility, VerticalScrollBarVisibility",
     "Source",
-    "PageSource, PageIndex, Offset", 
+    "Offset",
 
     "Command, CommandParameter",
+    "IsDefault, IsCancel",
 
     "IsEnabled",
+    "IsChecked",
+    "IsOpen",
+    "IsIndeterminate",
+    "PasswordChar",
     "IsVisible",
+    "IsHitTestVisible",
+    "Focusable, IsTabStop, TabIndex",
+    "Cursor",
 
+    "Binding",
+    "Path, Converter, StringFormat, TargetNullValue",
+    "ResourceKey",
     "Value",
     "Minimum, Maximum",
     "StartPoint, EndPoint",
-    "Progress",
 
+    "Title",
+    "Icon",
     "Text",
     "Content",
+    "PlaceholderText",
 
-    "FontFamily, FontSize, FontAttributes",
-    "Color, TextColor, BackgroundColor",
+    "FontFamily, FontSize, FontWeight, FontStyle",
+    "Color, Background, BackgroundColor, Foreground",
+    "Brush",
+    "Data, Points",
+    "Stretch",
+    "Fill",
+    "Opacity",
+    "RenderTransform, RenderTransformOrigin",
+    "ClipToBounds",
+    "Stroke, StrokeThickness",
+    "StrokeDashArray, StrokeLineCap, StrokeJoin",
+    "BorderBrush, BorderThickness, CornerRadius",
+    "BoxShadow",
+    "Radius",
+    "RadiusX, RadiusY",
 
-    "Storyboard.*, From, To, Duration",
+    "Duration, Easing, IterationCount, PlaybackDirection",
+    "Cue",
+
+    "TextInputOptions.ContentType",
+
+    "Speed",
+    "GaugeWidth",
+
+    "OnContent, OffContent",
+
+    "OffsetX, OffsetY",
+
+    "ToolTip.Tip",
 
     "*",
     "*:*",
+
+    "Click",
+    "PointerPressed, PointerReleased, PointerCaptureLost",
 
     "TrueValue",
     "FalseValue",
     "HandleEmptyString",
     "NullValue",
-    "NonNullValue"
+    "NonNullValue",
+    "DefaultValue",
+    "Plural, Singular"
   ],
   "FirstLineAttributes": "",
   "OrderAttributesByName": true,
@@ -131,9 +195,9 @@
   "ReorderCanvasChildren": false,
   "ReorderSetters": 0,
   "FormatMarkupExtension": true,
-  "NoNewLineMarkupExtensions": "x:Bind, Binding",
+  "NoNewLineMarkupExtensions": "x:Bind, x:Binding, Binding, TemplateBinding",
   "ThicknessSeparator": 2,
-  "ThicknessAttributes": "Margin, Padding, BorderThickness, ThumbnailClipMargin",
+  "ThicknessAttributes": "Margin, Padding, BorderThickness",
   "FormatOnSave": true,
   "CommentPadding": 1,
   "IndentSize": 4

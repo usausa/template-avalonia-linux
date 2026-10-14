@@ -4,8 +4,8 @@
 
     <Border Classes="dialog">
         <StackPanel>
-            <TextBlock Text="Confirm"
-                       Classes="dialog-title" />
+            <TextBlock Classes="dialog-title"
+                       Text="Confirm" />
             <TextBlock x:Name="MessageText"
                        TextWrapping="Wrap" />
             <StackPanel Orientation="Horizontal"
@@ -13,11 +13,13 @@
                         Spacing="8"
                         HorizontalAlignment="Right">
                 <Button Width="96"
+                        IsDefault="True"
                         Content="Yes"
-                        Click="OnYesClick" IsDefault="True" />
+                        Click="OnYesClick" />
                 <Button Width="96"
+                        IsCancel="True"
                         Content="No"
-                        Click="OnNoClick" IsCancel="True" />
+                        Click="OnNoClick" />
             </StackPanel>
         </StackPanel>
     </Border>

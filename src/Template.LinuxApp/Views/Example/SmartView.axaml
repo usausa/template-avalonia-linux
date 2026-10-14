@@ -7,8 +7,8 @@
              xmlns:s="http://smart/avalonia"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
-             xmlns:services="clr-namespace:Template.LinuxApp.Services"
              xmlns:logic="clr-namespace:Template.LinuxApp.Domain.Logic"
+             xmlns:services="clr-namespace:Template.LinuxApp.Services"
              xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.SmartView"
@@ -159,10 +159,11 @@
                         <Button Padding="0"
                                 Command="{Binding $parent[ItemsControl].((module:SmartViewModel)DataContext).SelectCommand, FallbackValue={x:Null}}"
                                 CommandParameter="{Binding}"
-                                Background="Transparent" BorderThickness="0">
-                            <Border Width="280"
-                                    Classes="panel disk-tab"
-                                    Classes.selected="{Binding IsSelected}">
+                                Background="Transparent"
+                                BorderThickness="0">
+                            <Border Classes="panel disk-tab"
+                                    Classes.selected="{Binding IsSelected}"
+                                    Width="280">
                                 <Grid RowDefinitions="Auto,Auto"
                                       ColumnDefinitions="Auto,*,Auto"
                                       ColumnSpacing="{StaticResource SpacingSmall}">
@@ -170,14 +171,15 @@
                                             Width="16" Height="16"
                                             Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}" />
                                     <TextBlock Grid.Row="0" Grid.Column="1"
-                                               Text="{Binding Name}"
-                                               Classes="card-title" />
+                                               Classes="card-title"
+                                               Text="{Binding Name}" />
                                     <TextBlock Grid.Row="0" Grid.Column="2"
-                                               Text="{Binding Temperature, StringFormat='{}{0:F0} °C', TargetNullValue=—}"
-                                               Classes="card-note" />
+                                               Classes="card-note"
+                                               Text="{Binding Temperature, StringFormat='{}{0:F0} °C', TargetNullValue=—}" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
-                                               Text="{Binding Model}"
-                                               Classes="card-meta" TextTrimming="CharacterEllipsis" />
+                                               Classes="card-meta"
+                                               TextTrimming="CharacterEllipsis"
+                                               Text="{Binding Model}" />
                                 </Grid>
                             </Border>
                         </Button>
@@ -185,9 +187,9 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <TextBlock Grid.Column="1"
+                       Classes="card-note"
                        VerticalAlignment="Bottom"
-                       Text="{Binding Updated, StringFormat='Updated {0:HH:mm:ss}', TargetNullValue=''}"
-                       Classes="card-note" />
+                       Text="{Binding Updated, StringFormat='Updated {0:HH:mm:ss}', TargetNullValue=''}" />
         </Grid>
 
         <ContentControl Grid.Row="1"
@@ -206,32 +208,33 @@
                                       ColumnDefinitions="*,Auto"
                                       ColumnSpacing="{StaticResource SpacingNormal}">
                                     <TextBlock Grid.Row="0" Grid.Column="0"
-                                               Text="{Binding Model}"
-                                               Classes="card-title" TextTrimming="CharacterEllipsis" />
+                                               Classes="card-title"
+                                               TextTrimming="CharacterEllipsis"
+                                               Text="{Binding Model}" />
                                     <WrapPanel Grid.Row="1" Grid.Column="0"
                                                ItemSpacing="{StaticResource SpacingNormal}">
-                                        <TextBlock Text="{Binding Device}"
-                                                   Classes="card-meta" />
-                                        <TextBlock Text="{Binding Type, Converter={StaticResource DiskTypeConverter}}"
-                                                   Classes="card-meta" />
-                                        <TextBlock Text="{Binding Size, Converter={StaticResource DiskSizeConverter}}"
-                                                   Classes="card-meta" />
-                                        <TextBlock IsVisible="{Binding Firmware, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                   Text="{Binding Firmware, StringFormat='FW {0}'}"
-                                                   Classes="card-meta" />
-                                        <TextBlock IsVisible="{Binding SerialNumber, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                   Text="{Binding SerialNumber, StringFormat='S/N {0}'}"
-                                                   Classes="card-meta" />
-                                        <TextBlock IsVisible="{Binding Removable}"
-                                                   Text="Removable"
-                                                   Classes="card-meta" />
-                                        <TextBlock IsVisible="{Binding HasAssessment}"
-                                                   Text="{Binding Assessment, Converter={StaticResource AssessmentConverter}}"
-                                                   Classes="card-meta" />
+                                        <TextBlock Classes="card-meta"
+                                                   Text="{Binding Device}" />
+                                        <TextBlock Classes="card-meta"
+                                                   Text="{Binding Type, Converter={StaticResource DiskTypeConverter}}" />
+                                        <TextBlock Classes="card-meta"
+                                                   Text="{Binding Size, Converter={StaticResource DiskSizeConverter}}" />
+                                        <TextBlock Classes="card-meta"
+                                                   IsVisible="{Binding Firmware, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   Text="{Binding Firmware, StringFormat='FW {0}'}" />
+                                        <TextBlock Classes="card-meta"
+                                                   IsVisible="{Binding SerialNumber, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   Text="{Binding SerialNumber, StringFormat='S/N {0}'}" />
+                                        <TextBlock Classes="card-meta"
+                                                   IsVisible="{Binding Removable}"
+                                                   Text="Removable" />
+                                        <TextBlock Classes="card-meta"
+                                                   IsVisible="{Binding HasAssessment}"
+                                                   Text="{Binding Assessment, Converter={StaticResource AssessmentConverter}}" />
                                     </WrapPanel>
                                     <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-                                            Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}"
-                                            Classes="health">
+                                            Classes="health"
+                                            Background="{Binding Health, Converter={StaticResource HealthBrushConverter}}">
                                         <TextBlock Text="{Binding Health}" />
                                     </Border>
                                     <ItemsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
@@ -260,10 +263,10 @@
                             </Border>
 
                             <Border Grid.Row="1"
-                                    IsVisible="{Binding HasSmart}"
-                                    Classes="panel">
-                                <UniformGrid ColumnSpacing="{StaticResource SpacingSmall}"
-                                             Rows="1">
+                                    Classes="panel"
+                                    IsVisible="{Binding HasSmart}">
+                                <UniformGrid Rows="1"
+                                             ColumnSpacing="{StaticResource SpacingSmall}">
                                     <controls:RingGauge Value="{Binding Life, TargetNullValue={x:Static sys:Double.NaN}}"
                                                         Text="{Binding Life, StringFormat='{}{0:F0}%', TargetNullValue=—}"
                                                         Fill="{Binding LifeHealth, Converter={StaticResource HealthBrushConverter}}"
@@ -286,9 +289,9 @@
                                           IsVisible="{Binding HasSmart}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid RowSpacing="{StaticResource SpacingSmall}"
-                                                     ColumnSpacing="{StaticResource SpacingSmall}"
-                                                     Columns="4" />
+                                        <UniformGrid Columns="4"
+                                                     RowSpacing="{StaticResource SpacingSmall}"
+                                                     ColumnSpacing="{StaticResource SpacingSmall}" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
@@ -308,22 +311,24 @@
                             </ItemsControl>
 
                             <Border Grid.Row="1" Grid.RowSpan="2"
-                                    IsVisible="{Binding !HasSmart}"
-                                    Classes="panel">
+                                    Classes="panel"
+                                    IsVisible="{Binding !HasSmart}">
                                 <StackPanel Spacing="{StaticResource SpacingLarge}"
                                             HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <Path HorizontalAlignment="Center"
+                                          Data="M4,16 H92 V80 H4 Z M18,62 H46 M70,62 H78"
                                           Opacity="0.4"
                                           Stroke="{DynamicResource PanelNoteBrush}"
-                                          StrokeThickness="6"
-                                          Data="M4,16 H92 V80 H4 Z M18,62 H46 M70,62 H78" />
+                                          StrokeThickness="6" />
                                     <TextBlock HorizontalAlignment="Center"
                                                Text="{Binding Smart, Converter={StaticResource MessageConverter}}"
                                                FontSize="28" />
-                                    <TextBlock MaxWidth="720"
+                                    <TextBlock Classes="card-note"
+                                               MaxWidth="720"
                                                HorizontalAlignment="Center"
-                                               Text="{Binding Smart, Converter={StaticResource MessageDetailConverter}}"
-                                               Classes="card-note" TextAlignment="Center" TextWrapping="Wrap" />
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"
+                                               Text="{Binding Smart, Converter={StaticResource MessageDetailConverter}}" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -333,16 +338,16 @@
                             <Grid RowDefinitions="Auto,Auto,*"
                                   RowSpacing="{StaticResource SpacingSmall}">
                                 <Grid ColumnDefinitions="*,Auto">
-                                    <TextBlock Text="{Binding IsNvme, Converter={s:BoolToText True='NVMe health log', False='SMART attributes'}}"
-                                               Classes="card-title" />
+                                    <TextBlock Classes="card-title"
+                                               Text="{Binding IsNvme, Converter={s:BoolToText True='NVMe health log', False='SMART attributes'}}" />
                                     <TextBlock Grid.Column="1"
+                                               Classes="card-note"
                                                IsVisible="{Binding IsAta}"
-                                               Text="{Binding Attributes.Count, Converter={StaticResource AttributeCountConverter}}"
-                                               Classes="card-note" />
+                                               Text="{Binding Attributes.Count, Converter={StaticResource AttributeCountConverter}}" />
                                     <TextBlock Grid.Column="1"
+                                               Classes="card-note"
                                                IsVisible="{Binding IsNvme}"
-                                               Text="{Binding Values.Count, Converter={StaticResource ValueCountConverter}}"
-                                               Classes="card-note" />
+                                               Text="{Binding Values.Count, Converter={StaticResource ValueCountConverter}}" />
                                 </Grid>
                                 <Grid Grid.Row="1"
                                       ColumnDefinitions="4,36,*,64,60,56,76,128,120"
@@ -350,29 +355,29 @@
                                       ColumnSpacing="{StaticResource SpacingSmall}"
                                       IsVisible="{Binding IsAta}">
                                     <TextBlock Grid.Column="1"
-                                               Text="ID"
-                                               Classes="panel-header" />
+                                               Classes="panel-header"
+                                               Text="ID" />
                                     <TextBlock Grid.Column="2"
-                                               Text="Attribute"
-                                               Classes="panel-header" />
+                                               Classes="panel-header"
+                                               Text="Attribute" />
                                     <TextBlock Grid.Column="3"
-                                               Text="Type"
-                                               Classes="panel-header" />
+                                               Classes="panel-header"
+                                               Text="Type" />
                                     <TextBlock Grid.Column="4"
-                                               Text="Current"
-                                               Classes="panel-header number" />
+                                               Classes="panel-header number"
+                                               Text="Current" />
                                     <TextBlock Grid.Column="5"
-                                               Text="Worst"
-                                               Classes="panel-header number" />
+                                               Classes="panel-header number"
+                                               Text="Worst" />
                                     <TextBlock Grid.Column="6"
-                                               Text="Threshold"
-                                               Classes="panel-header number" />
+                                               Classes="panel-header number"
+                                               Text="Threshold" />
                                     <TextBlock Grid.Column="7"
-                                               Text="Raw"
-                                               Classes="panel-header number" />
+                                               Classes="panel-header number"
+                                               Text="Raw" />
                                     <TextBlock Grid.Column="8"
-                                               Text="Raw (hex)"
-                                               Classes="panel-header" />
+                                               Classes="panel-header"
+                                               Text="Raw (hex)" />
                                 </Grid>
                                 <Grid Grid.Row="1"
                                       ColumnDefinitions="4,*,180,200"
@@ -380,44 +385,44 @@
                                       ColumnSpacing="{StaticResource SpacingSmall}"
                                       IsVisible="{Binding IsNvme}">
                                     <TextBlock Grid.Column="1"
-                                               Text="Item"
-                                               Classes="panel-header" />
+                                               Classes="panel-header"
+                                               Text="Item" />
                                     <TextBlock Grid.Column="2"
-                                               Text="Value"
-                                               Classes="panel-header number" />
+                                               Classes="panel-header number"
+                                               Text="Value" />
                                     <TextBlock Grid.Column="3"
-                                               Text="Detail"
-                                               Classes="panel-header" />
+                                               Classes="panel-header"
+                                               Text="Detail" />
                                 </Grid>
                                 <ScrollViewer Grid.Row="2"
-                                              VerticalScrollBarVisibility="Auto"
-                                              Classes="gutter">
+                                              Classes="gutter"
+                                              VerticalScrollBarVisibility="Auto">
                                     <StackPanel>
                                         <ItemsControl ItemsSource="{Binding Attributes}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="module:SmartAttributeItem">
-                                                    <Grid ColumnDefinitions="4,36,*,64,60,56,76,128,120"
-                                                          ColumnSpacing="{StaticResource SpacingSmall}"
-                                                          Classes="row">
+                                                    <Grid Classes="row"
+                                                          ColumnDefinitions="4,36,*,64,60,56,76,128,120"
+                                                          ColumnSpacing="{StaticResource SpacingSmall}">
                                                         <Border Grid.Column="0"
                                                                 Background="{Binding Health, Converter={StaticResource RowBrushConverter}}" />
                                                         <TextBlock Grid.Column="1"
-                                                                   Text="{Binding Id, StringFormat='{}{0:X2}'}"
-                                                                   Classes="mono" />
+                                                                   Classes="mono"
+                                                                   Text="{Binding Id, StringFormat='{}{0:X2}'}" />
                                                         <TextBlock Grid.Column="2"
                                                                    Text="{Binding Id, Converter={StaticResource AttributeNameConverter}}" />
                                                         <TextBlock Grid.Column="3"
-                                                                   Text="{Binding IsPreFailure, Converter={s:BoolToText True='Pre-fail', False='Old age'}}"
-                                                                   Classes="note" />
+                                                                   Classes="note"
+                                                                   Text="{Binding IsPreFailure, Converter={s:BoolToText True='Pre-fail', False='Old age'}}" />
                                                         <TextBlock Grid.Column="4"
-                                                                   Text="{Binding Current}"
-                                                                   Classes="number" />
+                                                                   Classes="number"
+                                                                   Text="{Binding Current}" />
                                                         <TextBlock Grid.Column="5"
-                                                                   Text="{Binding Worst}"
-                                                                   Classes="number" />
+                                                                   Classes="number"
+                                                                   Text="{Binding Worst}" />
                                                         <TextBlock Grid.Column="6"
-                                                                   Text="{Binding Threshold}"
-                                                                   Classes="number" />
+                                                                   Classes="number"
+                                                                   Text="{Binding Threshold}" />
                                                         <TextBlock Grid.Column="7"
                                                                    Classes="number">
                                                             <TextBlock.Text>
@@ -428,8 +433,8 @@
                                                             </TextBlock.Text>
                                                         </TextBlock>
                                                         <TextBlock Grid.Column="8"
-                                                                   Text="{Binding Raw, StringFormat='{}{0:X12}'}"
-                                                                   Classes="mono note" />
+                                                                   Classes="mono note"
+                                                                   Text="{Binding Raw, StringFormat='{}{0:X12}'}" />
                                                     </Grid>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
@@ -437,9 +442,9 @@
                                         <ItemsControl ItemsSource="{Binding Values}">
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate x:DataType="module:SmartValueItem">
-                                                    <Grid ColumnDefinitions="4,*,180,200"
-                                                          ColumnSpacing="{StaticResource SpacingSmall}"
-                                                          Classes="row">
+                                                    <Grid Classes="row"
+                                                          ColumnDefinitions="4,*,180,200"
+                                                          ColumnSpacing="{StaticResource SpacingSmall}">
                                                         <Border Grid.Column="0"
                                                                 Background="{Binding Health, Converter={StaticResource RowBrushConverter}}" />
                                                         <TextBlock Grid.Column="1"
@@ -469,10 +474,10 @@
                                     </StackPanel>
                                 </ScrollViewer>
                                 <TextBlock Grid.Row="2"
+                                           Classes="card-note"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"
                                            IsVisible="{Binding !HasSmart}"
-                                           Text="No SMART data"
-                                           Classes="card-note" />
+                                           Text="No SMART data" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -481,16 +486,16 @@
         </ContentControl>
 
         <TextBlock Grid.Row="1"
+                   Classes="card-note"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    IsVisible="{Binding !IsSupported}"
-                   Text="Disk information is available on Linux."
-                   Classes="card-note" />
+                   Text="Disk information is available on Linux." />
 
         <TextBlock Grid.Row="1"
+                   Classes="card-note"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    IsVisible="{Binding IsEmpty}"
-                   Text="No disks found"
-                   Classes="card-note" />
+                   Text="No disks found" />
     </Grid>
 
 </UserControl>

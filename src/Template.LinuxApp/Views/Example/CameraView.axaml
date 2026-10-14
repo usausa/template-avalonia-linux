@@ -35,7 +35,8 @@
         <Border Grid.Row="0" Grid.Column="0"
                 Margin="3" Padding="3"
                 HorizontalAlignment="Right" VerticalAlignment="Top"
-                Background="#40000000" BorderBrush="#C0FFFFFF" BorderThickness="1">
+                Background="#40000000"
+                BorderBrush="#C0FFFFFF" BorderThickness="1">
             <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                   ColumnDefinitions="Auto,Auto">
                 <Grid.Styles>
@@ -52,44 +53,44 @@
                 <TextBlock Grid.Row="0" Grid.Column="0"
                            Text="FPS:" />
                 <TextBlock Grid.Row="0" Grid.Column="1"
-                           Text="{Binding Fps, StringFormat={}{0:F1}}"
-                           Classes="value" />
+                           Classes="value"
+                           Text="{Binding Fps, StringFormat={}{0:F1}}" />
                 <TextBlock Grid.Row="1" Grid.Column="0"
                            Text="GC0/s:" />
                 <TextBlock Grid.Row="1" Grid.Column="1"
-                           Text="{Binding Gc0PerSec, StringFormat={}{0:F1}}"
-                           Classes="value" />
+                           Classes="value"
+                           Text="{Binding Gc0PerSec, StringFormat={}{0:F1}}" />
                 <TextBlock Grid.Row="2" Grid.Column="0"
                            Text="GC1/s:" />
                 <TextBlock Grid.Row="2" Grid.Column="1"
-                           Text="{Binding Gc1PerSec, StringFormat={}{0:F1}}"
-                           Classes="value" />
+                           Classes="value"
+                           Text="{Binding Gc1PerSec, StringFormat={}{0:F1}}" />
                 <TextBlock Grid.Row="3" Grid.Column="0"
                            Text="GC2/s:" />
                 <TextBlock Grid.Row="3" Grid.Column="1"
-                           Text="{Binding Gc2PerSec, StringFormat={}{0:F1}}"
-                           Classes="value" />
+                           Classes="value"
+                           Text="{Binding Gc2PerSec, StringFormat={}{0:F1}}" />
             </Grid>
         </Border>
 
         <ScrollViewer Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
-                      VerticalScrollBarVisibility="Auto"
-                      Classes="gutter">
+                      Classes="gutter"
+                      VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="{StaticResource PaddingSmall}"
                         Spacing="{StaticResource SpacingSmall}">
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingSmall}">
                         <Grid ColumnDefinitions="*,Auto">
-                            <TextBlock VerticalAlignment="Center"
-                                       Text="Camera"
-                                       Classes="panel-title" />
+                            <TextBlock Classes="panel-title"
+                                       VerticalAlignment="Center"
+                                       Text="Camera" />
                             <Button Grid.Column="1"
+                                    Classes="panel-button"
                                     Command="{Binding RefreshCommand}"
-                                    Content="Refresh"
-                                    Classes="panel-button" />
+                                    Content="Refresh" />
                         </Grid>
-                        <TextBlock Text="Device"
-                                   Classes="panel-header" />
+                        <TextBlock Classes="panel-header"
+                                   Text="Device" />
                         <ComboBox HorizontalAlignment="Stretch"
                                   ItemsSource="{Binding Cameras}"
                                   SelectedItem="{Binding SelectedCamera}">
@@ -106,8 +107,8 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <TextBlock Text="Resolution (YUYV)"
-                                   Classes="panel-header" />
+                        <TextBlock Classes="panel-header"
+                                   Text="Resolution (YUYV)" />
                         <ComboBox HorizontalAlignment="Stretch"
                                   ItemsSource="{Binding Resolutions}"
                                   SelectedItem="{Binding SelectedResolution}">
@@ -124,39 +125,39 @@
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
-                        <Button HorizontalAlignment="Stretch"
+                        <Button Classes="panel-button"
+                                HorizontalAlignment="Stretch"
                                 Command="{Binding ApplyCommand}"
-                                Content="Apply"
-                                Classes="panel-button" />
+                                Content="Apply" />
                         <ContentControl Content="{Binding SelectedCamera}">
                             <ContentControl.ContentTemplate>
                                 <DataTemplate x:DataType="video:CameraDevice">
                                     <Grid RowDefinitions="Auto,Auto,Auto,Auto"
                                           ColumnDefinitions="72,*">
                                         <TextBlock Grid.Row="0" Grid.Column="0"
-                                                   Text="Name"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Name" />
                                         <TextBlock Grid.Row="0" Grid.Column="1"
-                                                   Text="{Binding Name}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Name}" />
                                         <TextBlock Grid.Row="1" Grid.Column="0"
-                                                   Text="Driver"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Driver" />
                                         <TextBlock Grid.Row="1" Grid.Column="1"
-                                                   Text="{Binding Driver}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Driver}" />
                                         <TextBlock Grid.Row="2" Grid.Column="0"
-                                                   Text="Bus"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Bus" />
                                         <TextBlock Grid.Row="2" Grid.Column="1"
-                                                   Text="{Binding BusInfo}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding BusInfo}" />
                                         <TextBlock Grid.Row="3" Grid.Column="0"
-                                                   Text="Formats"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Formats" />
                                         <TextBlock Grid.Row="3" Grid.Column="1"
-                                                   Text="{Binding Formats, Converter={StaticResource FormatsConverter}}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Formats, Converter={StaticResource FormatsConverter}}" />
                                     </Grid>
                                 </DataTemplate>
                             </ContentControl.ContentTemplate>
@@ -167,17 +168,18 @@
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingSmall}">
                         <Grid ColumnDefinitions="*,Auto">
-                            <TextBlock VerticalAlignment="Center"
-                                       Text="QR code"
-                                       Classes="panel-title" />
+                            <TextBlock Classes="panel-title"
+                                       VerticalAlignment="Center"
+                                       Text="QR code" />
                             <CheckBox Grid.Column="1"
                                       IsEnabled="{Binding IsQrEnabled}"
                                       IsChecked="{Binding IsQrScan}"
                                       Content="Read" />
                         </Grid>
-                        <TextBlock Text="{Binding QrText, TargetNullValue=—}"
+                        <TextBlock TextWrapping="Wrap"
+                                   Text="{Binding QrText, TargetNullValue=—}"
                                    FontSize="{StaticResource FontSizeXLarge}"
-                                   FontWeight="SemiBold" TextWrapping="Wrap" />
+                                   FontWeight="SemiBold" />
                         <ItemsControl ItemsSource="{Binding QrHistory}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="module:QrHistoryItem">
@@ -197,19 +199,19 @@
 
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingSmall}">
-                        <TextBlock Text="Snapshot"
-                                   Classes="panel-title" />
+                        <TextBlock Classes="panel-title"
+                                   Text="Snapshot" />
                         <Border Height="180"
                                 BorderBrush="{DynamicResource PanelBorderBrush}"
                                 BorderThickness="{StaticResource BorderThicknessThin}">
                             <Image Source="{Binding LastSnapshot}"
                                    Stretch="Uniform" />
                         </Border>
-                        <TextBlock IsVisible="{Binding SnapshotFile, Converter={x:Static ObjectConverters.IsNull}}"
-                                   Text="{Binding SnapshotFolder}"
-                                   Classes="panel-note" />
-                        <TextBlock IsVisible="{Binding SnapshotFile, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                   Classes="panel-note">
+                        <TextBlock Classes="panel-note"
+                                   IsVisible="{Binding SnapshotFile, Converter={x:Static ObjectConverters.IsNull}}"
+                                   Text="{Binding SnapshotFolder}" />
+                        <TextBlock Classes="panel-note"
+                                   IsVisible="{Binding SnapshotFile, Converter={x:Static ObjectConverters.IsNotNull}}">
                             <TextBlock.Text>
                                 <MultiBinding StringFormat="{}{0} ({1})">
                                     <Binding Path="SnapshotFile" />
@@ -217,9 +219,9 @@
                                 </MultiBinding>
                             </TextBlock.Text>
                         </TextBlock>
-                        <TextBlock IsVisible="{Binding SnapshotError, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                   Text="{Binding SnapshotError}"
-                                   Classes="panel-note" />
+                        <TextBlock Classes="panel-note"
+                                   IsVisible="{Binding SnapshotError, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                   Text="{Binding SnapshotError}" />
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -227,15 +229,15 @@
 
         <UniformGrid Grid.Row="1" Grid.Column="0"
                      Rows="1">
-            <Button Command="{Binding StartCommand}"
-                    Content="Start"
-                    Classes="command" />
-            <Button Command="{Binding StopCommand}"
-                    Content="Stop"
-                    Classes="command" />
-            <Button Command="{Binding SnapshotCommand}"
-                    Content="Snapshot"
-                    Classes="command" />
+            <Button Classes="command"
+                    Command="{Binding StartCommand}"
+                    Content="Start" />
+            <Button Classes="command"
+                    Command="{Binding StopCommand}"
+                    Content="Stop" />
+            <Button Classes="command"
+                    Command="{Binding SnapshotCommand}"
+                    Content="Snapshot" />
         </UniformGrid>
 
     </Grid>

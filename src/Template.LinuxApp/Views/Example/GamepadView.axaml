@@ -60,30 +60,30 @@
         <Border Grid.Column="0"
                 Classes="panel">
             <DockPanel>
-                <Grid ColumnDefinitions="*,Auto"
-                      DockPanel.Dock="Top">
-                    <TextBlock Text="Controller"
-                               Classes="panel-title" />
+                <Grid DockPanel.Dock="Top"
+                      ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="panel-title"
+                               Text="Controller" />
                     <StackPanel Grid.Column="1"
                                 Orientation="Horizontal"
                                 Spacing="{StaticResource SpacingSmall}">
-                        <TextBlock IsVisible="{Binding IsConnected}"
-                                   Text="{Binding DeviceName}"
-                                   Classes="panel-name" />
-                        <TextBlock IsVisible="{Binding !IsConnected}"
-                                   Text="Disconnected"
-                                   Classes="panel-name" />
-                        <TextBlock Text="{Binding Device}"
-                                   Classes="panel-name" />
+                        <TextBlock Classes="panel-name"
+                                   IsVisible="{Binding IsConnected}"
+                                   Text="{Binding DeviceName}" />
+                        <TextBlock Classes="panel-name"
+                                   IsVisible="{Binding !IsConnected}"
+                                   Text="Disconnected" />
+                        <TextBlock Classes="panel-name"
+                                   Text="{Binding Device}" />
                     </StackPanel>
                 </Grid>
                 <controls:GamepadDiagram Margin="{StaticResource PaddingLarge}"
+                                         Foreground="{DynamicResource PanelTitleBrush}"
                                          Stroke="{DynamicResource PanelNoteBrush}"
                                          Axes="{Binding Axes}"
                                          BodyFill="{DynamicResource PanelBorderBrush}"
                                          Buttons="{Binding Buttons}"
                                          FaceColors="{StaticResource FaceColors}"
-                                         Foreground="{DynamicResource PanelTitleBrush}"
                                          IsConnected="{Binding IsConnected}"
                                          PressedFill="{StaticResource ChartBlue}" />
             </DockPanel>
@@ -96,14 +96,14 @@
             <Border Grid.Row="0"
                     Classes="panel">
                 <StackPanel Spacing="{StaticResource SpacingSmall}">
-                    <TextBlock Text="Buttons"
-                               Classes="panel-title" />
+                    <TextBlock Classes="panel-title"
+                               Text="Buttons" />
                     <ItemsControl ItemsSource="{Binding ButtonItems}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid RowSpacing="{StaticResource SpacingXSmall}"
-                                             ColumnSpacing="{StaticResource SpacingXSmall}"
-                                             Columns="4" />
+                                <UniformGrid Columns="4"
+                                             RowSpacing="{StaticResource SpacingXSmall}"
+                                             ColumnSpacing="{StaticResource SpacingXSmall}" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
@@ -111,12 +111,12 @@
                                 <Border Classes="button-cell"
                                         Classes.pressed="{Binding Pressed}">
                                     <Grid ColumnDefinitions="Auto,*">
-                                        <TextBlock Text="{Binding Index}"
-                                                   Classes="panel-name" />
+                                        <TextBlock Classes="panel-name"
+                                                   Text="{Binding Index}" />
                                         <TextBlock Grid.Column="1"
+                                                   Classes="panel-text"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding Name}"
-                                                   Classes="panel-text" />
+                                                   Text="{Binding Name}" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -128,8 +128,8 @@
             <Border Grid.Row="1"
                     Classes="panel">
                 <StackPanel Spacing="{StaticResource SpacingSmall}">
-                    <TextBlock Text="Axes"
-                               Classes="panel-title" />
+                    <TextBlock Classes="panel-title"
+                               Text="Axes" />
                     <ItemsControl ItemsSource="{Binding AxisItems}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -140,17 +140,17 @@
                             <DataTemplate x:DataType="module:GamepadAxisItem">
                                 <Grid ColumnDefinitions="20,64,*,56"
                                       ColumnSpacing="{StaticResource SpacingSmall}">
-                                    <TextBlock Text="{Binding Index}"
-                                               Classes="panel-name" />
+                                    <TextBlock Classes="panel-name"
+                                               Text="{Binding Index}" />
                                     <TextBlock Grid.Column="1"
-                                               Text="{Binding Name}"
-                                               Classes="panel-text" />
+                                               Classes="panel-text"
+                                               Text="{Binding Name}" />
                                     <controls:AxisBar Grid.Column="2"
                                                       Value="{Binding Value}" />
                                     <TextBlock Grid.Column="3"
+                                               Classes="panel-text"
                                                HorizontalAlignment="Right"
-                                               Text="{Binding Raw}"
-                                               Classes="panel-text" />
+                                               Text="{Binding Raw}" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -161,15 +161,16 @@
             <Border Grid.Row="2"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock Margin="0,0,0,6"
-                               Text="Sticks"
-                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Classes="panel-title"
+                               Margin="0,0,0,6"
+                               Text="Sticks" />
                     <ItemsControl ItemsSource="{Binding StickItems}"
                                   ClipToBounds="True">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid ColumnSpacing="{StaticResource SpacingSmall}"
-                                             Columns="2" />
+                                <UniformGrid Columns="2"
+                                             ColumnSpacing="{StaticResource SpacingSmall}" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
@@ -185,33 +186,33 @@
                                           ColumnSpacing="{StaticResource SpacingSmall}"
                                           VerticalAlignment="Center">
                                         <TextBlock Grid.ColumnSpan="2"
-                                                   Text="{Binding Name}"
-                                                   Classes="panel-title" />
+                                                   Classes="panel-title"
+                                                   Text="{Binding Name}" />
                                         <TextBlock Grid.Row="1" Grid.Column="0"
-                                                   Text="X"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="X" />
                                         <TextBlock Grid.Row="1" Grid.Column="1"
+                                                   Classes="panel-text"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding X, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}"
-                                                   Classes="panel-text" />
+                                                   Text="{Binding X, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}" />
                                         <TextBlock Grid.Row="2" Grid.Column="0"
-                                                   Text="Y"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Y" />
                                         <TextBlock Grid.Row="2" Grid.Column="1"
+                                                   Classes="panel-text"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding Y, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}"
-                                                   Classes="panel-text" />
+                                                   Text="{Binding Y, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}" />
                                         <TextBlock Grid.Row="3" Grid.Column="0"
-                                                   Text="Offset"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Offset" />
                                         <TextBlock Grid.Row="3" Grid.Column="1"
+                                                   Classes="panel-text"
                                                    HorizontalAlignment="Right"
-                                                   Text="{Binding Offset, StringFormat='{}{0:0.0%}'}"
-                                                   Classes="panel-text" />
+                                                   Text="{Binding Offset, StringFormat='{}{0:0.0%}'}" />
                                         <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
-                                                   Text="{Binding IsOutside, Converter={s:BoolToText True='Outside deadzone', False='Inside deadzone'}}"
                                                    Classes="stick-state"
-                                                   Classes.outside="{Binding IsOutside}" />
+                                                   Classes.outside="{Binding IsOutside}"
+                                                   Text="{Binding IsOutside, Converter={s:BoolToText True='Outside deadzone', False='Inside deadzone'}}" />
                                     </Grid>
                                 </Grid>
                             </DataTemplate>
@@ -223,9 +224,10 @@
             <Border Grid.Row="3"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock Margin="0,0,0,6"
-                               Text="Events"
-                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Classes="panel-title"
+                               Margin="0,0,0,6"
+                               Text="Events" />
                     <ItemsControl ItemsSource="{Binding Events}"
                                   ClipToBounds="True">
                         <ItemsControl.ItemTemplate>

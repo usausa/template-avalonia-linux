@@ -15,32 +15,32 @@
                             <Border Grid.Row="0" Grid.Column="0"
                                     x:DataType="state:DeviceStatus"
                                     DataContext="{TemplateBinding Status}"
-                                    Width="16" Height="16"
                                     Classes="device-state"
                                     Classes.connected="{Binding IsConnected, FallbackValue=False}"
                                     Classes.disabled="{Binding !IsEnabled, FallbackValue=False}"
                                     Classes.error="{Binding LastError, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
-                                    Classes.running="{Binding IsRunning, FallbackValue=False}" />
+                                    Classes.running="{Binding IsRunning, FallbackValue=False}"
+                                    Width="16" Height="16" />
                             <TextBlock Grid.Row="0" Grid.Column="1"
-                                       Text="{TemplateBinding Title}"
-                                       Classes="card-title" />
+                                       Classes="card-title"
+                                       Text="{TemplateBinding Title}" />
                             <TextBlock Grid.Row="0" Grid.Column="2"
                                        x:DataType="state:DeviceStatus"
                                        DataContext="{TemplateBinding Status}"
-                                       Text="{Binding Condition, FallbackValue=''}"
-                                       Classes="card-note" />
+                                       Classes="card-note"
+                                       Text="{Binding Condition, FallbackValue=''}" />
                             <TextBlock Grid.Row="1" Grid.Column="1"
-                                       Text="{TemplateBinding Device}"
-                                       Classes="card-meta" />
+                                       Classes="card-meta"
+                                       Text="{TemplateBinding Device}" />
                             <ContentPresenter Grid.Row="1" Grid.Column="2"
                                               Content="{TemplateBinding Content}"
                                               ContentTemplate="{TemplateBinding ContentTemplate}" />
                             <TextBlock Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
                                        x:DataType="state:DeviceStatus"
                                        DataContext="{TemplateBinding Status}"
+                                       Classes="card-error"
                                        IsVisible="{Binding LastError, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
-                                       Text="{Binding LastError, FallbackValue=''}"
-                                       Classes="card-error" />
+                                       Text="{Binding LastError, FallbackValue=''}" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

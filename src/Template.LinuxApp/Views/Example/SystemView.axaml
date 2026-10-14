@@ -62,60 +62,60 @@
           ColumnSpacing="{StaticResource SpacingSmall}">
 
         <ScrollViewer Grid.Column="0"
-                      VerticalScrollBarVisibility="Auto"
-                      Classes="gutter">
+                      Classes="gutter"
+                      VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="{StaticResource SpacingSmall}">
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingXSmall}">
-                        <TextBlock Text="Hardware"
-                                   Classes="panel-title" />
+                        <TextBlock Classes="panel-title"
+                                   Text="Hardware" />
                         <ContentControl Content="{Binding Host}">
                             <ContentControl.ContentTemplate>
                                 <DataTemplate x:DataType="services:HostSnapshot">
                                     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
                                           ColumnDefinitions="104,*">
                                         <TextBlock Grid.Row="0" Grid.Column="0"
-                                                   Text="Model"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Model" />
                                         <WrapPanel Grid.Row="0" Grid.Column="1"
                                                    ItemSpacing="6">
-                                            <TextBlock Text="{Binding Vendor}"
-                                                       Classes="panel-text" />
-                                            <TextBlock Text="{Binding ProductName}"
-                                                       Classes="panel-text" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding Vendor}" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding ProductName}" />
                                         </WrapPanel>
                                         <TextBlock Grid.Row="1" Grid.Column="0"
-                                                   Text="Board"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Board" />
                                         <WrapPanel Grid.Row="1" Grid.Column="1"
                                                    ItemSpacing="6">
-                                            <TextBlock Text="{Binding BoardVendor}"
-                                                       Classes="panel-text" />
-                                            <TextBlock Text="{Binding BoardName}"
-                                                       Classes="panel-text" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding BoardVendor}" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding BoardName}" />
                                         </WrapPanel>
                                         <TextBlock Grid.Row="2" Grid.Column="0"
-                                                   Text="BIOS"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="BIOS" />
                                         <WrapPanel Grid.Row="2" Grid.Column="1"
                                                    ItemSpacing="6">
-                                            <TextBlock Text="{Binding BiosVendor}"
-                                                       Classes="panel-text" />
-                                            <TextBlock Text="{Binding BiosVersion}"
-                                                       Classes="panel-text" />
-                                            <TextBlock IsVisible="{Binding BiosDate, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                       Text="{Binding BiosDate, StringFormat='({0})'}"
-                                                       Classes="panel-text" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding BiosVendor}" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding BiosVersion}" />
+                                            <TextBlock Classes="panel-text"
+                                                       IsVisible="{Binding BiosDate, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                       Text="{Binding BiosDate, StringFormat='({0})'}" />
                                         </WrapPanel>
                                         <TextBlock Grid.Row="3" Grid.Column="0"
-                                                   Text="CPU"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="CPU" />
                                         <TextBlock Grid.Row="3" Grid.Column="1"
-                                                   Text="{Binding Cpu}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Cpu}" />
                                         <TextBlock Grid.Row="4" Grid.Column="0"
-                                                   Text="Cores"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Cores" />
                                         <TextBlock Grid.Row="4" Grid.Column="1"
                                                    Classes="panel-text">
                                             <TextBlock.Text>
@@ -126,35 +126,35 @@
                                             </TextBlock.Text>
                                         </TextBlock>
                                         <TextBlock Grid.Row="5" Grid.Column="0"
-                                                   Text="Clock"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Clock" />
                                         <TextBlock Grid.Row="5" Grid.Column="1"
-                                                   Text="{Binding ClockMhz, StringFormat='{}{0:F0} MHz max', TargetNullValue=—}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding ClockMhz, StringFormat='{}{0:F0} MHz max', TargetNullValue=—}" />
                                         <TextBlock Grid.Row="6" Grid.Column="0"
-                                                   Text="Cache"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Cache" />
                                         <TextBlock Grid.Row="6" Grid.Column="1"
                                                    Classes="panel-text">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="L1d {0}, L1i {1}, L2 {2}, L3 {3}">
-                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
-                                                             Path="L1DCache" />
-                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
-                                                             Path="L1ICache" />
-                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
-                                                             Path="L2Cache" />
-                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
-                                                             Path="L3Cache" />
+                                                    <Binding Path="L1DCache"
+                                                             Converter="{StaticResource ByteSizeConverter}" />
+                                                    <Binding Path="L1ICache"
+                                                             Converter="{StaticResource ByteSizeConverter}" />
+                                                    <Binding Path="L2Cache"
+                                                             Converter="{StaticResource ByteSizeConverter}" />
+                                                    <Binding Path="L3Cache"
+                                                             Converter="{StaticResource ByteSizeConverter}" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
                                         <TextBlock Grid.Row="7" Grid.Column="0"
-                                                   Text="Memory"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Memory" />
                                         <TextBlock Grid.Row="7" Grid.Column="1"
-                                                   Text="{Binding Memory, Converter={StaticResource ByteSizeConverter}}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Memory, Converter={StaticResource ByteSizeConverter}}" />
                                     </Grid>
                                 </DataTemplate>
                             </ContentControl.ContentTemplate>
@@ -164,49 +164,49 @@
 
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingXSmall}">
-                        <TextBlock Text="OS"
-                                   Classes="panel-title" />
+                        <TextBlock Classes="panel-title"
+                                   Text="OS" />
                         <ContentControl Content="{Binding Host}">
                             <ContentControl.ContentTemplate>
                                 <DataTemplate x:DataType="services:HostSnapshot">
                                     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
                                           ColumnDefinitions="104,*">
                                         <TextBlock Grid.Row="0" Grid.Column="0"
-                                                   Text="Distribution"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Distribution" />
                                         <TextBlock Grid.Row="0" Grid.Column="1"
-                                                   Text="{Binding Distribution}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Distribution}" />
                                         <TextBlock Grid.Row="1" Grid.Column="0"
-                                                   Text="Kernel"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Kernel" />
                                         <WrapPanel Grid.Row="1" Grid.Column="1"
                                                    ItemSpacing="6">
-                                            <TextBlock Text="{Binding OsType}"
-                                                       Classes="panel-text" />
-                                            <TextBlock Text="{Binding OsRelease}"
-                                                       Classes="panel-text" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding OsType}" />
+                                            <TextBlock Classes="panel-text"
+                                                       Text="{Binding OsRelease}" />
                                         </WrapPanel>
                                         <TextBlock Grid.Row="2" Grid.Column="0"
-                                                   Text="Architecture"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Architecture" />
                                         <TextBlock Grid.Row="2" Grid.Column="1"
-                                                   Text="{Binding Architecture}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Architecture}" />
                                         <TextBlock Grid.Row="3" Grid.Column="0"
-                                                   Text="Host"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Host" />
                                         <TextBlock Grid.Row="3" Grid.Column="1"
-                                                   Text="{Binding HostName}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding HostName}" />
                                         <TextBlock Grid.Row="4" Grid.Column="0"
+                                                   Classes="panel-name"
                                                    VerticalAlignment="Top"
-                                                   Text="Address"
-                                                   Classes="panel-name" />
+                                                   Text="Address" />
                                         <TextBlock Grid.Row="4" Grid.Column="1"
+                                                   Classes="panel-text"
                                                    IsVisible="{Binding !Addresses.Count}"
-                                                   Text="—"
-                                                   Classes="panel-text" />
+                                                   Text="—" />
                                         <ItemsControl Grid.Row="4" Grid.Column="1"
                                                       ItemsSource="{Binding Addresses}">
                                             <ItemsControl.ItemTemplate>
@@ -223,13 +223,13 @@
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
                                         <TextBlock Grid.Row="5" Grid.Column="0"
+                                                   Classes="panel-name"
                                                    VerticalAlignment="Top"
-                                                   Text="Wireless"
-                                                   Classes="panel-name" />
+                                                   Text="Wireless" />
                                         <TextBlock Grid.Row="5" Grid.Column="1"
+                                                   Classes="panel-text"
                                                    IsVisible="{Binding !Wireless.Count}"
-                                                   Text="—"
-                                                   Classes="panel-text" />
+                                                   Text="—" />
                                         <ItemsControl Grid.Row="5" Grid.Column="1"
                                                       ItemsSource="{Binding Wireless}">
                                             <ItemsControl.ItemTemplate>
@@ -247,17 +247,17 @@
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
                                         <TextBlock Grid.Row="6" Grid.Column="0"
-                                                   Text="Boot"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Boot" />
                                         <TextBlock Grid.Row="6" Grid.Column="1"
-                                                   Text="{Binding BootTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}', TargetNullValue=—}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding BootTime, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}', TargetNullValue=—}" />
                                         <TextBlock Grid.Row="7" Grid.Column="0"
-                                                   Text="Uptime"
-                                                   Classes="panel-name" />
+                                                   Classes="panel-name"
+                                                   Text="Uptime" />
                                         <TextBlock Grid.Row="7" Grid.Column="1"
-                                                   Text="{Binding Uptime, Converter={StaticResource DurationConverter}}"
-                                                   Classes="panel-text" />
+                                                   Classes="panel-text"
+                                                   Text="{Binding Uptime, Converter={StaticResource DurationConverter}}" />
                                     </Grid>
                                 </DataTemplate>
                             </ContentControl.ContentTemplate>
@@ -267,8 +267,8 @@
 
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingXSmall}">
-                        <TextBlock Text="Power"
-                                   Classes="panel-title" />
+                        <TextBlock Classes="panel-title"
+                                   Text="Power" />
                         <ContentControl Content="{Binding Power}">
                             <ContentControl.ContentTemplate>
                                 <DataTemplate x:DataType="services:PowerSnapshot">
@@ -281,35 +281,35 @@
                                         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                                               ColumnDefinitions="104,*">
                                             <TextBlock Grid.Row="0" Grid.Column="0"
-                                                       Text="AC"
-                                                       Classes="panel-name" />
+                                                       Classes="panel-name"
+                                                       Text="AC" />
                                             <TextBlock Grid.Row="0" Grid.Column="1"
-                                                       Text="{Binding MainsOnline, Converter={StaticResource MainsConverter}}"
-                                                       Classes="panel-text" />
+                                                       Classes="panel-text"
+                                                       Text="{Binding MainsOnline, Converter={StaticResource MainsConverter}}" />
                                             <TextBlock Grid.Row="1" Grid.Column="0"
-                                                       Text="Battery"
-                                                       Classes="panel-name" />
+                                                       Classes="panel-name"
+                                                       Text="Battery" />
                                             <TextBlock Grid.Row="1" Grid.Column="1"
-                                                       Text="{Binding Status, TargetNullValue='Not present'}"
-                                                       Classes="panel-text" />
+                                                       Classes="panel-text"
+                                                       Text="{Binding Status, TargetNullValue='Not present'}" />
                                             <TextBlock Grid.Row="2" Grid.Column="0"
-                                                       Text="Voltage"
-                                                       Classes="panel-name" />
+                                                       Classes="panel-name"
+                                                       Text="Voltage" />
                                             <TextBlock Grid.Row="2" Grid.Column="1"
-                                                       Text="{Binding Voltage, StringFormat='{}{0:F2} V', TargetNullValue=—}"
-                                                       Classes="panel-text" />
+                                                       Classes="panel-text"
+                                                       Text="{Binding Voltage, StringFormat='{}{0:F2} V', TargetNullValue=—}" />
                                             <TextBlock Grid.Row="3" Grid.Column="0"
-                                                       Text="Current"
-                                                       Classes="panel-name" />
+                                                       Classes="panel-name"
+                                                       Text="Current" />
                                             <TextBlock Grid.Row="3" Grid.Column="1"
-                                                       Text="{Binding Current, StringFormat='{}{0:F2} A', TargetNullValue=—}"
-                                                       Classes="panel-text" />
+                                                       Classes="panel-text"
+                                                       Text="{Binding Current, StringFormat='{}{0:F2} A', TargetNullValue=—}" />
                                             <TextBlock Grid.Row="4" Grid.Column="0"
-                                                       Text="Charge"
-                                                       Classes="panel-name" />
+                                                       Classes="panel-name"
+                                                       Text="Charge" />
                                             <TextBlock Grid.Row="4" Grid.Column="1"
-                                                       IsVisible="{Binding HasBattery}"
-                                                       Classes="panel-text">
+                                                       Classes="panel-text"
+                                                       IsVisible="{Binding HasBattery}">
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="{}{0:N0} / {1:N0} mAh">
                                                         <Binding Path="Charge" />
@@ -318,9 +318,9 @@
                                                 </TextBlock.Text>
                                             </TextBlock>
                                             <TextBlock Grid.Row="4" Grid.Column="1"
+                                                       Classes="panel-text"
                                                        IsVisible="{Binding !HasBattery}"
-                                                       Text="—"
-                                                       Classes="panel-text" />
+                                                       Text="—" />
                                         </Grid>
                                     </StackPanel>
                                 </DataTemplate>
@@ -331,8 +331,8 @@
 
                 <Border Classes="panel">
                     <StackPanel Spacing="{StaticResource SpacingSmall}">
-                        <TextBlock Text="File systems"
-                                   Classes="panel-title" />
+                        <TextBlock Classes="panel-title"
+                                   Text="File systems" />
                         <ItemsControl ItemsSource="{Binding FileSystems}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -352,21 +352,21 @@
                                                     <Binding Path="MountPoint" />
                                                     <Binding Path="FileSystem" />
                                                     <Binding Path="Device" />
-                                                    <Binding Converter="{s:BoolToText True='  ro',
-                                                                                      False=''}"
-                                                             Path="ReadOnly" />
+                                                    <Binding Path="ReadOnly"
+                                                             Converter="{s:BoolToText True='  ro',
+                                                                                      False=''}" />
                                                 </MultiBinding>
                                             </controls:SegmentGauge.Label>
                                         </controls:SegmentGauge>
                                         <TextBlock Classes="panel-name">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}{0} used of {1}, {2} free">
-                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
-                                                             Path="Used" />
-                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
-                                                             Path="Total" />
-                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
-                                                             Path="Available" />
+                                                    <Binding Path="Used"
+                                                             Converter="{StaticResource ByteSizeConverter}" />
+                                                    <Binding Path="Total"
+                                                             Converter="{StaticResource ByteSizeConverter}" />
+                                                    <Binding Path="Available"
+                                                             Converter="{StaticResource ByteSizeConverter}" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -382,17 +382,17 @@
         <Border Grid.Column="1"
                 Classes="panel">
             <DockPanel>
-                <Grid ColumnDefinitions="*,Auto"
-                      Margin="0,0,0,8"
-                      DockPanel.Dock="Top">
-                    <TextBlock Text="USB devices"
-                               Classes="panel-title" />
+                <Grid DockPanel.Dock="Top"
+                      ColumnDefinitions="*,Auto"
+                      Margin="0,0,0,8">
+                    <TextBlock Classes="panel-title"
+                               Text="USB devices" />
                     <TextBlock Grid.Column="1"
-                               Text="{Binding UsbDevices.Count, Converter={StaticResource DeviceCountConverter}}"
-                               Classes="panel-name" />
+                               Classes="panel-name"
+                               Text="{Binding UsbDevices.Count, Converter={StaticResource DeviceCountConverter}}" />
                 </Grid>
-                <ScrollViewer VerticalScrollBarVisibility="Auto"
-                              Classes="gutter">
+                <ScrollViewer Classes="gutter"
+                              VerticalScrollBarVisibility="Auto">
                     <StackPanel Spacing="{StaticResource SpacingSmall}">
                         <ItemsControl ItemsSource="{Binding UsbDevices}">
                             <ItemsControl.ItemsPanel>
@@ -405,47 +405,48 @@
                                     <StackPanel Margin="{Binding Indent}">
                                         <Grid ColumnDefinitions="*,Auto"
                                               ColumnSpacing="{StaticResource SpacingSmall}">
-                                            <TextBlock IsVisible="{Binding Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                                       Text="{Binding Name}"
-                                                       Classes="panel-text" />
+                                            <TextBlock Classes="panel-text"
+                                                       IsVisible="{Binding Name, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                       Text="{Binding Name}" />
                                             <TextBlock Grid.Column="0"
-                                                       Text="USB hub"
-                                                       Classes="panel-text">
+                                                       Classes="panel-text"
+                                                       Text="USB hub">
                                                 <TextBlock.IsVisible>
                                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <Binding Converter="{x:Static StringConverters.IsNullOrEmpty}"
-                                                                 Path="Name" />
+                                                        <Binding Path="Name"
+                                                                 Converter="{x:Static StringConverters.IsNullOrEmpty}" />
                                                         <Binding Path="IsHub" />
                                                     </MultiBinding>
                                                 </TextBlock.IsVisible>
                                             </TextBlock>
                                             <TextBlock Grid.Column="0"
-                                                       Text="{Binding Classes, Converter={StaticResource UsbClassConverter}, StringFormat='{}{0} device'}"
-                                                       Classes="panel-text">
+                                                       Classes="panel-text"
+                                                       Text="{Binding Classes, Converter={StaticResource UsbClassConverter}, StringFormat='{}{0} device'}">
                                                 <TextBlock.IsVisible>
                                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <Binding Converter="{x:Static StringConverters.IsNullOrEmpty}"
-                                                                 Path="Name" />
+                                                        <Binding Path="Name"
+                                                                 Converter="{x:Static StringConverters.IsNullOrEmpty}" />
                                                         <Binding Path="!IsHub" />
                                                     </MultiBinding>
                                                 </TextBlock.IsVisible>
                                             </TextBlock>
                                             <TextBlock Grid.Column="1"
-                                                       Text="{Binding Speed, Converter={StaticResource UsbSpeedConverter}}"
-                                                       Classes="panel-name" />
+                                                       Classes="panel-name"
+                                                       Text="{Binding Speed, Converter={StaticResource UsbSpeedConverter}}" />
                                         </Grid>
-                                        <TextBlock Classes="panel-name" TextTrimming="CharacterEllipsis">
+                                        <TextBlock Classes="panel-name"
+                                                   TextTrimming="CharacterEllipsis">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}{0}  {1:x4}:{2:x4}  {3}  {4}  {5}">
                                                     <Binding Path="Port" />
                                                     <Binding Path="VendorId" />
                                                     <Binding Path="ProductId" />
-                                                    <Binding Converter="{StaticResource UsbClassConverter}"
-                                                             Path="Classes" />
-                                                    <Binding Converter="{StaticResource JoinConverter}"
-                                                             Path="Drivers" />
-                                                    <Binding Converter="{StaticResource JoinConverter}"
-                                                             Path="Files" />
+                                                    <Binding Path="Classes"
+                                                             Converter="{StaticResource UsbClassConverter}" />
+                                                    <Binding Path="Drivers"
+                                                             Converter="{StaticResource JoinConverter}" />
+                                                    <Binding Path="Files"
+                                                             Converter="{StaticResource JoinConverter}" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -453,9 +454,9 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock IsVisible="{Binding HasUsbEvents}"
-                                   Text="Changes"
-                                   Classes="panel-header" />
+                        <TextBlock Classes="panel-header"
+                                   IsVisible="{Binding HasUsbEvents}"
+                                   Text="Changes" />
                         <ItemsControl ItemsSource="{Binding UsbEvents}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="module:UsbEventItem">
@@ -463,9 +464,9 @@
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0:HH:mm:ss} {1} {2} ({3})">
                                                 <Binding Path="Time" />
-                                                <Binding Converter="{s:BoolToText True=Connected,
-                                                                                  False=Disconnected}"
-                                                         Path="Connected" />
+                                                <Binding Path="Connected"
+                                                         Converter="{s:BoolToText True=Connected,
+                                                                                  False=Disconnected}" />
                                                 <Binding Path="Name" />
                                                 <Binding Path="Port" />
                                             </MultiBinding>
@@ -482,10 +483,10 @@
         <Border Grid.Column="2"
                 Classes="panel">
             <DockPanel>
-                <Grid ColumnDefinitions="*,Auto"
-                      DockPanel.Dock="Top">
-                    <TextBlock Text="Processes"
-                               Classes="panel-title" />
+                <Grid DockPanel.Dock="Top"
+                      ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="panel-title"
+                               Text="Processes" />
                     <TextBlock Grid.Column="1"
                                Classes="panel-name">
                         <TextBlock.Text>
@@ -496,58 +497,59 @@
                         </TextBlock.Text>
                     </TextBlock>
                 </Grid>
-                <Grid ColumnDefinitions="48,*,64,56,72,52,16"
+                <Grid DockPanel.Dock="Top"
+                      Classes="process"
+                      ColumnDefinitions="48,*,64,56,72,52,16"
                       Margin="0,6,0,2"
-                      ColumnSpacing="{StaticResource SpacingSmall}"
-                      Classes="process" DockPanel.Dock="Top">
-                    <TextBlock Text="PID"
-                               Classes="panel-header number" />
+                      ColumnSpacing="{StaticResource SpacingSmall}">
+                    <TextBlock Classes="panel-header number"
+                               Text="PID" />
                     <TextBlock Grid.Column="1"
-                               Text="Name"
-                               Classes="panel-header" />
+                               Classes="panel-header"
+                               Text="Name" />
                     <TextBlock Grid.Column="2"
-                               Text="User"
-                               Classes="panel-header" />
+                               Classes="panel-header"
+                               Text="User" />
                     <TextBlock Grid.Column="3"
-                               Text="CPU"
-                               Classes="panel-header number" />
+                               Classes="panel-header number"
+                               Text="CPU" />
                     <TextBlock Grid.Column="4"
-                               Text="Memory"
-                               Classes="panel-header number" />
+                               Classes="panel-header number"
+                               Text="Memory" />
                     <TextBlock Grid.Column="5"
-                               Text="Threads"
-                               Classes="panel-header number" />
+                               Classes="panel-header number"
+                               Text="Threads" />
                     <TextBlock Grid.Column="6"
-                               Text="S"
-                               Classes="panel-header" />
+                               Classes="panel-header"
+                               Text="S" />
                 </Grid>
                 <ItemsControl ItemsSource="{Binding Processes}"
                               ClipToBounds="True">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="services:ProcessEntry">
-                            <Grid ColumnDefinitions="48,*,64,56,72,52,16"
-                                  ColumnSpacing="{StaticResource SpacingSmall}"
-                                  Classes="process">
-                                <TextBlock Text="{Binding ProcessId}"
-                                           Classes="panel-text number" />
+                            <Grid Classes="process"
+                                  ColumnDefinitions="48,*,64,56,72,52,16"
+                                  ColumnSpacing="{StaticResource SpacingSmall}">
+                                <TextBlock Classes="panel-text number"
+                                           Text="{Binding ProcessId}" />
                                 <TextBlock Grid.Column="1"
-                                           Text="{Binding Name}"
-                                           Classes="panel-text" />
+                                           Classes="panel-text"
+                                           Text="{Binding Name}" />
                                 <TextBlock Grid.Column="2"
-                                           Text="{Binding User}"
-                                           Classes="panel-text" />
+                                           Classes="panel-text"
+                                           Text="{Binding User}" />
                                 <TextBlock Grid.Column="3"
-                                           Text="{Binding CpuUsage, StringFormat='{}{0:F1}%', TargetNullValue=—}"
-                                           Classes="panel-text number" />
+                                           Classes="panel-text number"
+                                           Text="{Binding CpuUsage, StringFormat='{}{0:F1}%', TargetNullValue=—}" />
                                 <TextBlock Grid.Column="4"
-                                           Text="{Binding Memory, Converter={StaticResource ByteSizeConverter}}"
-                                           Classes="panel-text number" />
+                                           Classes="panel-text number"
+                                           Text="{Binding Memory, Converter={StaticResource ByteSizeConverter}}" />
                                 <TextBlock Grid.Column="5"
-                                           Text="{Binding Threads}"
-                                           Classes="panel-text number" />
+                                           Classes="panel-text number"
+                                           Text="{Binding Threads}" />
                                 <TextBlock Grid.Column="6"
-                                           Text="{Binding State, Converter={StaticResource ProcessStateConverter}}"
-                                           Classes="panel-text" />
+                                           Classes="panel-text"
+                                           Text="{Binding State, Converter={StaticResource ProcessStateConverter}}" />
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -556,10 +558,10 @@
         </Border>
 
         <TextBlock Grid.Column="1" Grid.ColumnSpan="2"
+                   Classes="panel-note"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    IsVisible="{Binding !IsSupported}"
-                   Text="System information is available on Linux."
-                   Classes="panel-note" />
+                   Text="System information is available on Linux." />
     </Grid>
 
 </UserControl>

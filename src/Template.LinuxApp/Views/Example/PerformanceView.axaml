@@ -33,9 +33,9 @@
           RowSpacing="{StaticResource SpacingSmall}">
 
         <UniformGrid Grid.Row="0"
+                     Rows="2" Columns="6"
                      RowSpacing="{StaticResource SpacingSmall}"
-                     ColumnSpacing="{StaticResource SpacingSmall}"
-                     Columns="6" Rows="2">
+                     ColumnSpacing="{StaticResource SpacingSmall}">
             <controls:StatTile Value="{Binding Uptime, Converter={StaticResource ShortDurationConverter}}"
                                Title="Uptime"
                                Fill="{StaticResource ChartGreen}"
@@ -96,8 +96,9 @@
             <Border Grid.Column="0"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock Text="CPU load (%)"
-                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Classes="panel-title"
+                               Text="CPU load (%)" />
                     <controls:SeriesChart Maximum="100"
                                           Series="{Binding CoreUsage}"
                                           ValueFormat="{}{0:0.0}%" />
@@ -106,8 +107,9 @@
             <Border Grid.Column="1"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock Text="Temperature (°C)"
-                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Classes="panel-title"
+                               Text="Temperature (°C)" />
                     <controls:SeriesChart Palette="{StaticResource ChartRedShades}"
                                           Series="{Binding Temperatures}"
                                           ValueFormat="{}{0:0} °C" />
@@ -116,8 +118,9 @@
             <Border Grid.Column="2"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock Text="Clock (MHz)"
-                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Classes="panel-title"
+                               Text="Clock (MHz)" />
                     <controls:SeriesChart Palette="{StaticResource ChartPurpleShades}"
                                           Series="{Binding CoreClock}"
                                           ValueFormat="{}{0:0} MHz" />
@@ -131,8 +134,9 @@
             <Border Grid.Column="0"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock Text="Disk load (%)"
-                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Classes="panel-title"
+                               Text="Disk load (%)" />
                     <controls:SeriesChart Maximum="100"
                                           Palette="{StaticResource ChartYellowShades}"
                                           Series="{Binding DiskBusy}"
@@ -142,8 +146,9 @@
             <Border Grid.Column="1"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock Text="Network (KB/s)"
-                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <TextBlock DockPanel.Dock="Top"
+                               Classes="panel-title"
+                               Text="Network (KB/s)" />
                     <controls:SeriesChart Palette="{StaticResource ChartPurpleShades}"
                                           Series="{Binding Network}"
                                           ValueConverter="{StaticResource ByteRateConverter}" />
@@ -152,109 +157,109 @@
         </Grid>
 
         <UniformGrid Grid.Row="3"
+                     Rows="2" Columns="4"
                      RowSpacing="{StaticResource SpacingSmall}"
-                     ColumnSpacing="{StaticResource SpacingSmall}"
-                     Columns="4" Rows="2">
+                     ColumnSpacing="{StaticResource SpacingSmall}">
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Run queue"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Run queue" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding RunQueue.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding RunQueue.Current, StringFormat='{}{0:N0}', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Values="{Binding RunQueue.History}" />
                 </DockPanel>
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Interrupts"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Interrupts" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding Interrupts.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding Interrupts.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Values="{Binding Interrupts.History}" />
                 </DockPanel>
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Context switches"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Context switches" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding ContextSwitches.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding ContextSwitches.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Values="{Binding ContextSwitches.History}" />
                 </DockPanel>
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Forks"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Forks" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding Forks.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding Forks.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Values="{Binding Forks.History}" />
                 </DockPanel>
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Page faults"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Page faults" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding PageFaults.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding PageFaults.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Values="{Binding PageFaults.History}" />
                 </DockPanel>
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Swap pages"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Swap pages" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding SwapPages.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding SwapPages.Current, StringFormat='{}{0:N0}/s', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Values="{Binding SwapPages.History}" />
                 </DockPanel>
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Disk queue"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Disk queue" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding DiskQueue.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding DiskQueue.Current, StringFormat='{}{0:N0}', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Values="{Binding DiskQueue.History}" />
                 </DockPanel>
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid ColumnDefinitions="*,Auto"
-                          DockPanel.Dock="Top">
-                        <TextBlock Text="Memory commit"
-                                   Classes="panel-title" />
+                    <Grid DockPanel.Dock="Top"
+                          ColumnDefinitions="*,Auto">
+                        <TextBlock Classes="panel-title"
+                                   Text="Memory commit" />
                         <TextBlock Grid.Column="1"
-                                   Text="{Binding Commit.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
-                                   Classes="panel-value" />
+                                   Classes="panel-value"
+                                   Text="{Binding Commit.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}" />
                     </Grid>
                     <controls:BarChart Maximum="100"
                                        Values="{Binding Commit.History}" />
@@ -263,10 +268,10 @@
         </UniformGrid>
 
         <TextBlock Grid.Row="1" Grid.RowSpan="3"
+                   Classes="panel-note"
                    HorizontalAlignment="Center" VerticalAlignment="Center"
                    IsVisible="{Binding !IsSupported}"
-                   Text="System information is available on Linux."
-                   Classes="panel-note" />
+                   Text="System information is available on Linux." />
     </Grid>
 
 </UserControl>

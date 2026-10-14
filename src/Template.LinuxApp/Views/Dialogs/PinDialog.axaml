@@ -12,36 +12,50 @@
                        FontSize="32" />
             <StackPanel HorizontalAlignment="Center">
                 <UniformGrid Columns="3">
-                    <Button Content="1"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="2"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="3"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="4"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="5"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="6"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="7"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="8"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="9"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="Del"
-                            Classes="keypad" Click="OnDeleteClick" />
-                    <Button Content="0"
-                            Classes="keypad" Click="OnDigitClick" />
-                    <Button Content="OK"
-                            Classes="keypad" Click="OnOkClick" IsDefault="True" />
+                    <Button Classes="keypad"
+                            Content="1"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="2"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="3"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="4"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="5"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="6"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="7"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="8"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="9"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            Content="Del"
+                            Click="OnDeleteClick" />
+                    <Button Classes="keypad"
+                            Content="0"
+                            Click="OnDigitClick" />
+                    <Button Classes="keypad"
+                            IsDefault="True"
+                            Content="OK"
+                            Click="OnOkClick" />
                 </UniformGrid>
                 <Button Margin="4,8,4,4"
                         HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
+                        IsCancel="True"
                         Content="Cancel"
-                        Click="OnCancelClick" IsCancel="True" />
+                        Click="OnCancelClick" />
             </StackPanel>
         </StackPanel>
     </Border>

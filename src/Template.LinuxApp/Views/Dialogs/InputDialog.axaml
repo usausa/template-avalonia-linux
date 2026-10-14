@@ -12,11 +12,13 @@
                         Spacing="8"
                         HorizontalAlignment="Right">
                 <Button Width="96"
+                        IsDefault="True"
                         Content="OK"
-                        Click="OnOkClick" IsDefault="True" />
+                        Click="OnOkClick" />
                 <Button Width="96"
+                        IsCancel="True"
                         Content="Cancel"
-                        Click="OnCancelClick" IsCancel="True" />
+                        Click="OnCancelClick" />
             </StackPanel>
         </StackPanel>
     </Border>

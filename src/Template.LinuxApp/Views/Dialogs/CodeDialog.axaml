@@ -4,8 +4,8 @@
 
     <Border Classes="dialog">
         <StackPanel>
-            <TextBlock Text="Admin code"
-                       Classes="dialog-title" />
+            <TextBlock Classes="dialog-title"
+                       Text="Admin code" />
             <TextBlock x:Name="ProgressText"
                        HorizontalAlignment="Center"
                        FontSize="32" />

@@ -4,15 +4,16 @@
 
     <Border Classes="dialog">
         <StackPanel>
-            <TextBlock Text="Information"
-                       Classes="dialog-title" />
+            <TextBlock Classes="dialog-title"
+                       Text="Information" />
             <TextBlock x:Name="MessageText"
                        TextWrapping="Wrap" />
             <Button Width="96"
                     Margin="0,16,0,0"
                     HorizontalAlignment="Right"
+                    IsDefault="True"
                     Content="OK"
-                    Click="OnOkClick" IsDefault="True" />
+                    Click="OnOkClick" />
         </StackPanel>
     </Border>
 

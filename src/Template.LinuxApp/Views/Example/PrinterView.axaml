@@ -107,15 +107,15 @@
                   RowSpacing="{StaticResource SpacingSmall}"
                   ColumnSpacing="{StaticResource SpacingNormal}">
                 <TextBlock Grid.Row="0" Grid.Column="0"
-                           Text="Line printer"
-                           Classes="card-note" />
+                           Classes="card-note"
+                           Text="Line printer" />
                 <TextBlock Grid.Row="0" Grid.Column="1"
-                           Text="Image printer"
-                           Classes="card-note" />
+                           Classes="card-note"
+                           Text="Image printer" />
                 <Border Grid.Row="1" Grid.Column="0"
+                        Classes="paper"
                         Padding="40,24"
-                        VerticalAlignment="Top"
-                        Classes="paper">
+                        VerticalAlignment="Top">
                     <Viewbox Stretch="Uniform">
                         <TextBlock Text="{Binding PreviewText}"
                                    FontFamily="monospace"
@@ -123,9 +123,9 @@
                     </Viewbox>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="1"
+                        Classes="paper"
                         Padding="0"
-                        HorizontalAlignment="Center" VerticalAlignment="Top"
-                        Classes="paper">
+                        HorizontalAlignment="Center" VerticalAlignment="Top">
                     <Image Source="{Binding PreviewImage}"
                            Stretch="Uniform" />
                 </Border>
@@ -133,28 +133,28 @@
                             Orientation="Horizontal"
                             Spacing="{StaticResource SpacingNormal}"
                             IsVisible="{Binding HasResult}">
-                    <TextBlock Text="{Binding ResultTime, StringFormat='{}{0:HH:mm:ss}'}"
-                               Classes="result"
-                               Classes.error="{Binding IsResultError}" />
-                    <TextBlock Text="{Binding Result, Converter={StaticResource ResultTextConverter}}"
-                               Classes="result"
-                               Classes.error="{Binding IsResultError}" />
-                    <TextBlock IsVisible="{Binding ResultJobId, Converter={x:Static ObjectConverters.IsNotNull}}"
-                               Text="{Binding ResultJobId, StringFormat='#{0}'}"
-                               Classes="result"
-                               Classes.error="{Binding IsResultError}" />
+                    <TextBlock Classes="result"
+                               Classes.error="{Binding IsResultError}"
+                               Text="{Binding ResultTime, StringFormat='{}{0:HH:mm:ss}'}" />
+                    <TextBlock Classes="result"
+                               Classes.error="{Binding IsResultError}"
+                               Text="{Binding Result, Converter={StaticResource ResultTextConverter}}" />
+                    <TextBlock Classes="result"
+                               Classes.error="{Binding IsResultError}"
+                               IsVisible="{Binding ResultJobId, Converter={x:Static ObjectConverters.IsNotNull}}"
+                               Text="{Binding ResultJobId, StringFormat='#{0}'}" />
                 </StackPanel>
             </Grid>
         </Border>
 
         <UniformGrid Grid.Row="2" Grid.Column="0"
                      Rows="1">
-            <Button Command="{Binding PrintTextCommand}"
-                    Content="Print text"
-                    Classes="command" />
-            <Button Command="{Binding PrintImageCommand}"
-                    Content="Print image"
-                    Classes="command" />
+            <Button Classes="command"
+                    Command="{Binding PrintTextCommand}"
+                    Content="Print text" />
+            <Button Classes="command"
+                    Command="{Binding PrintImageCommand}"
+                    Content="Print image" />
         </UniformGrid>
 
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
@@ -163,38 +163,38 @@
                   RowSpacing="{StaticResource SpacingSmall}">
                 <Grid ColumnDefinitions="*,Auto"
                       ColumnSpacing="{StaticResource SpacingNormal}">
-                    <TextBlock Text="Jobs"
-                               Classes="card-title" />
+                    <TextBlock Classes="card-title"
+                               Text="Jobs" />
                     <Border Grid.Column="1"
-                            Background="{Binding Queue.State, Converter={StaticResource PrinterStateBrushConverter}}"
-                            Classes="state-chip">
+                            Classes="state-chip"
+                            Background="{Binding Queue.State, Converter={StaticResource PrinterStateBrushConverter}}">
                         <TextBlock Text="{Binding Queue.State}"
                                    FontSize="{StaticResource FontSizeLarge}" />
                     </Border>
                 </Grid>
                 <WrapPanel Grid.Row="1"
                            ItemSpacing="{StaticResource SpacingNormal}">
-                    <TextBlock IsVisible="{Binding Queue.MakeModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                               Text="{Binding Queue.MakeModel}"
-                               Classes="card-meta" />
-                    <TextBlock IsVisible="{Binding Queue.Reasons, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                               Text="{Binding Queue.Reasons}"
-                               Classes="card-meta" />
-                    <TextBlock IsVisible="{Binding Queue.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                               Text="{Binding Queue.Message}"
-                               Classes="card-meta" />
-                    <TextBlock IsVisible="{Binding !Queue.IsAcceptingJobs}"
-                               Text="Not accepting jobs"
-                               Classes="card-meta" />
+                    <TextBlock Classes="card-meta"
+                               IsVisible="{Binding Queue.MakeModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               Text="{Binding Queue.MakeModel}" />
+                    <TextBlock Classes="card-meta"
+                               IsVisible="{Binding Queue.Reasons, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               Text="{Binding Queue.Reasons}" />
+                    <TextBlock Classes="card-meta"
+                               IsVisible="{Binding Queue.Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               Text="{Binding Queue.Message}" />
+                    <TextBlock Classes="card-meta"
+                               IsVisible="{Binding !Queue.IsAcceptingJobs}"
+                               Text="Not accepting jobs" />
                 </WrapPanel>
                 <TextBlock Grid.Row="2"
+                           Classes="card-note"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            IsVisible="{Binding !HasJobs}"
-                           Text="No jobs"
-                           Classes="card-note" />
+                           Text="No jobs" />
                 <ScrollViewer Grid.Row="2"
-                              VerticalScrollBarVisibility="Auto"
-                              Classes="gutter">
+                              Classes="gutter"
+                              VerticalScrollBarVisibility="Auto">
                     <ItemsControl ItemsSource="{Binding Jobs}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -208,8 +208,8 @@
                                       ColumnSpacing="{StaticResource SpacingSmall}">
                                     <TextBlock Grid.Row="0" Grid.Column="0"
                                                VerticalAlignment="Center"
-                                               FontSize="{StaticResource FontSizeLarge}"
-                                               TextTrimming="CharacterEllipsis">
+                                               TextTrimming="CharacterEllipsis"
+                                               FontSize="{StaticResource FontSizeLarge}">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}#{0}  {1}">
                                                 <Binding Path="JobId" />
@@ -218,22 +218,22 @@
                                         </TextBlock.Text>
                                     </TextBlock>
                                     <Border Grid.Row="0" Grid.Column="1"
+                                            Classes="state-chip"
                                             HorizontalAlignment="Right"
-                                            Background="{Binding State, Converter={StaticResource JobStateBrushConverter}}"
-                                            Classes="state-chip">
+                                            Background="{Binding State, Converter={StaticResource JobStateBrushConverter}}">
                                         <TextBlock Text="{Binding State}"
                                                    FontSize="{StaticResource FontSizeNormal}" />
                                     </Border>
                                     <TextBlock Grid.Row="1" Grid.Column="0"
+                                               Classes="card-meta"
                                                VerticalAlignment="Center"
-                                               Text="{Binding SubmitTime, StringFormat='{}{0:yyyy/MM/dd HH:mm:ss}'}"
-                                               Classes="card-meta" />
+                                               Text="{Binding SubmitTime, StringFormat='{}{0:yyyy/MM/dd HH:mm:ss}'}" />
                                     <Button Grid.Row="1" Grid.Column="1"
+                                            Classes="panel-button"
                                             Command="{Binding $parent[ItemsControl].((module:PrinterViewModel)DataContext).CancelJobCommand, FallbackValue={x:Null}}"
                                             CommandParameter="{Binding JobId}"
                                             IsVisible="{Binding CanCancel}"
-                                            Content="Cancel"
-                                            Classes="panel-button" />
+                                            Content="Cancel" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
