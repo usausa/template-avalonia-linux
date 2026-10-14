@@ -43,8 +43,8 @@
     </PackageReference>
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
-    <PackageReference Include="BunnyTail.DependencyInjection" Version="0.9.0" />
-    <PackageReference Include="BunnyTail.XamlProperty.Avalonia" Version="1.4.0" />
+    <PackageReference Include="BunnyTail.DependencyInjection" Version="0.10.0" />
+    <PackageReference Include="BunnyTail.XamlProperty.Avalonia" Version="1.5.0" />
     <PackageReference Include="LinuxDotNet.Cups" Version="2.0.0" />
     <PackageReference Include="LinuxDotNet.Disk" Version="2.0.0" />
     <PackageReference Include="LinuxDotNet.GameInput" Version="2.0.0" />
