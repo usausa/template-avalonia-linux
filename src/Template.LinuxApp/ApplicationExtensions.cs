@@ -19,6 +19,9 @@ using Template.LinuxApp.Components.Nfc;
 using Template.LinuxApp.Components.Printer;
 using Template.LinuxApp.Components.Video;
 using Template.LinuxApp.Devices.Input;
+#if DEBUG
+using Template.LinuxApp.Extender;
+#endif
 using Template.LinuxApp.Reports;
 using Template.LinuxApp.Services;
 using Template.LinuxApp.Settings;
@@ -78,6 +81,9 @@ public static partial class ApplicationExtensions
         builder.Services.AddNavigator(static (_, config) =>
         {
             config.UseAvaloniaNavigationProvider();
+#if DEBUG
+            config.AddPlugin<LeakDetectionPlugin>();
+#endif
             config.UseIdViewMapper(static m => m.AutoRegister(ViewSource()));
         });
 

@@ -1,15 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="using:System"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
-             xmlns:sys="using:System"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.DashboardView"
-             x:DataType="local:DashboardViewModel"
-             s:DataContextResolver.Type="local:DashboardViewModel"
+             x:DataType="module:DashboardViewModel"
+             s:DataContextResolver.Type="module:DashboardViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Styles>
@@ -35,8 +35,8 @@
     <Grid RowDefinitions="Auto,*"
           ColumnDefinitions="3*,2*"
           Margin="{StaticResource PaddingSmall}"
-          ColumnSpacing="{StaticResource SpacingSmall}"
-          RowSpacing="{StaticResource SpacingSmall}">
+          RowSpacing="{StaticResource SpacingSmall}"
+          ColumnSpacing="{StaticResource SpacingSmall}">
 
         <Border Grid.Row="0" Grid.Column="0"
                 Classes="panel">
@@ -44,8 +44,8 @@
                 <TextBlock Margin="0,0,0,8"
                            Text="Application"
                            Classes="title" />
-                <Grid ColumnDefinitions="220,*"
-                      RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                      ColumnDefinitions="220,*"
                       RowSpacing="{StaticResource SpacingXSmall}">
                     <TextBlock Grid.Row="0" Grid.Column="0"
                                Text="Version"
@@ -104,8 +104,8 @@
             <StackPanel Spacing="{StaticResource SpacingSmall}">
                 <TextBlock Text="Theme"
                            Classes="title" />
-                <UniformGrid Columns="3"
-                             ColumnSpacing="{StaticResource SpacingSmall}">
+                <UniformGrid ColumnSpacing="{StaticResource SpacingSmall}"
+                             Columns="3">
                     <Button Command="{Binding ThemeCommand}"
                             CommandParameter="Light"
                             Content="Light"
@@ -142,24 +142,24 @@
                                Classes="dashboard-name" />
                 </Grid>
                 <UniformGrid Grid.Row="1"
-                             Rows="1"
-                             ColumnSpacing="{StaticResource SpacingSmall}">
+                             ColumnSpacing="{StaticResource SpacingSmall}"
+                             Rows="1">
                     <controls:RingGauge Value="{Binding Cpu, TargetNullValue={x:Static sys:Double.NaN}}"
                                         Text="{Binding Cpu, StringFormat='{}{0:F0}%', TargetNullValue=—}"
-                                        Label="CPU"
-                                        Fill="{StaticResource ChartBlue}" />
+                                        Fill="{StaticResource ChartBlue}"
+                                        Label="CPU" />
                     <controls:RingGauge Value="{Binding Memory, TargetNullValue={x:Static sys:Double.NaN}}"
                                         Text="{Binding Memory, StringFormat='{}{0:F0}%', TargetNullValue=—}"
-                                        Label="Memory"
-                                        Fill="{StaticResource ChartPurple}" />
+                                        Fill="{StaticResource ChartPurple}"
+                                        Label="Memory" />
                     <controls:RingGauge Value="{Binding Swap, TargetNullValue={x:Static sys:Double.NaN}}"
                                         Text="{Binding Swap, StringFormat='{}{0:F0}%', TargetNullValue=—}"
-                                        Label="Swap"
-                                        Fill="{StaticResource ChartOrange}" />
+                                        Fill="{StaticResource ChartOrange}"
+                                        Label="Swap" />
                     <controls:RingGauge Value="{Binding Temperature, TargetNullValue={x:Static sys:Double.NaN}}"
                                         Text="{Binding Temperature, StringFormat='{}{0:F0} °C', TargetNullValue=—}"
-                                        Label="Temperature"
-                                        Fill="{StaticResource ChartRed}" />
+                                        Fill="{StaticResource ChartRed}"
+                                        Label="Temperature" />
                 </UniformGrid>
             </Grid>
         </Border>

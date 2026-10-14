@@ -50,11 +50,11 @@ public sealed partial class BarcodeViewModel : AppViewModelBase
 
     public string QrDevice => qrReader.Device;
 
-    public ICommand ResumeCommand { get; }
+    public IObserveCommand ResumeCommand { get; }
 
-    public ICommand PauseCommand { get; }
+    public IObserveCommand PauseCommand { get; }
 
-    public ICommand ClearCommand { get; }
+    public IObserveCommand ClearCommand { get; }
 
     public BarcodeViewModel(TimeProvider timeProvider, IBarcodeReader barcodeReader, IQrReader qrReader)
     {

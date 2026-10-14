@@ -7,14 +7,21 @@ public abstract class AppViewModelBase :
     ExtendViewModelBase,
     INavigatorAware,
     INavigationEventSupportAsync,
-    INotifySupportAsync<ShellEvent>,
-    INavigationLifecycleSupport
+    INavigationLifecycleSupport,
+    INotifySupportAsync<ShellEvent>
 {
     public INavigator Navigator { get; set; } = default!;
 
     protected AppViewModelBase()
     {
         AcceptsCommand = false;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+
+        System.Diagnostics.Debug.WriteLine($"{GetType()} is Disposed");
     }
 
     public virtual Task OnNavigatingFromAsync(INavigationContext context) => Task.CompletedTask;

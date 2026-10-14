@@ -3,14 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
-             xmlns:video="clr-namespace:Template.LinuxApp.Components.Video"
              xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             xmlns:video="clr-namespace:Template.LinuxApp.Components.Video"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.CameraView"
-             x:DataType="local:CameraViewModel"
-             s:DataContextResolver.Type="local:CameraViewModel"
+             x:DataType="module:CameraViewModel"
+             s:DataContextResolver.Type="module:CameraViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
@@ -27,8 +27,8 @@
                 <Image Source="{Binding Bitmap}"
                        Stretch="Fill" />
                 <controls:FaceBoxOverlay FaceBoxes="{Binding FaceBoxes}" />
-                <controls:QrCodeOverlay Codes="{Binding QrCodes}"
-                                        Stroke="{StaticResource ChartGreen}" />
+                <controls:QrCodeOverlay Stroke="{StaticResource ChartGreen}"
+                                        Codes="{Binding QrCodes}" />
             </Panel>
         </Viewbox>
 
@@ -131,8 +131,8 @@
                         <ContentControl Content="{Binding SelectedCamera}">
                             <ContentControl.ContentTemplate>
                                 <DataTemplate x:DataType="video:CameraDevice">
-                                    <Grid ColumnDefinitions="72,*"
-                                          RowDefinitions="Auto,Auto,Auto,Auto">
+                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                                          ColumnDefinitions="72,*">
                                         <TextBlock Grid.Row="0" Grid.Column="0"
                                                    Text="Name"
                                                    Classes="panel-name" />
@@ -171,17 +171,16 @@
                                        Text="QR code"
                                        Classes="panel-title" />
                             <CheckBox Grid.Column="1"
-                                      Content="Read"
+                                      IsEnabled="{Binding IsQrEnabled}"
                                       IsChecked="{Binding IsQrScan}"
-                                      IsEnabled="{Binding IsQrEnabled}" />
+                                      Content="Read" />
                         </Grid>
                         <TextBlock Text="{Binding QrText, TargetNullValue=—}"
                                    FontSize="{StaticResource FontSizeXLarge}"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="Wrap" />
+                                   FontWeight="SemiBold" TextWrapping="Wrap" />
                         <ItemsControl ItemsSource="{Binding QrHistory}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="local:QrHistoryItem">
+                                <DataTemplate x:DataType="module:QrHistoryItem">
                                     <TextBlock Classes="panel-name">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0:HH:mm:ss}  {1}">
@@ -201,8 +200,8 @@
                         <TextBlock Text="Snapshot"
                                    Classes="panel-title" />
                         <Border Height="180"
-                                BorderThickness="{StaticResource BorderThicknessThin}"
-                                BorderBrush="{DynamicResource PanelBorderBrush}">
+                                BorderBrush="{DynamicResource PanelBorderBrush}"
+                                BorderThickness="{StaticResource BorderThicknessThin}">
                             <Image Source="{Binding LastSnapshot}"
                                    Stretch="Uniform" />
                         </Border>

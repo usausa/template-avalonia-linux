@@ -3,12 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.PerformanceView"
-             x:DataType="local:PerformanceViewModel"
-             s:DataContextResolver.Type="local:PerformanceViewModel"
+             x:DataType="module:PerformanceViewModel"
+             s:DataContextResolver.Type="module:PerformanceViewModel"
              d:DesignWidth="1280" d:DesignHeight="696">
 
     <UserControl.Styles>
@@ -33,61 +33,61 @@
           RowSpacing="{StaticResource SpacingSmall}">
 
         <UniformGrid Grid.Row="0"
-                     Columns="6" Rows="2"
+                     RowSpacing="{StaticResource SpacingSmall}"
                      ColumnSpacing="{StaticResource SpacingSmall}"
-                     RowSpacing="{StaticResource SpacingSmall}">
-            <controls:StatTile Title="Uptime"
-                               Value="{Binding Uptime, Converter={StaticResource ShortDurationConverter}}"
-                               Values="{Binding UptimeDays.History}"
-                               Fill="{StaticResource ChartGreen}" />
-            <controls:StatTile Title="Load average"
-                               Value="{Binding Load.Current, StringFormat='{}{0:0.00}', TargetNullValue=—}"
-                               Values="{Binding Load.History}"
-                               Fill="{StaticResource ChartPurple}" />
-            <controls:StatTile Title="Processes"
-                               Value="{Binding Processes.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
-                               Values="{Binding Processes.History}"
-                               Fill="{StaticResource ChartPurple}" />
-            <controls:StatTile Title="Threads"
-                               Value="{Binding Threads.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
-                               Values="{Binding Threads.History}"
-                               Fill="{StaticResource ChartPurple}" />
-            <controls:StatTile Title="File handles"
-                               Value="{Binding FileHandles.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
-                               Values="{Binding FileHandles.History}"
-                               Fill="{StaticResource ChartPurple}" />
-            <controls:StatTile Title="TCP connections"
-                               Value="{Binding Connections.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
-                               Values="{Binding Connections.History}"
-                               Fill="{StaticResource ChartPurple}" />
-            <controls:StatTile Title="CPU used"
-                               Value="{Binding Cpu.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
-                               Values="{Binding Cpu.History}"
+                     Columns="6" Rows="2">
+            <controls:StatTile Value="{Binding Uptime, Converter={StaticResource ShortDurationConverter}}"
+                               Title="Uptime"
+                               Fill="{StaticResource ChartGreen}"
+                               Values="{Binding UptimeDays.History}" />
+            <controls:StatTile Value="{Binding Load.Current, StringFormat='{}{0:0.00}', TargetNullValue=—}"
+                               Title="Load average"
+                               Fill="{StaticResource ChartPurple}"
+                               Values="{Binding Load.History}" />
+            <controls:StatTile Value="{Binding Processes.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
+                               Title="Processes"
+                               Fill="{StaticResource ChartPurple}"
+                               Values="{Binding Processes.History}" />
+            <controls:StatTile Value="{Binding Threads.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
+                               Title="Threads"
+                               Fill="{StaticResource ChartPurple}"
+                               Values="{Binding Threads.History}" />
+            <controls:StatTile Value="{Binding FileHandles.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
+                               Title="File handles"
+                               Fill="{StaticResource ChartPurple}"
+                               Values="{Binding FileHandles.History}" />
+            <controls:StatTile Value="{Binding Connections.Current, StringFormat='{}{0:N0}', TargetNullValue=—}"
+                               Title="TCP connections"
+                               Fill="{StaticResource ChartPurple}"
+                               Values="{Binding Connections.History}" />
+            <controls:StatTile Value="{Binding Cpu.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
                                Minimum="0" Maximum="100"
-                               Fill="{StaticResource ChartBlue}" />
-            <controls:StatTile Title="Memory used"
-                               Value="{Binding Memory.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
-                               Values="{Binding Memory.History}"
+                               Title="CPU used"
+                               Fill="{StaticResource ChartBlue}"
+                               Values="{Binding Cpu.History}" />
+            <controls:StatTile Value="{Binding Memory.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
                                Minimum="0" Maximum="100"
-                               Fill="{StaticResource ChartBlue}" />
-            <controls:StatTile Title="Swap used"
-                               Value="{Binding Swap.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
-                               Values="{Binding Swap.History}"
+                               Title="Memory used"
+                               Fill="{StaticResource ChartBlue}"
+                               Values="{Binding Memory.History}" />
+            <controls:StatTile Value="{Binding Swap.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
                                Minimum="0" Maximum="100"
-                               Fill="{StaticResource ChartBlue}" />
-            <controls:StatTile Title="Battery"
-                               Value="{Binding Battery.Current, StringFormat='{}{0:0}%', TargetNullValue=—}"
-                               Values="{Binding Battery.History}"
+                               Title="Swap used"
+                               Fill="{StaticResource ChartBlue}"
+                               Values="{Binding Swap.History}" />
+            <controls:StatTile Value="{Binding Battery.Current, StringFormat='{}{0:0}%', TargetNullValue=—}"
                                Minimum="0" Maximum="100"
-                               Fill="{StaticResource ChartGreen}" />
-            <controls:StatTile Title="Power"
-                               Value="{Binding Power.Current, StringFormat='{}{0:0.0} W', TargetNullValue=—}"
-                               Values="{Binding Power.History}"
-                               Fill="{StaticResource ChartOrange}" />
-            <controls:StatTile Title="CPU temperature"
-                               Value="{Binding CpuTemperature.Current, StringFormat='{}{0:0} °C', TargetNullValue=—}"
-                               Values="{Binding CpuTemperature.History}"
-                               Fill="{StaticResource ChartRed}" />
+                               Title="Battery"
+                               Fill="{StaticResource ChartGreen}"
+                               Values="{Binding Battery.History}" />
+            <controls:StatTile Value="{Binding Power.Current, StringFormat='{}{0:0.0} W', TargetNullValue=—}"
+                               Title="Power"
+                               Fill="{StaticResource ChartOrange}"
+                               Values="{Binding Power.History}" />
+            <controls:StatTile Value="{Binding CpuTemperature.Current, StringFormat='{}{0:0} °C', TargetNullValue=—}"
+                               Title="CPU temperature"
+                               Fill="{StaticResource ChartRed}"
+                               Values="{Binding CpuTemperature.History}" />
         </UniformGrid>
 
         <Grid Grid.Row="1"
@@ -96,34 +96,31 @@
             <Border Grid.Column="0"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="CPU load (%)"
-                               Classes="panel-title" />
-                    <controls:SeriesChart Series="{Binding CoreUsage}"
-                                          ValueFormat="{}{0:0.0}%"
-                                          Maximum="100" />
+                    <TextBlock Text="CPU load (%)"
+                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <controls:SeriesChart Maximum="100"
+                                          Series="{Binding CoreUsage}"
+                                          ValueFormat="{}{0:0.0}%" />
                 </DockPanel>
             </Border>
             <Border Grid.Column="1"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="Temperature (°C)"
-                               Classes="panel-title" />
-                    <controls:SeriesChart Series="{Binding Temperatures}"
-                                          ValueFormat="{}{0:0} °C"
-                                          Palette="{StaticResource ChartRedShades}" />
+                    <TextBlock Text="Temperature (°C)"
+                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <controls:SeriesChart Palette="{StaticResource ChartRedShades}"
+                                          Series="{Binding Temperatures}"
+                                          ValueFormat="{}{0:0} °C" />
                 </DockPanel>
             </Border>
             <Border Grid.Column="2"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="Clock (MHz)"
-                               Classes="panel-title" />
-                    <controls:SeriesChart Series="{Binding CoreClock}"
-                                          ValueFormat="{}{0:0} MHz"
-                                          Palette="{StaticResource ChartPurpleShades}" />
+                    <TextBlock Text="Clock (MHz)"
+                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <controls:SeriesChart Palette="{StaticResource ChartPurpleShades}"
+                                          Series="{Binding CoreClock}"
+                                          ValueFormat="{}{0:0} MHz" />
                 </DockPanel>
             </Border>
         </Grid>
@@ -134,36 +131,34 @@
             <Border Grid.Column="0"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="Disk load (%)"
-                               Classes="panel-title" />
-                    <controls:SeriesChart Series="{Binding DiskBusy}"
-                                          ValueFormat="{}{0:0.0}%"
+                    <TextBlock Text="Disk load (%)"
+                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <controls:SeriesChart Maximum="100"
                                           Palette="{StaticResource ChartYellowShades}"
-                                          Maximum="100" />
+                                          Series="{Binding DiskBusy}"
+                                          ValueFormat="{}{0:0.0}%" />
                 </DockPanel>
             </Border>
             <Border Grid.Column="1"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="Network (KB/s)"
-                               Classes="panel-title" />
-                    <controls:SeriesChart Series="{Binding Network}"
-                                          ValueConverter="{StaticResource ByteRateConverter}"
-                                          Palette="{StaticResource ChartPurpleShades}" />
+                    <TextBlock Text="Network (KB/s)"
+                               Classes="panel-title" DockPanel.Dock="Top" />
+                    <controls:SeriesChart Palette="{StaticResource ChartPurpleShades}"
+                                          Series="{Binding Network}"
+                                          ValueConverter="{StaticResource ByteRateConverter}" />
                 </DockPanel>
             </Border>
         </Grid>
 
         <UniformGrid Grid.Row="3"
-                     Columns="4" Rows="2"
+                     RowSpacing="{StaticResource SpacingSmall}"
                      ColumnSpacing="{StaticResource SpacingSmall}"
-                     RowSpacing="{StaticResource SpacingSmall}">
+                     Columns="4" Rows="2">
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Run queue"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
@@ -175,8 +170,8 @@
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Interrupts"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
@@ -188,8 +183,8 @@
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Context switches"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
@@ -201,8 +196,8 @@
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Forks"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
@@ -214,8 +209,8 @@
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Page faults"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
@@ -227,8 +222,8 @@
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Swap pages"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
@@ -240,8 +235,8 @@
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Disk queue"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
@@ -253,16 +248,16 @@
             </Border>
             <Border Classes="panel">
                 <DockPanel>
-                    <Grid DockPanel.Dock="Top"
-                          ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,Auto"
+                          DockPanel.Dock="Top">
                         <TextBlock Text="Memory commit"
                                    Classes="panel-title" />
                         <TextBlock Grid.Column="1"
                                    Text="{Binding Commit.Current, StringFormat='{}{0:0.0}%', TargetNullValue=—}"
                                    Classes="panel-value" />
                     </Grid>
-                    <controls:BarChart Values="{Binding Commit.History}"
-                                       Maximum="100" />
+                    <controls:BarChart Maximum="100"
+                                       Values="{Binding Commit.History}" />
                 </DockPanel>
             </Border>
         </UniformGrid>

@@ -99,7 +99,7 @@ public sealed partial class SmartViewModel : AppViewModelBase
     [ObservableProperty]
     public partial DateTimeOffset? Updated { get; set; }
 
-    public ICommand SelectCommand { get; }
+    public IObserveCommand SelectCommand { get; }
 
     public SmartViewModel(TimeProvider timeProvider, DiskService diskService)
     {

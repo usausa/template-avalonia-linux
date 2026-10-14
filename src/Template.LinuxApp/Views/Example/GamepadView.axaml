@@ -3,12 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.GamepadView"
-             x:DataType="local:GamepadViewModel"
-             s:DataContextResolver.Type="local:GamepadViewModel"
+             x:DataType="module:GamepadViewModel"
+             s:DataContextResolver.Type="module:GamepadViewModel"
              d:DesignWidth="1280" d:DesignHeight="696">
 
     <UserControl.Resources>
@@ -60,8 +60,8 @@
         <Border Grid.Column="0"
                 Classes="panel">
             <DockPanel>
-                <Grid DockPanel.Dock="Top"
-                      ColumnDefinitions="*,Auto">
+                <Grid ColumnDefinitions="*,Auto"
+                      DockPanel.Dock="Top">
                     <TextBlock Text="Controller"
                                Classes="panel-title" />
                     <StackPanel Grid.Column="1"
@@ -78,14 +78,14 @@
                     </StackPanel>
                 </Grid>
                 <controls:GamepadDiagram Margin="{StaticResource PaddingLarge}"
-                                         Buttons="{Binding Buttons}"
-                                         Axes="{Binding Axes}"
-                                         IsConnected="{Binding IsConnected}"
-                                         FaceColors="{StaticResource FaceColors}"
-                                         BodyFill="{DynamicResource PanelBorderBrush}"
                                          Stroke="{DynamicResource PanelNoteBrush}"
-                                         PressedFill="{StaticResource ChartBlue}"
-                                         Foreground="{DynamicResource PanelTitleBrush}" />
+                                         Axes="{Binding Axes}"
+                                         BodyFill="{DynamicResource PanelBorderBrush}"
+                                         Buttons="{Binding Buttons}"
+                                         FaceColors="{StaticResource FaceColors}"
+                                         Foreground="{DynamicResource PanelTitleBrush}"
+                                         IsConnected="{Binding IsConnected}"
+                                         PressedFill="{StaticResource ChartBlue}" />
             </DockPanel>
         </Border>
 
@@ -101,13 +101,13 @@
                     <ItemsControl ItemsSource="{Binding ButtonItems}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid Columns="4"
+                                <UniformGrid RowSpacing="{StaticResource SpacingXSmall}"
                                              ColumnSpacing="{StaticResource SpacingXSmall}"
-                                             RowSpacing="{StaticResource SpacingXSmall}" />
+                                             Columns="4" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="local:GamepadButtonItem">
+                            <DataTemplate x:DataType="module:GamepadButtonItem">
                                 <Border Classes="button-cell"
                                         Classes.pressed="{Binding Pressed}">
                                     <Grid ColumnDefinitions="Auto,*">
@@ -137,7 +137,7 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="local:GamepadAxisItem">
+                            <DataTemplate x:DataType="module:GamepadAxisItem">
                                 <Grid ColumnDefinitions="20,64,*,56"
                                       ColumnSpacing="{StaticResource SpacingSmall}">
                                     <TextBlock Text="{Binding Index}"
@@ -161,63 +161,54 @@
             <Border Grid.Row="2"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Margin="0,0,0,6"
+                    <TextBlock Margin="0,0,0,6"
                                Text="Sticks"
-                               Classes="panel-title" />
+                               Classes="panel-title" DockPanel.Dock="Top" />
                     <ItemsControl ItemsSource="{Binding StickItems}"
                                   ClipToBounds="True">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid Columns="2"
-                                             ColumnSpacing="{StaticResource SpacingSmall}" />
+                                <UniformGrid ColumnSpacing="{StaticResource SpacingSmall}"
+                                             Columns="2" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="local:GamepadStickItem">
+                            <DataTemplate x:DataType="module:GamepadStickItem">
                                 <Grid ColumnDefinitions="*,Auto"
                                       ColumnSpacing="{StaticResource SpacingSmall}">
-                                    <controls:StickScope Position="{Binding Position}"
-                                                         Deadzone="{x:Static local:GamepadViewModel.Deadzone}" />
+                                    <controls:StickScope Deadzone="{x:Static module:GamepadViewModel.Deadzone}"
+                                                         Position="{Binding Position}" />
                                     <Grid Grid.Column="1"
-                                          VerticalAlignment="Center"
-                                          ColumnDefinitions="Auto,64"
                                           RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                                          ColumnDefinitions="Auto,64"
+                                          RowSpacing="{StaticResource SpacingXSmall}"
                                           ColumnSpacing="{StaticResource SpacingSmall}"
-                                          RowSpacing="{StaticResource SpacingXSmall}">
+                                          VerticalAlignment="Center">
                                         <TextBlock Grid.ColumnSpan="2"
                                                    Text="{Binding Name}"
                                                    Classes="panel-title" />
-                                        <TextBlock Grid.Row="1"
-                                                   Grid.Column="0"
+                                        <TextBlock Grid.Row="1" Grid.Column="0"
                                                    Text="X"
                                                    Classes="panel-name" />
-                                        <TextBlock Grid.Row="1"
-                                                   Grid.Column="1"
+                                        <TextBlock Grid.Row="1" Grid.Column="1"
                                                    HorizontalAlignment="Right"
                                                    Text="{Binding X, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}"
                                                    Classes="panel-text" />
-                                        <TextBlock Grid.Row="2"
-                                                   Grid.Column="0"
+                                        <TextBlock Grid.Row="2" Grid.Column="0"
                                                    Text="Y"
                                                    Classes="panel-name" />
-                                        <TextBlock Grid.Row="2"
-                                                   Grid.Column="1"
+                                        <TextBlock Grid.Row="2" Grid.Column="1"
                                                    HorizontalAlignment="Right"
                                                    Text="{Binding Y, StringFormat='{}{0:+0.0%;-0.0%;0.0%}'}"
                                                    Classes="panel-text" />
-                                        <TextBlock Grid.Row="3"
-                                                   Grid.Column="0"
+                                        <TextBlock Grid.Row="3" Grid.Column="0"
                                                    Text="Offset"
                                                    Classes="panel-name" />
-                                        <TextBlock Grid.Row="3"
-                                                   Grid.Column="1"
+                                        <TextBlock Grid.Row="3" Grid.Column="1"
                                                    HorizontalAlignment="Right"
                                                    Text="{Binding Offset, StringFormat='{}{0:0.0%}'}"
                                                    Classes="panel-text" />
-                                        <TextBlock Grid.Row="4"
-                                                   Grid.Column="0"
-                                                   Grid.ColumnSpan="2"
+                                        <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
                                                    Text="{Binding IsOutside, Converter={s:BoolToText True='Outside deadzone', False='Inside deadzone'}}"
                                                    Classes="stick-state"
                                                    Classes.outside="{Binding IsOutside}" />
@@ -232,14 +223,13 @@
             <Border Grid.Row="3"
                     Classes="panel">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Top"
-                               Margin="0,0,0,6"
+                    <TextBlock Margin="0,0,0,6"
                                Text="Events"
-                               Classes="panel-title" />
+                               Classes="panel-title" DockPanel.Dock="Top" />
                     <ItemsControl ItemsSource="{Binding Events}"
                                   ClipToBounds="True">
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="local:GamepadEventItem">
+                            <DataTemplate x:DataType="module:GamepadEventItem">
                                 <TextBlock Classes="panel-text">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="{}{0:HH:mm:ss.fff}  {1}">

@@ -1,18 +1,18 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="using:System"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:s="http://smart/avalonia"
-             xmlns:sys="using:System"
              xmlns:info="using:LinuxDotNet.SystemInfo"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
-             xmlns:services="clr-namespace:Template.LinuxApp.Services"
+             xmlns:s="http://smart/avalonia"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             xmlns:services="clr-namespace:Template.LinuxApp.Services"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.SystemView"
-             x:DataType="local:SystemViewModel"
-             s:DataContextResolver.Type="local:SystemViewModel"
+             x:DataType="module:SystemViewModel"
+             s:DataContextResolver.Type="module:SystemViewModel"
              d:DesignWidth="1280" d:DesignHeight="696">
 
     <UserControl.Resources>
@@ -48,8 +48,7 @@
         <converters:UsbSpeedConverter x:Key="UsbSpeedConverter" />
         <converters:JoinConverter x:Key="JoinConverter" />
         <converters:CountConverter x:Key="DeviceCountConverter"
-                                   Singular="device"
-                                   Plural="devices" />
+                                   Plural="devices" Singular="device" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -139,14 +138,14 @@
                                                    Classes="panel-text">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="L1d {0}, L1i {1}, L2 {2}, L3 {3}">
-                                                    <Binding Path="L1DCache"
-                                                             Converter="{StaticResource ByteSizeConverter}" />
-                                                    <Binding Path="L1ICache"
-                                                             Converter="{StaticResource ByteSizeConverter}" />
-                                                    <Binding Path="L2Cache"
-                                                             Converter="{StaticResource ByteSizeConverter}" />
-                                                    <Binding Path="L3Cache"
-                                                             Converter="{StaticResource ByteSizeConverter}" />
+                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
+                                                             Path="L1DCache" />
+                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
+                                                             Path="L1ICache" />
+                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
+                                                             Path="L2Cache" />
+                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
+                                                             Path="L3Cache" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -274,11 +273,11 @@
                             <ContentControl.ContentTemplate>
                                 <DataTemplate x:DataType="services:PowerSnapshot">
                                     <StackPanel Spacing="{StaticResource SpacingXSmall}">
-                                        <controls:SegmentGauge Label="Battery"
+                                        <controls:SegmentGauge IsVisible="{Binding HasBattery}"
                                                                Value="{Binding Capacity, TargetNullValue={x:Static sys:Double.NaN}}"
                                                                Text="{Binding Capacity, StringFormat='{}{0}%', TargetNullValue=—}"
                                                                Fill="{StaticResource ChartGreen}"
-                                                               IsVisible="{Binding HasBattery}" />
+                                                               Label="Battery" />
                                         <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
                                               ColumnDefinitions="104,*">
                                             <TextBlock Grid.Row="0" Grid.Column="0"
@@ -345,28 +344,29 @@
                                     <StackPanel Spacing="2">
                                         <controls:SegmentGauge Value="{Binding Usage, TargetNullValue={x:Static sys:Double.NaN}}"
                                                                Text="{Binding Usage, StringFormat='{}{0:F0}%', TargetNullValue=—}"
-                                                               Threshold="80"
                                                                Fill="{StaticResource ChartYellow}"
+                                                               Threshold="80"
                                                                ThresholdFill="{StaticResource ChartRed}">
                                             <controls:SegmentGauge.Label>
                                                 <MultiBinding StringFormat="{}{0}  {1}  {2}{3}">
                                                     <Binding Path="MountPoint" />
                                                     <Binding Path="FileSystem" />
                                                     <Binding Path="Device" />
-                                                    <Binding Path="ReadOnly"
-                                                             Converter="{s:BoolToText True='  ro', False=''}" />
+                                                    <Binding Converter="{s:BoolToText True='  ro',
+                                                                                      False=''}"
+                                                             Path="ReadOnly" />
                                                 </MultiBinding>
                                             </controls:SegmentGauge.Label>
                                         </controls:SegmentGauge>
                                         <TextBlock Classes="panel-name">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}{0} used of {1}, {2} free">
-                                                    <Binding Path="Used"
-                                                             Converter="{StaticResource ByteSizeConverter}" />
-                                                    <Binding Path="Total"
-                                                             Converter="{StaticResource ByteSizeConverter}" />
-                                                    <Binding Path="Available"
-                                                             Converter="{StaticResource ByteSizeConverter}" />
+                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
+                                                             Path="Used" />
+                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
+                                                             Path="Total" />
+                                                    <Binding Converter="{StaticResource ByteSizeConverter}"
+                                                             Path="Available" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -382,9 +382,9 @@
         <Border Grid.Column="1"
                 Classes="panel">
             <DockPanel>
-                <Grid DockPanel.Dock="Top"
+                <Grid ColumnDefinitions="*,Auto"
                       Margin="0,0,0,8"
-                      ColumnDefinitions="*,Auto">
+                      DockPanel.Dock="Top">
                     <TextBlock Text="USB devices"
                                Classes="panel-title" />
                     <TextBlock Grid.Column="1"
@@ -401,7 +401,7 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="local:UsbItem">
+                                <DataTemplate x:DataType="module:UsbItem">
                                     <StackPanel Margin="{Binding Indent}">
                                         <Grid ColumnDefinitions="*,Auto"
                                               ColumnSpacing="{StaticResource SpacingSmall}">
@@ -413,8 +413,8 @@
                                                        Classes="panel-text">
                                                 <TextBlock.IsVisible>
                                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <Binding Path="Name"
-                                                                 Converter="{x:Static StringConverters.IsNullOrEmpty}" />
+                                                        <Binding Converter="{x:Static StringConverters.IsNullOrEmpty}"
+                                                                 Path="Name" />
                                                         <Binding Path="IsHub" />
                                                     </MultiBinding>
                                                 </TextBlock.IsVisible>
@@ -424,8 +424,8 @@
                                                        Classes="panel-text">
                                                 <TextBlock.IsVisible>
                                                     <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <Binding Path="Name"
-                                                                 Converter="{x:Static StringConverters.IsNullOrEmpty}" />
+                                                        <Binding Converter="{x:Static StringConverters.IsNullOrEmpty}"
+                                                                 Path="Name" />
                                                         <Binding Path="!IsHub" />
                                                     </MultiBinding>
                                                 </TextBlock.IsVisible>
@@ -434,19 +434,18 @@
                                                        Text="{Binding Speed, Converter={StaticResource UsbSpeedConverter}}"
                                                        Classes="panel-name" />
                                         </Grid>
-                                        <TextBlock TextTrimming="CharacterEllipsis"
-                                                   Classes="panel-name">
+                                        <TextBlock Classes="panel-name" TextTrimming="CharacterEllipsis">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}{0}  {1:x4}:{2:x4}  {3}  {4}  {5}">
                                                     <Binding Path="Port" />
                                                     <Binding Path="VendorId" />
                                                     <Binding Path="ProductId" />
-                                                    <Binding Path="Classes"
-                                                             Converter="{StaticResource UsbClassConverter}" />
-                                                    <Binding Path="Drivers"
-                                                             Converter="{StaticResource JoinConverter}" />
-                                                    <Binding Path="Files"
-                                                             Converter="{StaticResource JoinConverter}" />
+                                                    <Binding Converter="{StaticResource UsbClassConverter}"
+                                                             Path="Classes" />
+                                                    <Binding Converter="{StaticResource JoinConverter}"
+                                                             Path="Drivers" />
+                                                    <Binding Converter="{StaticResource JoinConverter}"
+                                                             Path="Files" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -454,18 +453,19 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock Text="Changes"
-                                   IsVisible="{Binding HasUsbEvents}"
+                        <TextBlock IsVisible="{Binding HasUsbEvents}"
+                                   Text="Changes"
                                    Classes="panel-header" />
                         <ItemsControl ItemsSource="{Binding UsbEvents}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="local:UsbEventItem">
+                                <DataTemplate x:DataType="module:UsbEventItem">
                                     <TextBlock Classes="panel-name">
                                         <TextBlock.Text>
                                             <MultiBinding StringFormat="{}{0:HH:mm:ss} {1} {2} ({3})">
                                                 <Binding Path="Time" />
-                                                <Binding Path="Connected"
-                                                         Converter="{s:BoolToText True=Connected, False=Disconnected}" />
+                                                <Binding Converter="{s:BoolToText True=Connected,
+                                                                                  False=Disconnected}"
+                                                         Path="Connected" />
                                                 <Binding Path="Name" />
                                                 <Binding Path="Port" />
                                             </MultiBinding>
@@ -482,8 +482,8 @@
         <Border Grid.Column="2"
                 Classes="panel">
             <DockPanel>
-                <Grid DockPanel.Dock="Top"
-                      ColumnDefinitions="*,Auto">
+                <Grid ColumnDefinitions="*,Auto"
+                      DockPanel.Dock="Top">
                     <TextBlock Text="Processes"
                                Classes="panel-title" />
                     <TextBlock Grid.Column="1"
@@ -496,11 +496,10 @@
                         </TextBlock.Text>
                     </TextBlock>
                 </Grid>
-                <Grid DockPanel.Dock="Top"
+                <Grid ColumnDefinitions="48,*,64,56,72,52,16"
                       Margin="0,6,0,2"
-                      ColumnDefinitions="48,*,64,56,72,52,16"
                       ColumnSpacing="{StaticResource SpacingSmall}"
-                      Classes="process">
+                      Classes="process" DockPanel.Dock="Top">
                     <TextBlock Text="PID"
                                Classes="panel-header number" />
                     <TextBlock Grid.Column="1"

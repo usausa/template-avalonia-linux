@@ -39,8 +39,9 @@
                 </UniformGrid>
                 <Button Margin="4,8,4,4"
                         HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
                         Content="Cancel"
-                        Click="OnCancelClick" HorizontalContentAlignment="Center" IsCancel="True" />
+                        Click="OnCancelClick" IsCancel="True" />
             </StackPanel>
         </StackPanel>
     </Border>

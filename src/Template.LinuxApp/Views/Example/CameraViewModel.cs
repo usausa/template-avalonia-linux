@@ -120,15 +120,15 @@ public sealed partial class CameraViewModel : AppViewModelBase
 
     public ObservableCollection<QrHistoryItem> QrHistory { get; } = [];
 
-    public ICommand StartCommand { get; }
+    public IObserveCommand StartCommand { get; }
 
-    public ICommand StopCommand { get; }
+    public IObserveCommand StopCommand { get; }
 
-    public ICommand ApplyCommand { get; }
+    public IObserveCommand ApplyCommand { get; }
 
-    public ICommand RefreshCommand { get; }
+    public IObserveCommand RefreshCommand { get; }
 
-    public ICommand SnapshotCommand { get; }
+    public IObserveCommand SnapshotCommand { get; }
 
     public CameraViewModel(TimeProvider timeProvider, IDispatcher dispatcher, IVideoSource videoSource, IQrCodeDetector qrCodeDetector, SnapshotService snapshotService)
     {

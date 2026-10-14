@@ -74,11 +74,11 @@ public sealed partial class PrinterViewModel : AppViewModelBase
 
     public string ImageDevice => imagePrinter.Device;
 
-    public ICommand PrintTextCommand { get; }
+    public IObserveCommand PrintTextCommand { get; }
 
-    public ICommand PrintImageCommand { get; }
+    public IObserveCommand PrintImageCommand { get; }
 
-    public ICommand CancelJobCommand { get; }
+    public IObserveCommand CancelJobCommand { get; }
 
     public PrinterViewModel(TimeProvider timeProvider, ILinePrinter linePrinter, IImagePrinter imagePrinter, ReceiptReportBuilder reportBuilder)
     {

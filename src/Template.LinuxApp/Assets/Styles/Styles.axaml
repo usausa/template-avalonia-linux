@@ -13,14 +13,14 @@
                               ColumnDefinitions="Auto,*,Auto"
                               ColumnSpacing="{StaticResource SpacingSmall}">
                             <Border Grid.Row="0" Grid.Column="0"
-                                    Width="16" Height="16"
                                     x:DataType="state:DeviceStatus"
                                     DataContext="{TemplateBinding Status}"
+                                    Width="16" Height="16"
                                     Classes="device-state"
-                                    Classes.running="{Binding IsRunning, FallbackValue=False}"
                                     Classes.connected="{Binding IsConnected, FallbackValue=False}"
+                                    Classes.disabled="{Binding !IsEnabled, FallbackValue=False}"
                                     Classes.error="{Binding LastError, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}"
-                                    Classes.disabled="{Binding !IsEnabled, FallbackValue=False}" />
+                                    Classes.running="{Binding IsRunning, FallbackValue=False}" />
                             <TextBlock Grid.Row="0" Grid.Column="1"
                                        Text="{TemplateBinding Title}"
                                        Classes="card-title" />
@@ -47,11 +47,6 @@
             </Setter>
         </ControlTheme>
     </Styles.Resources>
-
-    <!-- Kiosk -->
-    <Style Selector="Window.hide-cursor, Window.hide-cursor :is(InputElement)">
-        <Setter Property="Cursor" Value="None" />
-    </Style>
 
     <!-- Dialog -->
     <Style Selector="Border.dialog-frame">
@@ -225,7 +220,8 @@
         <Setter Property="BorderThickness" Value="{StaticResource BorderThicknessNormal}" />
         <Setter Property="Transitions">
             <Transitions>
-                <BrushTransition Property="BorderBrush" Duration="0:0:0.3" />
+                <BrushTransition Property="BorderBrush"
+                                 Duration="0:0:0.3" />
             </Transitions>
         </Setter>
     </Style>

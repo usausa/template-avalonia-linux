@@ -1,19 +1,19 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sys="using:System"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:s="http://smart/avalonia"
-             xmlns:sys="using:System"
              xmlns:disk="using:LinuxDotNet.Disk"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
-             xmlns:logic="clr-namespace:Template.LinuxApp.Domain.Logic"
-             xmlns:services="clr-namespace:Template.LinuxApp.Services"
+             xmlns:s="http://smart/avalonia"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             xmlns:services="clr-namespace:Template.LinuxApp.Services"
+             xmlns:logic="clr-namespace:Template.LinuxApp.Domain.Logic"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.SmartView"
-             x:DataType="local:SmartViewModel"
-             s:DataContextResolver.Type="local:SmartViewModel"
+             x:DataType="module:SmartViewModel"
+             s:DataContextResolver.Type="module:SmartViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
@@ -93,11 +93,9 @@
         <converters:SmartIssueConverter x:Key="IssueConverter" />
         <converters:SmartValueConverter x:Key="ValueConverter" />
         <converters:CountConverter x:Key="AttributeCountConverter"
-                                   Singular="attribute"
-                                   Plural="attributes" />
+                                   Plural="attributes" Singular="attribute" />
         <converters:CountConverter x:Key="ValueCountConverter"
-                                   Singular="value"
-                                   Plural="values" />
+                                   Plural="values" Singular="value" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -157,12 +155,11 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="local:SmartDiskItem">
+                    <DataTemplate x:DataType="module:SmartDiskItem">
                         <Button Padding="0"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Command="{Binding $parent[ItemsControl].((local:SmartViewModel)DataContext).SelectCommand, FallbackValue={x:Null}}"
-                                CommandParameter="{Binding}">
+                                Command="{Binding $parent[ItemsControl].((module:SmartViewModel)DataContext).SelectCommand, FallbackValue={x:Null}}"
+                                CommandParameter="{Binding}"
+                                Background="Transparent" BorderThickness="0">
                             <Border Width="280"
                                     Classes="panel disk-tab"
                                     Classes.selected="{Binding IsSelected}">
@@ -180,8 +177,7 @@
                                                Classes="card-note" />
                                     <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
                                                Text="{Binding Model}"
-                                               TextTrimming="CharacterEllipsis"
-                                               Classes="card-meta" />
+                                               Classes="card-meta" TextTrimming="CharacterEllipsis" />
                                 </Grid>
                             </Border>
                         </Button>
@@ -197,7 +193,7 @@
         <ContentControl Grid.Row="1"
                         Content="{Binding Selected}">
             <ContentControl.ContentTemplate>
-                <DataTemplate x:DataType="local:SmartDiskItem">
+                <DataTemplate x:DataType="module:SmartDiskItem">
                     <Grid ColumnDefinitions="*,*"
                           ColumnSpacing="{StaticResource SpacingSmall}">
 
@@ -211,8 +207,7 @@
                                       ColumnSpacing="{StaticResource SpacingNormal}">
                                     <TextBlock Grid.Row="0" Grid.Column="0"
                                                Text="{Binding Model}"
-                                               TextTrimming="CharacterEllipsis"
-                                               Classes="card-title" />
+                                               Classes="card-title" TextTrimming="CharacterEllipsis" />
                                     <WrapPanel Grid.Row="1" Grid.Column="0"
                                                ItemSpacing="{StaticResource SpacingNormal}">
                                         <TextBlock Text="{Binding Device}"
@@ -267,22 +262,22 @@
                             <Border Grid.Row="1"
                                     IsVisible="{Binding HasSmart}"
                                     Classes="panel">
-                                <UniformGrid Rows="1"
-                                             ColumnSpacing="{StaticResource SpacingSmall}">
+                                <UniformGrid ColumnSpacing="{StaticResource SpacingSmall}"
+                                             Rows="1">
                                     <controls:RingGauge Value="{Binding Life, TargetNullValue={x:Static sys:Double.NaN}}"
                                                         Text="{Binding Life, StringFormat='{}{0:F0}%', TargetNullValue=—}"
-                                                        Label="Life"
-                                                        Fill="{Binding LifeHealth, Converter={StaticResource HealthBrushConverter}}" />
+                                                        Fill="{Binding LifeHealth, Converter={StaticResource HealthBrushConverter}}"
+                                                        Label="Life" />
                                     <controls:RingGauge Value="{Binding Temperature, TargetNullValue={x:Static sys:Double.NaN}}"
                                                         Maximum="80"
                                                         Text="{Binding Temperature, StringFormat='{}{0:F0} °C', TargetNullValue=—}"
-                                                        Label="Temperature"
-                                                        Fill="{Binding TemperatureHealth, Converter={StaticResource HealthBrushConverter}}" />
+                                                        Fill="{Binding TemperatureHealth, Converter={StaticResource HealthBrushConverter}}"
+                                                        Label="Temperature" />
                                     <controls:RingGauge IsVisible="{Binding IsNvme}"
                                                         Value="{Binding Spare, TargetNullValue={x:Static sys:Double.NaN}}"
                                                         Text="{Binding Spare, StringFormat='{}{0:F0}%', TargetNullValue=—}"
-                                                        Label="Spare"
-                                                        Fill="{Binding SpareHealth, Converter={StaticResource HealthBrushConverter}}" />
+                                                        Fill="{Binding SpareHealth, Converter={StaticResource HealthBrushConverter}}"
+                                                        Label="Spare" />
                                 </UniformGrid>
                             </Border>
 
@@ -291,13 +286,13 @@
                                           IsVisible="{Binding HasSmart}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
-                                        <UniformGrid Columns="4"
+                                        <UniformGrid RowSpacing="{StaticResource SpacingSmall}"
                                                      ColumnSpacing="{StaticResource SpacingSmall}"
-                                                     RowSpacing="{StaticResource SpacingSmall}" />
+                                                     Columns="4" />
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="local:SmartStatItem">
+                                    <DataTemplate x:DataType="module:SmartStatItem">
                                         <controls:StatTile Height="72"
                                                            Title="{Binding Title}"
                                                            Fill="{Binding Health, Converter={StaticResource StatBrushConverter}}">
@@ -315,22 +310,20 @@
                             <Border Grid.Row="1" Grid.RowSpan="2"
                                     IsVisible="{Binding !HasSmart}"
                                     Classes="panel">
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                                            Spacing="{StaticResource SpacingLarge}">
+                                <StackPanel Spacing="{StaticResource SpacingLarge}"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center">
                                     <Path HorizontalAlignment="Center"
-                                          Data="M4,16 H92 V80 H4 Z M18,62 H46 M70,62 H78"
+                                          Opacity="0.4"
                                           Stroke="{DynamicResource PanelNoteBrush}"
                                           StrokeThickness="6"
-                                          Opacity="0.4" />
+                                          Data="M4,16 H92 V80 H4 Z M18,62 H46 M70,62 H78" />
                                     <TextBlock HorizontalAlignment="Center"
                                                Text="{Binding Smart, Converter={StaticResource MessageConverter}}"
                                                FontSize="28" />
                                     <TextBlock MaxWidth="720"
                                                HorizontalAlignment="Center"
                                                Text="{Binding Smart, Converter={StaticResource MessageDetailConverter}}"
-                                               TextAlignment="Center"
-                                               TextWrapping="Wrap"
-                                               Classes="card-note" />
+                                               Classes="card-note" TextAlignment="Center" TextWrapping="Wrap" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -352,8 +345,8 @@
                                                Classes="card-note" />
                                 </Grid>
                                 <Grid Grid.Row="1"
-                                      Margin="{StaticResource ScrollGutter}"
                                       ColumnDefinitions="4,36,*,64,60,56,76,128,120"
+                                      Margin="{StaticResource ScrollGutter}"
                                       ColumnSpacing="{StaticResource SpacingSmall}"
                                       IsVisible="{Binding IsAta}">
                                     <TextBlock Grid.Column="1"
@@ -382,8 +375,8 @@
                                                Classes="panel-header" />
                                 </Grid>
                                 <Grid Grid.Row="1"
-                                      Margin="{StaticResource ScrollGutter}"
                                       ColumnDefinitions="4,*,180,200"
+                                      Margin="{StaticResource ScrollGutter}"
                                       ColumnSpacing="{StaticResource SpacingSmall}"
                                       IsVisible="{Binding IsNvme}">
                                     <TextBlock Grid.Column="1"
@@ -402,7 +395,7 @@
                                     <StackPanel>
                                         <ItemsControl ItemsSource="{Binding Attributes}">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="local:SmartAttributeItem">
+                                                <DataTemplate x:DataType="module:SmartAttributeItem">
                                                     <Grid ColumnDefinitions="4,36,*,64,60,56,76,128,120"
                                                           ColumnSpacing="{StaticResource SpacingSmall}"
                                                           Classes="row">
@@ -443,7 +436,7 @@
                                         </ItemsControl>
                                         <ItemsControl ItemsSource="{Binding Values}">
                                             <ItemsControl.ItemTemplate>
-                                                <DataTemplate x:DataType="local:SmartValueItem">
+                                                <DataTemplate x:DataType="module:SmartValueItem">
                                                     <Grid ColumnDefinitions="4,*,180,200"
                                                           ColumnSpacing="{StaticResource SpacingSmall}"
                                                           Classes="row">

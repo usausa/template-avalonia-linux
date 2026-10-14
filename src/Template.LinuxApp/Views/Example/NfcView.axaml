@@ -3,13 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.NfcView"
-             x:DataType="local:NfcViewModel"
-             s:DataContextResolver.Type="local:NfcViewModel"
+             x:DataType="module:NfcViewModel"
+             s:DataContextResolver.Type="module:NfcViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
@@ -17,8 +17,7 @@
         <converters:SuicaTerminalConverter x:Key="TerminalConverter" />
         <converters:SuicaProcessConverter x:Key="ProcessConverter" />
         <converters:CountConverter x:Key="RecordCountConverter"
-                                   Singular="record"
-                                   Plural="records" />
+                                   Plural="records" Singular="record" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -48,36 +47,35 @@
                 Classes="panel scan-card"
                 Classes.flash="{Binding IsFlashing}">
             <Panel>
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                            IsVisible="{Binding !HasCard}"
-                            Spacing="{StaticResource SpacingXLarge}">
+                <StackPanel Spacing="{StaticResource SpacingXLarge}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsVisible="{Binding !HasCard}">
                     <Path HorizontalAlignment="Center"
-                          Data="M20,30 A22,22 0 0 1 20,66 M38,18 A38,38 0 0 1 38,78 M56,6 A54,54 0 0 1 56,90"
+                          Opacity="0.4"
                           Stroke="{DynamicResource PanelNoteBrush}"
                           StrokeThickness="8"
-                          StrokeLineCap="Round"
-                          Opacity="0.4" />
+                          Data="M20,30 A22,22 0 0 1 20,66 M38,18 A38,38 0 0 1 38,78 M56,6 A54,54 0 0 1 56,90" StrokeLineCap="Round" />
                     <TextBlock HorizontalAlignment="Center"
                                Text="Touch a Suica card"
                                FontSize="28"
                                Foreground="{DynamicResource PanelNoteBrush}" />
                 </StackPanel>
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                            IsVisible="{Binding HasCard}"
-                            Spacing="{StaticResource SpacingLarge}">
-                    <StackPanel HorizontalAlignment="Center"
-                                Orientation="Horizontal"
-                                Spacing="{StaticResource SpacingNormal}">
+                <StackPanel Spacing="{StaticResource SpacingLarge}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsVisible="{Binding HasCard}">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource SpacingNormal}"
+                                HorizontalAlignment="Center">
                         <TextBlock Text="Balance"
                                    Classes="card-note" />
                         <TextBlock Text="{Binding ReadTime, StringFormat='{}{0:HH:mm:ss}', TargetNullValue=''}"
                                    Classes="card-note" />
                     </StackPanel>
-                    <StackPanel HorizontalAlignment="Center"
-                                Orientation="Horizontal"
-                                Spacing="{StaticResource SpacingSmall}">
-                        <TextBlock VerticalAlignment="Bottom"
-                                   Margin="0,0,0,20"
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="{StaticResource SpacingSmall}"
+                                HorizontalAlignment="Center">
+                        <TextBlock Margin="0,0,0,20"
+                                   VerticalAlignment="Bottom"
                                    Text="¥"
                                    FontSize="64"
                                    FontWeight="SemiBold" />
@@ -88,8 +86,8 @@
                     <TextBlock HorizontalAlignment="Center"
                                Text="{Binding Idm}"
                                FontSize="{StaticResource FontSizeXLarge}"
-                               Foreground="{DynamicResource PanelNoteBrush}"
-                               Classes="code" />
+                               Classes="code"
+                               Foreground="{DynamicResource PanelNoteBrush}" />
                 </StackPanel>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Bottom"
                            IsVisible="{Binding HasError}"
@@ -130,7 +128,7 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="local:SuicaHistoryItem">
+                            <DataTemplate x:DataType="module:SuicaHistoryItem">
                                 <Grid ColumnDefinitions="Auto,*"
                                       ColumnSpacing="{StaticResource SpacingSmall}">
                                     <Border Grid.Column="0"
@@ -157,10 +155,10 @@
                                                    FontSize="{StaticResource FontSizeLarge}">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}{0} - {1}">
-                                                    <Binding Path="Terminal"
-                                                             Converter="{StaticResource TerminalConverter}" />
-                                                    <Binding Path="Process"
-                                                             Converter="{StaticResource ProcessConverter}" />
+                                                    <Binding Converter="{StaticResource TerminalConverter}"
+                                                             Path="Terminal" />
+                                                    <Binding Converter="{StaticResource ProcessConverter}"
+                                                             Path="Process" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>

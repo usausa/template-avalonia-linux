@@ -3,12 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.GraphicsView"
-             x:DataType="local:GraphicsViewModel"
-             s:DataContextResolver.Type="local:GraphicsViewModel"
+             x:DataType="module:GraphicsViewModel"
+             s:DataContextResolver.Type="module:GraphicsViewModel"
              d:DesignWidth="1280" d:DesignHeight="696">
 
     <UserControl.Styles>
@@ -167,18 +167,18 @@
                                Classes="panel-title" />
                     <Rectangle Grid.Row="1" Grid.Column="0"
                                Width="72" Height="72"
-                               Classes="rotate"
-                               Fill="{StaticResource ChartGreen}" />
+                               Fill="{StaticResource ChartGreen}"
+                               Classes="rotate" />
                     <Ellipse Grid.Row="1" Grid.Column="1"
                              Width="44" Height="44"
                              Margin="0,0,0,8"
                              VerticalAlignment="Bottom"
-                             Classes="translate"
-                             Fill="{StaticResource ChartOrange}" />
+                             Fill="{StaticResource ChartOrange}"
+                             Classes="translate" />
                     <Ellipse Grid.Row="1" Grid.Column="2"
                              Width="88" Height="88"
-                             Classes="scale"
-                             Fill="{StaticResource ChartPurple}" />
+                             Fill="{StaticResource ChartPurple}"
+                             Classes="scale" />
                     <TextBlock Grid.Row="2" Grid.Column="0"
                                Text="Rotate"
                                Classes="caption" />
@@ -203,43 +203,43 @@
                             <TextBlock Text="Linear"
                                        Classes="easing-name" />
                             <Ellipse Grid.Column="1"
-                                     Classes="easing linear"
-                                     Fill="{StaticResource ChartBlue}" />
+                                     Fill="{StaticResource ChartBlue}"
+                                     Classes="easing linear" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
                             <TextBlock Text="Sine"
                                        Classes="easing-name" />
                             <Ellipse Grid.Column="1"
-                                     Classes="easing sine"
-                                     Fill="{StaticResource ChartGreen}" />
+                                     Fill="{StaticResource ChartGreen}"
+                                     Classes="easing sine" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
                             <TextBlock Text="Cubic"
                                        Classes="easing-name" />
                             <Ellipse Grid.Column="1"
-                                     Classes="easing cubic"
-                                     Fill="{StaticResource ChartYellow}" />
+                                     Fill="{StaticResource ChartYellow}"
+                                     Classes="easing cubic" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
                             <TextBlock Text="Back"
                                        Classes="easing-name" />
                             <Ellipse Grid.Column="1"
-                                     Classes="easing back"
-                                     Fill="{StaticResource ChartOrange}" />
+                                     Fill="{StaticResource ChartOrange}"
+                                     Classes="easing back" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
                             <TextBlock Text="Bounce"
                                        Classes="easing-name" />
                             <Ellipse Grid.Column="1"
-                                     Classes="easing bounce"
-                                     Fill="{StaticResource ChartRed}" />
+                                     Fill="{StaticResource ChartRed}"
+                                     Classes="easing bounce" />
                         </Grid>
                         <Grid ColumnDefinitions="96,*">
                             <TextBlock Text="Elastic"
                                        Classes="easing-name" />
                             <Ellipse Grid.Column="1"
-                                     Classes="easing elastic"
-                                     Fill="{StaticResource ChartPurple}" />
+                                     Fill="{StaticResource ChartPurple}"
+                                     Classes="easing elastic" />
                         </Grid>
                     </UniformGrid>
                 </Grid>
@@ -303,19 +303,18 @@
                             </Ellipse.Fill>
                         </Ellipse>
                         <Path Width="84" Height="80"
-                              Data="M 28,0 L 34.6,19.9 55.6,20 38.6,32.4 45,52.4 28,40.1 11,52.4 17.4,32.4 0.4,20 21.4,19.9 Z"
                               Fill="{StaticResource ChartRed}"
-                              Stretch="Uniform" />
+                              Data="M 28,0 L 34.6,19.9 55.6,20 38.6,32.4 45,52.4 28,40.1 11,52.4 17.4,32.4 0.4,20 21.4,19.9 Z" Stretch="Uniform" />
                         <Viewbox Width="100" Height="64">
-                            <Polyline Points="0,36 16,8 32,36 48,8 64,36"
-                                      Stroke="{StaticResource ChartGreen}"
-                                      StrokeDashArray="2,1.5" StrokeJoin="Round" StrokeLineCap="Round" StrokeThickness="4" />
+                            <Polyline Stroke="{StaticResource ChartGreen}"
+                                      StrokeThickness="4"
+                                      Points="0,36 16,8 32,36 48,8 64,36" StrokeDashArray="2,1.5" StrokeJoin="Round" StrokeLineCap="Round" />
                         </Viewbox>
                         <Border Width="100" Height="64"
+                                CornerRadius="{StaticResource CornerRadiusSmall}"
                                 Background="{DynamicResource PanelBackgroundBrush}"
                                 BorderBrush="{DynamicResource PanelBorderBrush}"
                                 BorderThickness="{StaticResource BorderThicknessThin}"
-                                CornerRadius="{StaticResource CornerRadiusSmall}"
                                 BoxShadow="0 6 16 0 #66000000" />
                     </UniformGrid>
                 </Grid>
@@ -340,8 +339,8 @@
                                    Classes="panel-note" />
                     </Grid>
                     <controls:ParticleField Grid.Row="1"
-                                            ClipToBounds="True"
                                             Fill="{StaticResource ChartBlue}"
+                                            ClipToBounds="True"
                                             LinkBrush="{StaticResource ChartBlue}" />
                 </Grid>
             </Border>
@@ -365,8 +364,8 @@
                                                    Foreground="{DynamicResource PanelNoteBrush}" />
                     </Grid>
                     <controls:AnimatedWave Grid.Row="1"
-                                           GridBrush="{DynamicResource PanelBorderBrush}"
                                            Stroke="{StaticResource ChartBlue}"
+                                           GridBrush="{DynamicResource PanelBorderBrush}"
                                            SecondaryStroke="{StaticResource ChartOrange}" />
                 </Grid>
             </Border>

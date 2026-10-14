@@ -9,8 +9,8 @@
             <TextBox x:Name="ValueText" />
             <StackPanel Orientation="Horizontal"
                         Margin="0,16,0,0"
-                        HorizontalAlignment="Right"
-                        Spacing="8">
+                        Spacing="8"
+                        HorizontalAlignment="Right">
                 <Button Width="96"
                         Content="OK"
                         Click="OnOkClick" IsDefault="True" />

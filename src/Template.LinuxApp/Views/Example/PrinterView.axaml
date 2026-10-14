@@ -2,14 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:s="http://smart/avalonia"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
-             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              xmlns:cups="using:LinuxDotNet.Cups"
+             xmlns:s="http://smart/avalonia"
+             xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.PrinterView"
-             x:DataType="local:PrinterViewModel"
-             s:DataContextResolver.Type="local:PrinterViewModel"
+             x:DataType="module:PrinterViewModel"
+             s:DataContextResolver.Type="module:PrinterViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
@@ -41,17 +41,17 @@
         </s:MapToBrushConverter>
         <s:MapToTextConverter x:Key="ResultTextConverter">
             <s:MapToTextConverter.Entries>
-                <s:MapToTextEntry Key="{x:Static local:PrintResult.TextSent}"
+                <s:MapToTextEntry Key="{x:Static module:PrintResult.TextSent}"
                                   Value="Sent to the line printer" />
-                <s:MapToTextEntry Key="{x:Static local:PrintResult.TextFailed}"
+                <s:MapToTextEntry Key="{x:Static module:PrintResult.TextFailed}"
                                   Value="Printing to the line printer failed" />
-                <s:MapToTextEntry Key="{x:Static local:PrintResult.ImageSent}"
+                <s:MapToTextEntry Key="{x:Static module:PrintResult.ImageSent}"
                                   Value="Sent to the image printer" />
-                <s:MapToTextEntry Key="{x:Static local:PrintResult.ImageFailed}"
+                <s:MapToTextEntry Key="{x:Static module:PrintResult.ImageFailed}"
                                   Value="Printing to the image printer failed" />
-                <s:MapToTextEntry Key="{x:Static local:PrintResult.Canceled}"
+                <s:MapToTextEntry Key="{x:Static module:PrintResult.Canceled}"
                                   Value="Canceled" />
-                <s:MapToTextEntry Key="{x:Static local:PrintResult.CancelFailed}"
+                <s:MapToTextEntry Key="{x:Static module:PrintResult.CancelFailed}"
                                   Value="Canceling failed" />
             </s:MapToTextConverter.Entries>
         </s:MapToTextConverter>
@@ -113,8 +113,8 @@
                            Text="Image printer"
                            Classes="card-note" />
                 <Border Grid.Row="1" Grid.Column="0"
-                        VerticalAlignment="Top"
                         Padding="40,24"
+                        VerticalAlignment="Top"
                         Classes="paper">
                     <Viewbox Stretch="Uniform">
                         <TextBlock Text="{Binding PreviewText}"
@@ -123,8 +123,8 @@
                     </Viewbox>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="1"
-                        HorizontalAlignment="Center" VerticalAlignment="Top"
                         Padding="0"
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
                         Classes="paper">
                     <Image Source="{Binding PreviewImage}"
                            Stretch="Uniform" />
@@ -202,7 +202,7 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="local:PrintJobItem">
+                            <DataTemplate x:DataType="module:PrintJobItem">
                                 <Grid RowDefinitions="Auto,Auto"
                                       ColumnDefinitions="*,Auto"
                                       ColumnSpacing="{StaticResource SpacingSmall}">
@@ -229,7 +229,7 @@
                                                Text="{Binding SubmitTime, StringFormat='{}{0:yyyy/MM/dd HH:mm:ss}'}"
                                                Classes="card-meta" />
                                     <Button Grid.Row="1" Grid.Column="1"
-                                            Command="{Binding $parent[ItemsControl].((local:PrinterViewModel)DataContext).CancelJobCommand, FallbackValue={x:Null}}"
+                                            Command="{Binding $parent[ItemsControl].((module:PrinterViewModel)DataContext).CancelJobCommand, FallbackValue={x:Null}}"
                                             CommandParameter="{Binding JobId}"
                                             IsVisible="{Binding CanCancel}"
                                             Content="Cancel"

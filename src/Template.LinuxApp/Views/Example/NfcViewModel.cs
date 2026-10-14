@@ -60,7 +60,7 @@ public sealed partial class NfcViewModel : AppViewModelBase
 
     public DeviceStatus ReaderStatus => suicaReader.Status;
 
-    public ICommand ClearCommand { get; }
+    public IObserveCommand ClearCommand { get; }
 
     public NfcViewModel(TimeProvider timeProvider, ISuicaReader suicaReader)
     {

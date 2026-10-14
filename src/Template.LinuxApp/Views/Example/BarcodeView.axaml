@@ -3,19 +3,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:s="http://smart/avalonia"
-             xmlns:local="clr-namespace:Template.LinuxApp.Views.Example"
              xmlns:controls="clr-namespace:Template.LinuxApp.Controls"
              xmlns:converters="clr-namespace:Template.LinuxApp.Converters"
+             xmlns:module="clr-namespace:Template.LinuxApp.Views.Example"
              mc:Ignorable="d"
              x:Class="Template.LinuxApp.Views.Example.BarcodeView"
-             x:DataType="local:BarcodeViewModel"
-             s:DataContextResolver.Type="local:BarcodeViewModel"
+             x:DataType="module:BarcodeViewModel"
+             s:DataContextResolver.Type="module:BarcodeViewModel"
              d:DesignWidth="1280" d:DesignHeight="740">
 
     <UserControl.Resources>
         <converters:CountConverter x:Key="ScanCountConverter"
-                                   Singular="scan"
-                                   Plural="scans" />
+                                   Plural="scans" Singular="scan" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -77,13 +76,13 @@
                 Classes="panel scan-card"
                 Classes.flash="{Binding IsFlashing}">
             <Panel>
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                            IsVisible="{Binding Latest, Converter={x:Static ObjectConverters.IsNull}}"
-                            Spacing="{StaticResource SpacingXLarge}">
+                <StackPanel Spacing="{StaticResource SpacingXLarge}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            IsVisible="{Binding Latest, Converter={x:Static ObjectConverters.IsNull}}">
                     <Path HorizontalAlignment="Center"
-                          Data="M0,0h6v96h-6z M10,0h3v96h-3z M17,0h3v96h-3z M24,0h8v96h-8z M36,0h3v96h-3z M43,0h5v96h-5z M52,0h3v96h-3z M59,0h8v96h-8z M71,0h3v96h-3z M78,0h3v96h-3z M85,0h6v96h-6z M95,0h3v96h-3z M102,0h8v96h-8z M114,0h3v96h-3z M121,0h5v96h-5z M130,0h3v96h-3z M137,0h6v96h-6z M147,0h3v96h-3z M154,0h8v96h-8z M166,0h3v96h-3z M173,0h6v96h-6z"
                           Fill="{DynamicResource PanelNoteBrush}"
-                          Opacity="0.4" />
+                          Opacity="0.4"
+                          Data="M0,0h6v96h-6z M10,0h3v96h-3z M17,0h3v96h-3z M24,0h8v96h-8z M36,0h3v96h-3z M43,0h5v96h-5z M52,0h3v96h-3z M59,0h8v96h-8z M71,0h3v96h-3z M78,0h3v96h-3z M85,0h6v96h-6z M95,0h3v96h-3z M102,0h8v96h-8z M114,0h3v96h-3z M121,0h5v96h-5z M130,0h3v96h-3z M137,0h6v96h-6z M147,0h3v96h-3z M154,0h8v96h-8z M166,0h3v96h-3z M173,0h6v96h-6z" />
                     <TextBlock HorizontalAlignment="Center"
                                Text="Scan a barcode or QR code"
                                FontSize="28"
@@ -91,25 +90,23 @@
                 </StackPanel>
                 <ContentControl Content="{Binding Latest}">
                     <ContentControl.ContentTemplate>
-                        <DataTemplate x:DataType="local:BarcodeHistoryItem">
-                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
-                                        Spacing="{StaticResource SpacingLarge}">
-                                <StackPanel HorizontalAlignment="Center"
-                                            Orientation="Horizontal"
-                                            Spacing="{StaticResource SpacingNormal}">
+                        <DataTemplate x:DataType="module:BarcodeHistoryItem">
+                            <StackPanel Spacing="{StaticResource SpacingLarge}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="{StaticResource SpacingNormal}"
+                                            HorizontalAlignment="Center">
                                     <Border Classes="source-chip"
                                             Classes.qr="{Binding IsQr}">
                                         <TextBlock Text="{Binding Source}"
                                                    FontSize="{StaticResource FontSizeLarge}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="White" />
+                                                   FontWeight="SemiBold" Foreground="White" />
                                     </Border>
                                     <Border IsVisible="{Binding IsRepeated}"
                                             Classes="count-badge">
                                         <TextBlock Text="{Binding Count, StringFormat='×{0}'}"
                                                    FontSize="{StaticResource FontSizeLarge}"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="White" />
+                                                   FontWeight="SemiBold" Foreground="White" />
                                     </Border>
                                     <TextBlock Text="{Binding Time, StringFormat='{}{0:HH:mm:ss}'}"
                                                Classes="card-note" />
@@ -118,8 +115,7 @@
                                 </StackPanel>
                                 <TextBlock Text="{Binding Code}"
                                            FontSize="96"
-                                           TextAlignment="Center"
-                                           Classes="code" />
+                                           Classes="code" TextAlignment="Center" />
                             </StackPanel>
                         </DataTemplate>
                     </ContentControl.ContentTemplate>
@@ -158,7 +154,7 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="local:BarcodeHistoryItem">
+                            <DataTemplate x:DataType="module:BarcodeHistoryItem">
                                 <Grid ColumnDefinitions="Auto,*"
                                       ColumnSpacing="{StaticResource SpacingSmall}">
                                     <Border Grid.Column="0"
@@ -176,8 +172,7 @@
                                                     Classes="count-badge">
                                                 <TextBlock Text="{Binding Count, StringFormat='×{0}'}"
                                                            FontSize="{StaticResource FontSizeNormal}"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="White" />
+                                                           FontWeight="SemiBold" Foreground="White" />
                                             </Border>
                                         </Grid>
                                         <StackPanel Orientation="Horizontal"

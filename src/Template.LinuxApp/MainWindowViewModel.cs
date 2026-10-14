@@ -2,8 +2,6 @@ namespace Template.LinuxApp;
 
 using System.Reactive.Concurrency;
 
-using Smart.Mvvm.ViewModels;
-
 using Template.LinuxApp.Devices.Input;
 using Template.LinuxApp.Services;
 using Template.LinuxApp.Shell;
@@ -37,7 +35,7 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
         new(ViewId.Graphics, "Graphics")
     ];
 
-    public ICommand ForwardCommand { get; }
+    public IObserveCommand ForwardCommand { get; }
 
     public MainWindowViewModel(INavigator navigator, IDialogService dialogService, IInputDevice input, ScreenCapture screenCapture)
     {

@@ -1,0 +1,7 @@
+<Styles xmlns="https://github.com/avaloniaui">
+
+    <Style Selector=":is(InputElement)">
+        <Setter Property="Cursor" Value="None" />
+    </Style>
+
+</Styles>

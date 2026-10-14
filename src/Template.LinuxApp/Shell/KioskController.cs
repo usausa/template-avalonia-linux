@@ -1,6 +1,8 @@
 namespace Template.LinuxApp.Shell;
 
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using Avalonia.Styling;
 using Avalonia.Threading;
 
 using Template.LinuxApp.Components.Gamepad;
@@ -11,6 +13,8 @@ using Template.LinuxApp.Views.Dialogs;
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class KioskController
 {
+    private static readonly Uri HideCursorStylesUri = new("avares://Template.LinuxApp/Assets/Styles/HideCursor.axaml");
+
     private static readonly TimeSpan CodeTimeout = TimeSpan.FromSeconds(10);
 
     private static readonly TimeSpan CodeMismatchDisplay = TimeSpan.FromSeconds(2);
@@ -70,7 +74,7 @@ public sealed class KioskController
 
         if (setting.HideCursor)
         {
-            target.Classes.Add("hide-cursor");
+            target.Styles.Add((IStyle)AvaloniaXamlLoader.Load(HideCursorStylesUri));
         }
 
         target.Closing += OnClosing;

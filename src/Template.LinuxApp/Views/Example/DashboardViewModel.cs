@@ -44,9 +44,9 @@ public sealed partial class DashboardViewModel : AppViewModelBase
     [ObservableProperty]
     public partial double? Temperature { get; set; }
 
-    public ICommand ThemeCommand { get; }
+    public IObserveCommand ThemeCommand { get; }
 
-    public ICommand ExitCommand { get; }
+    public IObserveCommand ExitCommand { get; }
 
     public DashboardViewModel(IHostEnvironment environment, Setting setting, KioskSetting kioskSetting, PerformanceService performanceService, ThemeService themeService, ExitService exitService)
     {
