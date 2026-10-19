@@ -18,7 +18,7 @@ public sealed class StickScope : Control
 
     private const double LabelRatio = 0.1;
 
-    private const double MinLabelSize = 11;
+    private const double MinLabelSize = 12;
 
     private const double LabelMargin = 3;
 
@@ -151,7 +151,7 @@ public sealed class StickScope : Control
         context.DrawEllipse(null, new Pen(inside), center, zone, zone);
 
         var foreground = Foreground ?? ChartHelper.DefaultTextBrush;
-        var labelSize = Math.Max(MinLabelSize, radius * LabelRatio);
+        var labelSize = ChartHelper.RoundFontSize(Math.Max(MinLabelSize, radius * LabelRatio));
         var zoneLabel = ChartHelper.CreateText(FormatPercent(deadzone), labelSize, foreground);
         context.DrawText(zoneLabel, new Point(center.X + zone + LabelMargin, center.Y + LabelMargin));
         var rangeLabel = ChartHelper.CreateText(FormatPercent(range), labelSize, foreground);

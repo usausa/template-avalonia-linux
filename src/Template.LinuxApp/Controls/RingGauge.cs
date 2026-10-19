@@ -112,12 +112,12 @@ public sealed class RingGauge : Control
         }
 
         var foreground = Foreground ?? ChartHelper.DefaultTextBrush;
-        var text = ChartHelper.CreateText(String.IsNullOrEmpty(Text) ? "—" : Text, Math.Max(16, radius * 0.4), hasValue ? fill : foreground, ChartHelper.BoldTypeface);
+        var text = ChartHelper.CreateText(String.IsNullOrEmpty(Text) ? "—" : Text, ChartHelper.RoundFontSize(Math.Max(16, radius * 0.4)), hasValue ? fill : foreground, ChartHelper.BoldTypeface);
         context.DrawText(text, new Point(center.X - (text.Width / 2), center.Y - (text.Height / 2)));
 
         if (!String.IsNullOrEmpty(Label))
         {
-            var label = ChartHelper.CreateText(Label, Math.Max(12, radius * 0.16), foreground);
+            var label = ChartHelper.CreateText(Label, ChartHelper.RoundFontSize(Math.Max(12, radius * 0.16)), foreground);
             label.MaxTextWidth = radius * 1.4;
             label.MaxLineCount = 1;
             label.Trimming = TextTrimming.CharacterEllipsis;

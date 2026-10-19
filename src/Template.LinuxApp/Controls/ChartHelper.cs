@@ -75,6 +75,8 @@ internal static class ChartHelper
     public static FormattedText CreateText(string text, double size, IBrush brush, Typeface? typeface = null) =>
         new(text, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, typeface ?? Typeface.Default, size, brush);
 
+    public static double RoundFontSize(double size) => Math.Round(size / 4) * 4;
+
     public static void DrawAxis(DrawingContext context, Rect plot, double minimum, double maximum, int divisions, IBrush textBrush, IBrush gridBrush)
     {
         var pen = new Pen(gridBrush);
@@ -82,7 +84,7 @@ internal static class ChartHelper
         {
             var y = Math.Round(plot.Bottom - (plot.Height * i / divisions)) + 0.5;
             context.DrawLine(pen, new Point(plot.Left, y), new Point(plot.Right, y));
-            var label = CreateText(FormatAxis(minimum + ((maximum - minimum) * i / divisions)), 11, textBrush);
+            var label = CreateText(FormatAxis(minimum + ((maximum - minimum) * i / divisions)), 12, textBrush);
             context.DrawText(label, new Point(plot.Left - label.Width - 4, y - (label.Height / 2)));
         }
     }
@@ -94,7 +96,7 @@ internal static class ChartHelper
             return;
         }
 
-        var minimum = span * ((CreateText("00:00:00", 11, textBrush).Width + 16) / plot.Width);
+        var minimum = span * ((CreateText("00:00:00", 12, textBrush).Width + 16) / plot.Width);
         var step = TimeSteps.FirstOrDefault(x => x >= minimum, TimeSteps[^1]);
         var format = step >= TimeSpan.FromMinutes(1) ? "HH:mm" : "HH:mm:ss";
         var pen = new Pen(gridBrush);
@@ -103,7 +105,7 @@ internal static class ChartHelper
         {
             var x = Math.Round(plot.Left + (plot.Width * (ticks - start.Ticks) / span.Ticks)) + 0.5;
             context.DrawLine(pen, new Point(x, plot.Top), new Point(x, plot.Bottom));
-            var label = CreateText(new DateTime(ticks, DateTimeKind.Unspecified).ToString(format, CultureInfo.InvariantCulture), 11, textBrush);
+            var label = CreateText(new DateTime(ticks, DateTimeKind.Unspecified).ToString(format, CultureInfo.InvariantCulture), 12, textBrush);
             var left = x - (label.Width / 2);
             if ((left >= plot.Left - 2) && (left + label.Width <= plot.Right + 4))
             {

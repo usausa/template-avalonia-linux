@@ -130,10 +130,10 @@ public sealed class StatTile : Control
         var foreground = Foreground ?? Brushes.White;
         if (!String.IsNullOrEmpty(Title))
         {
-            context.DrawText(ChartHelper.CreateText(Title, 13, foreground), new Point(8, 6));
+            context.DrawText(ChartHelper.CreateText(Title, 14, foreground), new Point(8, 6));
         }
 
-        var value = ChartHelper.CreateText(String.IsNullOrEmpty(Value) ? "—" : Value, Math.Clamp(bounds.Height * 0.32, 16, 34), foreground, ChartHelper.BoldTypeface);
+        var value = ChartHelper.CreateText(String.IsNullOrEmpty(Value) ? "—" : Value, ChartHelper.RoundFontSize(Math.Clamp(bounds.Height * 0.32, 16, 32)), foreground, ChartHelper.BoldTypeface);
         context.DrawText(value, new Point(bounds.Width - value.Width - 8, 3));
     }
 

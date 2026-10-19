@@ -189,9 +189,9 @@ public sealed class SeriesChart : Control
 
     private void DrawLegend(DrawingContext context, IReadOnlyList<ChartSeries> series, IBrush[] brushes, Rect area, IBrush textBrush)
     {
-        var header = ChartHelper.CreateText("Name", 11, textBrush);
+        var header = ChartHelper.CreateText("Name", 12, textBrush);
         context.DrawText(header, new Point(area.Left + 18, area.Top + 2));
-        var last = ChartHelper.CreateText("Last", 11, textBrush);
+        var last = ChartHelper.CreateText("Last", 12, textBrush);
         context.DrawText(last, new Point(area.Right - last.Width - 4, area.Top + 2));
 
         var rows = Math.Max(0, (int)((area.Height - RowHeight) / RowHeight));
