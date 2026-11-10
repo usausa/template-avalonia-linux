@@ -1,68 +1,70 @@
 # template-avalonia-linux
 
-Linux の x64 機のキオスク端末向けの Avalonia アプリの雛形。
+English | [日本語](README.ja.md)
 
-## 🖥️ 画面
+Avalonia app template for kiosk terminals on Linux x64 machines.
+
+## 🖥️ Screens
 
 <img width="50%" src="./docs/dashboard.png" />
 
-- アプリの情報(版・ランタイム・環境・キオスク・起動の時刻)
-- CPU・メモリー・スワップ・温度のゲージ、テーマの切り替え・終了
+- App information (version, runtime, environment, kiosk, start time)
+- Gauges for CPU, memory, swap, and temperature, theme switching, and exit
 
 <img width="50%" src="./docs/system.png" />
 
-- ハードウェア・OS・電源・ファイルシステムの使用率
-- USB 機器のつながり(ドライバー・デバイスファイル)と抜き差し、プロセスの一覧
+- Hardware, OS, power, and file system usage
+- USB device connections (driver, device file), plugging and unplugging, and the process list
 
 <img width="50%" src="./docs/performance.png" />
 
-- 稼働時間・負荷・CPU・メモリー・電力などの数値パネルと 120 秒のトレンド
-- コアごとの使用率・クロック、温度、ディスク、ネットワークの折れ線、カーネルの統計の棒グラフ
+- Value panels for uptime, load, CPU, memory, power, and more with a 120-second trend
+- Line charts of per-core usage and clock, temperature, disk, and network, and bar charts of kernel statistics
 
 <img width="50%" src="./docs/smart.png" />
 
-- ディスクごとの SMART の判定・寿命・温度・主な値
-- 属性の現在値・最悪値・しきい値・生の値の一覧
+- SMART assessment, life, temperature, and key values of each disk
+- List of the current, worst, threshold, and raw values of the attributes
 
 <img width="50%" src="./docs/camera.png" />
 
-- カメラの映像、形式と解像度の切り替え、顔の検出、QR の読み取り、静止画
+- Camera video, format and resolution switching, face detection, QR reading, and still images
 
 <img width="50%" src="./docs/barcode.png" />
 
-- バーコードリーダーと QR リーダーの読み取り、履歴と重複の回数
+- Reading with barcode readers and QR readers, with the history and duplicate counts
 
 <img width="50%" src="./docs/nfc.png" />
 
-- Suica の残高と利用履歴(PC/SC のリーダー)
+- Suica balance and usage history (PC/SC reader)
 
 <img width="50%" src="./docs/printer.png" />
 
-- ライン プリンターと CUPS のプリンターの状態・ジョブ
-- レシートとラベルの見本のプレビューと印刷
+- Status and jobs of the line printer and CUPS printers
+- Preview and printing of sample receipts and labels
 
 <img width="50%" src="./docs/gamepad.png" />
 
-- パッドのボタン・スティック・トリガーの押下
-- ボタンと軸の生の値、スティックのずれ(デッドゾーン 8% の円と拡大表示)、直近の入力
+- Button, stick, and trigger presses on the pad
+- Raw button and axis values, stick drift (an 8% dead zone circle and a magnified view), and recent input
 
 <img width="50%" src="./docs/controller.png" />
 
-- パッドで操作する速度計・ギア、サーボと LED への送信
+- Speedometer and gear operated with the pad, and sending to servos and LEDs
 
 <img width="50%" src="./docs/typography.png" />
 
-- 各種フォント、絵文字
+- Various fonts and emoji
 
 <img width="50%" src="./docs/graphics.png" />
 
-- アニメーション・イージング・アナログ時計・図形・パーティクル・毎フレーム描く波形・fps
+- Animation, easing, analog clock, shapes, particles, a waveform drawn every frame, and fps
 
-## 🔑 SMART の権限
+## 🔑 SMART permissions
 
-**設定**
+**Setup**
 
 ```bash
-sudo usermod -aG disk <ユーザー>
+sudo usermod -aG disk <user>
 sudo setcap cap_sys_rawio,cap_sys_admin+ep ~/Template.LinuxApp/Template.LinuxApp
 ```
