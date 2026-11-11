@@ -68,3 +68,11 @@ Avalonia app template for kiosk terminals on Linux x64 machines.
 sudo usermod -aG disk <user>
 sudo setcap cap_sys_rawio,cap_sys_admin+ep ~/Template.LinuxApp/Template.LinuxApp
 ```
+
+## 🔗 Related Projects
+
+| Project | Description |
+| --- | --- |
+| [template-wpf](https://github.com/usausa/template-wpf) | WPF desktop application template |
+| [template-avalonia-desktop](https://github.com/usausa/template-avalonia-desktop) | Avalonia desktop application template |
+| [template-avalonia-embedded](https://github.com/usausa/template-avalonia-embedded) | Avalonia application template for Raspberry Pi embedded devices |
