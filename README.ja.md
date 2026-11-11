@@ -73,6 +73,6 @@ sudo setcap cap_sys_rawio,cap_sys_admin+ep ~/Template.LinuxApp/Template.LinuxApp
 
 | プロジェクト | 説明 |
 | --- | --- |
-| [template-wpf](https://github.com/usausa/template-wpf) | WPF のデスクトップアプリのテンプレート |
-| [template-avalonia-desktop](https://github.com/usausa/template-avalonia-desktop) | Avalonia のデスクトップアプリのテンプレート |
-| [template-avalonia-embedded](https://github.com/usausa/template-avalonia-embedded) | Raspberry Pi の組み込み機器向けの Avalonia アプリのテンプレート |
+| [template-wpf](https://github.com/usausa/template-wpf) | WPF デスクトップアプリのテンプレート |
+| [template-avalonia-desktop](https://github.com/usausa/template-avalonia-desktop) | Avalonia デスクトップアプリのテンプレート |
+| [template-avalonia-embedded](https://github.com/usausa/template-avalonia-embedded) | Raspberry Pi 組み込み機器向け Avalonia アプリのテンプレート |
