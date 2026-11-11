@@ -1,8 +1,8 @@
-# template-avalonia-linux
+# Template project for Avalonia kiosk on Linux
 
 [English](README.md) | 日本語
 
-Linux の x64 機のキオスク端末向けの Avalonia アプリの雛形。
+[Template](https://usausa.github.io/template/) project for Avalonia kiosk on Linux.
 
 ## 🖥️ 画面
 
