@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0</TargetFrameworks>
+    <TargetFrameworks>net11.0</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -35,26 +35,26 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.1.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="12.1.5" />
+    <PackageReference Include="Avalonia" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.6" />
     <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.5" />
-    <PackageReference Include="BunnyTail.DependencyInjection" Version="0.10.0" />
-    <PackageReference Include="BunnyTail.XamlProperty.Avalonia" Version="1.5.0" />
-    <PackageReference Include="LinuxDotNet.Cups" Version="2.0.0" />
-    <PackageReference Include="LinuxDotNet.Disk" Version="2.0.0" />
-    <PackageReference Include="LinuxDotNet.GameInput" Version="2.0.0" />
-    <PackageReference Include="LinuxDotNet.InputEvent" Version="2.0.0" />
-    <PackageReference Include="LinuxDotNet.SystemInfo" Version="2.0.0" />
-    <PackageReference Include="LinuxDotNet.Video4Linux2" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.14" />
-    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.31.1" />
-    <PackageReference Include="Mofucat.SerialIO" Version="1.5.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.6" />
+    <PackageReference Include="BunnyTail.DependencyInjection" Version="1.0.0" />
+    <PackageReference Include="BunnyTail.XamlProperty.Avalonia" Version="2.0.0" />
+    <PackageReference Include="LinuxDotNet.Cups" Version="3.1.0" />
+    <PackageReference Include="LinuxDotNet.Disk" Version="3.1.0" />
+    <PackageReference Include="LinuxDotNet.GameInput" Version="3.1.0" />
+    <PackageReference Include="LinuxDotNet.InputEvent" Version="3.1.0" />
+    <PackageReference Include="LinuxDotNet.SystemInfo" Version="3.1.0" />
+    <PackageReference Include="LinuxDotNet.Video4Linux2" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="11.0.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.32.0" />
+    <PackageReference Include="Mofucat.SerialIO" Version="2.0.0" />
     <PackageReference Include="NAudio.Alsa" Version="3.3.0" />
     <PackageReference Include="PCSC" Version="7.0.1" />
     <PackageReference Include="QRCoder" Version="1.8.1" />
@@ -64,17 +64,17 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="System.IO.Ports" Version="10.0.14" />
+    <PackageReference Include="System.IO.Ports" Version="11.0.0" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
-    <PackageReference Include="Usa.Smart.Avalonia" Version="2.29.0" />
-    <PackageReference Include="Usa.Smart.Avalonia.Extensions" Version="2.29.0" />
-    <PackageReference Include="Usa.Smart.Core" Version="2.20.0" />
-    <PackageReference Include="Usa.Smart.Mapper" Version="1.0.0-beta14" />
-    <PackageReference Include="Usa.Smart.Mvvm" Version="2.18.0" />
-    <PackageReference Include="Usa.Smart.Navigation" Version="3.17.0" />
-    <PackageReference Include="Usa.Smart.Navigation.Avalonia" Version="3.17.0" />
-    <PackageReference Include="Usa.Smart.Navigation.Extensions.DependencyInjection" Version="3.17.0" />
-    <PackageReference Include="Usa.Smart.Reactive" Version="2.15.0" />
+    <PackageReference Include="Usa.Smart.Avalonia" Version="3.0.0" />
+    <PackageReference Include="Usa.Smart.Avalonia.Extensions" Version="3.0.0" />
+    <PackageReference Include="Usa.Smart.Core" Version="3.0.0" />
+    <PackageReference Include="Usa.Smart.Mapper" Version="1.0.0" />
+    <PackageReference Include="Usa.Smart.Mvvm" Version="3.0.0" />
+    <PackageReference Include="Usa.Smart.Navigation" Version="3.21.0" />
+    <PackageReference Include="Usa.Smart.Navigation.Avalonia" Version="3.21.0" />
+    <PackageReference Include="Usa.Smart.Navigation.Extensions.DependencyInjection" Version="3.21.0" />
+    <PackageReference Include="Usa.Smart.Reactive" Version="3.0.0" />
     <PackageReference Include="Xaml.Behaviors.Avalonia" Version="12.1.5" />
     <PackageReference Include="ZXing.Net" Version="0.16.11" />
   </ItemGroup>

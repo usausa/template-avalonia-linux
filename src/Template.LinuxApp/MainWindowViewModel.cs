@@ -15,7 +15,7 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
 
     private readonly ScreenCapture screenCapture;
 
-    private IDisposable? navigatingBusy;
+    private BusyStateScope? navigatingBusy;
 
     public INavigator Navigator { get; }
 
@@ -83,13 +83,15 @@ public sealed class MainWindowViewModel : ExtendViewModelBase
         }
     }
 
-    private Task HandleInputAsync(InputSignal signal) => dialogService.IsOpen ? Task.CompletedTask : signal switch
-    {
-        { Key: InputKey.Select, Action: InputAction.Press } => SwitchViewAsync(),
-        { Key: InputKey.Start, Action: InputAction.Press } => Navigator.NotifyAsync(ShellEvent.Start),
-        { Key: InputKey.Capture, Action: InputAction.Press } => screenCapture.CaptureAsync(),
-        _ => Task.CompletedTask
-    };
+    private Task HandleInputAsync(InputSignal signal) => dialogService.IsOpen
+        ? Task.CompletedTask
+        : signal switch
+        {
+            { Key: InputKey.Select, Action: InputAction.Press } => SwitchViewAsync(),
+            { Key: InputKey.Start, Action: InputAction.Press } => Navigator.NotifyAsync(ShellEvent.Start),
+            { Key: InputKey.Capture, Action: InputAction.Press } => screenCapture.CaptureAsync(),
+            _ => Task.CompletedTask
+        };
 
     private Task<bool> SwitchViewAsync()
     {

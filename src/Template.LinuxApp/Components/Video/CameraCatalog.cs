@@ -25,11 +25,14 @@ public static class CameraCatalog
 
         try
         {
-            return [.. VideoInfo.GetAllVideo()
-                .Where(static x => x.IsAvailable && x.IsVideoCapture)
-                .Select(ToDevice)
-                .Where(static x => x.Resolutions.Count > 0)
-                .OrderBy(static x => x.Device, StringComparer.Ordinal)];
+            return
+            [
+                .. VideoInfo.GetAllVideo()
+                    .Where(static x => x.IsAvailable && x.IsVideoCapture)
+                    .Select(ToDevice)
+                    .Where(static x => x.Resolutions.Count > 0)
+                    .OrderBy(static x => x.Device, StringComparer.Ordinal)
+            ];
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

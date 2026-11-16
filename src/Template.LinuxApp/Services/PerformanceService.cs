@@ -529,9 +529,12 @@ public sealed partial class PerformanceService : IDisposable
                     .Where(static x => x.Type == "temp")
                     .Select(x => (Monitor: monitor.Name, Sensor: x)))
                 .ToList();
-            Temperatures = [.. sensors
-                .Take(MaxTemperatureSensors)
-                .Select(static x => (String.IsNullOrEmpty(x.Sensor.Label) ? x.Monitor : $"{x.Monitor} {x.Sensor.Label}", x.Sensor))];
+            Temperatures =
+            [
+                .. sensors
+                    .Take(MaxTemperatureSensors)
+                    .Select(static x => (String.IsNullOrEmpty(x.Sensor.Label) ? x.Monitor : $"{x.Monitor} {x.Sensor.Label}", x.Sensor))
+            ];
             CpuTemperature = FindCpuTemperature(sensors);
         }
 

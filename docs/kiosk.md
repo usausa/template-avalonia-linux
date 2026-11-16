@@ -109,7 +109,7 @@ gsettings set com.ubuntu.update-notifier show-apport-crashes false
 ### 配置
 
 ```bash
-dotnet publish src/Template.LinuxApp/Template.LinuxApp.csproj -c Release -f net10.0 -r linux-x64 -p:PublishSingleFile=true --self-contained -o publish
+dotnet publish src/Template.LinuxApp/Template.LinuxApp.csproj -c Release -f net11.0 -r linux-x64 -p:PublishSingleFile=true --self-contained -o publish
 ssh <ユーザー>@<端末> mkdir -p Template.LinuxApp
 scp publish/* <ユーザー>@<端末>:Template.LinuxApp/
 ssh <ユーザー>@<端末> chmod +x Template.LinuxApp/Template.LinuxApp

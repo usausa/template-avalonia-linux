@@ -38,8 +38,8 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Canvas Grid.Row="1"
-                    navigation:NavigationContainer.Navigator="{Binding Navigator}" />
+            <Grid Grid.Row="1"
+                  navigation:NavigationContainer.Navigator="{Binding Navigator}" />
         </Grid>
         <controls:DialogLayer x:Name="DialogLayer" />
     </Panel>
