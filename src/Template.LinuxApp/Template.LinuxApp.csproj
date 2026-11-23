@@ -42,7 +42,7 @@
     </PackageReference>
     <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.6" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.6" />
-    <PackageReference Include="BunnyTail.DependencyInjection" Version="1.0.0" />
+    <PackageReference Include="BunnyTail.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="BunnyTail.XamlProperty.Avalonia" Version="2.0.0" />
     <PackageReference Include="LinuxDotNet.Cups" Version="3.1.0" />
     <PackageReference Include="LinuxDotNet.Disk" Version="3.1.0" />
@@ -65,10 +65,10 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="System.IO.Ports" Version="11.0.0" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
-    <PackageReference Include="Usa.Smart.Avalonia" Version="3.0.0" />
-    <PackageReference Include="Usa.Smart.Avalonia.Extensions" Version="3.0.0" />
-    <PackageReference Include="Usa.Smart.Core" Version="3.0.0" />
-    <PackageReference Include="Usa.Smart.Mapper" Version="1.0.0" />
+    <PackageReference Include="Usa.Smart.Avalonia" Version="3.1.0" />
+    <PackageReference Include="Usa.Smart.Avalonia.Extensions" Version="3.1.0" />
+    <PackageReference Include="Usa.Smart.Core" Version="3.2.0" />
+    <PackageReference Include="Usa.Smart.Mapper" Version="1.1.0" />
     <PackageReference Include="Usa.Smart.Mvvm" Version="3.0.0" />
     <PackageReference Include="Usa.Smart.Navigation" Version="3.21.0" />
     <PackageReference Include="Usa.Smart.Navigation.Avalonia" Version="3.21.0" />
